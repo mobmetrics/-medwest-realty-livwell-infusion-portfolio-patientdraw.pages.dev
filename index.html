@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LivWell Infusions — Portfolio &amp; Patient Draw | MedWest Realty</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#29374D;--red:#DC2F3A;--bg:#EEF0F3;--line:#DCE0E6;--muted:#5B6472;--ink:#29374D}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+ font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+
+/* ---------- header ---------- */
+#header{background:var(--navy);color:#fff;display:flex;align-items:center;gap:18px;padding:11px 20px}
+.mw-brand{display:flex;align-items:center;gap:9px;min-width:190px}
+.mw-logo-img{height:36px;width:36px;object-fit:contain;display:block;border-radius:5px}
+.mw-box{width:32px;height:32px;border-radius:5px;background:#fff;color:var(--navy);
+ display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+.mw-name{font-size:13.5px;font-weight:700;letter-spacing:.2px}
+.mw-sub{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;opacity:.72}
+.title-block{flex:1;text-align:center}
+.title-block h1{margin:0;font-size:19px;letter-spacing:.2px}
+.title-block p{margin:2px 0 0;font-size:12px;opacity:.8}
+.client-chip{background:#fff;border-radius:40px;padding:5px 17px;display:flex;align-items:center;
+ justify-content:center;min-height:50px;box-shadow:0 1px 8px rgba(0,0,0,.3);white-space:nowrap}
+.client-logo{height:40px;width:auto;max-width:200px;display:block}
+.client-fb{color:var(--navy);font-weight:800;font-size:13.5px;letter-spacing:.3px;text-align:center}
+.client-fb span{display:block;font-size:9px;font-weight:600;letter-spacing:.8px;color:var(--muted);text-transform:uppercase}
+
+/* ---------- stat cards ---------- */
+#stats-row{display:grid;grid-template-columns:repeat(6,1fr);background:#fff;border-bottom:1px solid var(--line)}
+.stat-card{padding:11px 8px;text-align:center;border-right:1px solid var(--line);border-top:3px solid transparent}
+.stat-card:last-child{border-right:0}
+.stat-val{font-size:22px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.stat-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-top:2px}
+.c1{border-top-color:var(--navy)}.c1 .stat-val{color:var(--navy)}
+.c2{border-top-color:var(--red)}.c2 .stat-val{color:var(--red)}
+.c3{border-top-color:#2E6F8E}.c3 .stat-val{color:#2E6F8E}
+.c4{border-top-color:#37A05F}.c4 .stat-val{color:#37A05F}
+.c5{border-top-color:#C98A12}.c5 .stat-val{color:#C98A12}
+.c6{border-top-color:#6B5B95}.c6 .stat-val{color:#6B5B95}
+
+/* ---------- layer bar ---------- */
+#layers{background:#fff;border-bottom:1px solid var(--line);padding:8px 14px;
+ display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+#layers .lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-right:2px}
+.lbtn{display:flex;align-items:center;gap:5px;font-size:12px;padding:4px 11px;border:1px solid var(--line);
+ border-radius:30px;cursor:pointer;background:#fff;color:#6b7280;user-select:none;white-space:nowrap}
+.lbtn .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.lbtn.active{font-weight:700}
+.sep{width:1px;height:20px;background:var(--line);margin:0 3px}
+.radbox{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-left:auto}
+.radbox input[type=range]{width:120px;accent-color:var(--red)}
+.radbox b{color:var(--navy);font-size:13px;font-variant-numeric:tabular-nums;min-width:44px}
+
+/* ---------- callout band ---------- */
+.hl-block{background:var(--navy);color:#fff;padding:9px 16px;display:none}
+.hl-block.show{display:block}
+.hl-title{font-size:12px;font-weight:800;letter-spacing:.4px;margin-bottom:2px}
+.hl-note{font-size:11.5px;opacity:.86;line-height:1.45}
+.hl-note b{color:#FFD8DA}
+.ramp{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:10px;opacity:.9}
+.ramp i{width:34px;height:7px;border-radius:2px;display:block}
+
+/* ---------- main ---------- */
+#main-area{display:grid;grid-template-columns:1fr 344px;gap:0;height:600px}
+#map{height:100%;width:100%}
+#side{background:#fff;border-left:1px solid var(--line);overflow-y:auto;padding:14px}
+.s-title{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);
+ margin:0 0 3px;padding-top:2px}
+.s-sub{font-size:11px;color:var(--muted);margin:0 0 9px}
+.s-section{border-top:1px solid var(--line);margin-top:15px;padding-top:13px}
+.s-section:first-child{border-top:0;margin-top:0;padding-top:0}
+
+.dcards{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.dcard{border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.dcard-hdr{padding:6px 9px;font-size:11.5px;font-weight:800;color:#fff;display:flex;justify-content:space-between}
+.dcard.best .dcard-hdr{background:var(--navy)}
+.dcard.worst .dcard-hdr{background:var(--red)}
+.dcard-hdr .badge{font-size:8.5px;letter-spacing:.7px;opacity:.85;align-self:center}
+.dcard-body{padding:7px 9px}
+.di{display:flex;justify-content:space-between;gap:6px;padding:2px 0;border-bottom:1px solid #F2F4F6;font-size:11px}
+.di:last-child{border-bottom:0}
+.di-lbl{color:var(--muted)}
+.di-val{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.chart-wrap{position:relative;height:210px}
+.chart-wrap.tall{height:250px}
+.toggle-mini{display:flex;gap:5px;margin:0 0 8px}
+.toggle-mini button{font:inherit;font-size:11px;padding:3px 10px;border:1px solid var(--line);
+ background:#fff;border-radius:4px;cursor:pointer;color:var(--muted)}
+.toggle-mini button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ---------- sections ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:20px 16px 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:9px;padding:18px 20px;margin-bottom:18px}
+.card h2{margin:0 0 3px;font-size:16px}
+.card .lede{margin:0 0 15px;font-size:12.5px;color:var(--muted)}
+
+table.sc{width:100%;border-collapse:collapse;font-size:13px}
+table.sc th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+ border-bottom:1.5px solid var(--line);padding:0 9px 7px 0}
+table.sc td{padding:8px 9px 8px 0;border-bottom:1px solid #F2F4F6;vertical-align:top}
+table.sc td.b{font-weight:800;color:var(--navy);white-space:nowrap}
+table.sc td.w{font-weight:800;color:var(--red);white-space:nowrap}
+table.sc td.why{color:var(--muted);font-size:12px;line-height:1.45}
+table.sc tr.new td{background:#FBFCFD}
+.tag{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.5px;padding:1px 5px;border-radius:3px;
+ margin-left:6px;vertical-align:1px;background:var(--navy);color:#fff}
+
+#filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+#filter-row select,#filter-row input{font:inherit;font-size:12.5px;padding:5px 9px;border:1px solid var(--line);
+ border-radius:5px;background:#fff;color:var(--ink)}
+#filter-row input{min-width:170px}
+.btn{font:inherit;font-size:12.5px;padding:5px 12px;border:1px solid var(--line);background:#fff;
+ border-radius:5px;cursor:pointer;color:var(--muted)}
+table.dt{width:100%;border-collapse:collapse;font-size:12.5px}
+table.dt th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+ border-bottom:1.5px solid var(--line);padding:0 8px 7px 0;cursor:pointer;user-select:none;white-space:nowrap}
+table.dt th:hover{color:var(--navy)}
+table.dt th .ar{opacity:.45;font-size:9px}
+table.dt td{padding:6px 8px 6px 0;border-bottom:1px solid #F2F4F6}
+table.dt td.n{text-align:right;font-variant-numeric:tabular-nums}
+table.dt tbody tr{cursor:pointer}
+table.dt tbody tr:hover td{background:#F5F7F9}
+table.dt tr.hi td{background:#FDF3F4;font-weight:700;color:var(--red)}
+table.dt tr.mo td{background:#EEF1F5;font-weight:700}
+.pill{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.4px;padding:1px 6px;border-radius:9px}
+.pill.iso{background:#E7EFF5;color:#1F5C7A}
+.pill.mid{background:#FDF3E3;color:#8A5D07}
+.pill.clu{background:#FBE9EA;color:#A81F26}
+.tbl-scroll{overflow-x:auto}
+.cpin i{display:block;width:9px;height:9px;border:1px solid #fff;border-radius:1px;
+ box-shadow:0 0 0 .5px rgba(0,0,0,.4)}
+.pill.dlo{background:#E4EFE8;color:#1E6B41}
+.pill.dmd{background:#FDF3E3;color:#8A5D07}
+.pill.dhi{background:#FBE9EA;color:#A81F26}
+.pill.dna{background:#EFF1F4;color:#7A8494}
+
+.factor{border-top:1px solid var(--line);padding:13px 0 3px}
+.factor:first-of-type{border-top:0}
+.factor h3{margin:0 0 4px;font-size:13.5px}
+.factor p{margin:0;font-size:13px;color:#3D4757;line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 28px}
+footer{max-width:1320px;margin:0 auto;padding:4px 16px 34px;font-size:11px;color:var(--muted);line-height:1.55}
+.leaflet-popup-content{font:12.5px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--navy);margin:9px 11px}
+.leaflet-popup-content b{font-size:13px}
+.mapbtn{background:#fff;border:1px solid rgba(0,0,0,.2);border-radius:4px;padding:4px 8px;
+ font-size:11.5px;cursor:pointer;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.15)}
+@media(max-width:1080px){
+ #stats-row{grid-template-columns:repeat(3,1fr)}
+ #main-area{grid-template-columns:1fr;height:auto}
+ #map{height:440px}#side{border-left:0;border-top:1px solid var(--line);max-height:none}
+ .two{grid-template-columns:1fr}
+ #header{flex-wrap:wrap}.title-block{order:3;flex-basis:100%;text-align:left}
+}
+
+/* ---------- Sketch A: single-viewport layout ---------- */
+html,body{height:100%}
+body{overflow:hidden}
+#app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#header,#stats-row,#layers,#deck{flex:none}
+#main-area{flex:1;min-height:0;height:auto;display:grid;grid-template-columns:62% 38%}
+#map-wrap{display:flex;flex-direction:column;min-height:0;min-width:0}
+#map{flex:1;min-height:0;height:auto;width:100%}
+#side{overflow-y:auto;min-height:0;max-height:none;padding:12px 14px}
+.hl-block{flex:none;padding:6px 14px}
+.hl-title{font-size:11px}
+.hl-note{font-size:10.8px;line-height:1.4}
+.ramp{margin-top:4px;font-size:9.5px}
+.stat-card{padding:8px}
+.stat-val{font-size:20px}
+#layers{padding:6px 14px}
+.s-section{margin-top:12px;padding-top:10px}
+.chart-wrap{height:148px}.chart-wrap.tall{height:196px}
+#deck{height:224px;display:flex;flex-direction:column;background:#fff;border-top:1px solid var(--line)}
+#tabbar{flex:none;display:flex;padding:0 12px;gap:3px;border-bottom:1px solid var(--line)}
+.tab{font:inherit;font-size:12px;font-weight:700;letter-spacing:.3px;padding:8px 13px;border:0;
+ background:none;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent}
+.tab:hover{color:var(--navy)}
+.tab.on{color:var(--navy);border-bottom-color:var(--red)}
+.tabpanes{flex:1;min-height:0;position:relative}
+.pane{display:none;position:absolute;inset:0;overflow-y:auto;padding:10px 16px 16px}
+.pane.on{display:block}
+.pane .card{background:none;border:0;border-radius:0;padding:0;margin:0}
+.pane .card h2{display:none}
+.pane .card .lede{margin:0 0 8px;font-size:12px}
+#filter-row{position:sticky;top:0;background:#fff;z-index:3;margin:0 0 8px;padding-bottom:8px}
+table.dt thead th{position:sticky;top:0;background:#fff;z-index:2}
+table.sc thead th{position:sticky;top:0;background:#fff;z-index:2}
+table.sc td{padding:6px 9px 6px 0}
+table.dt td{padding:4px 8px 4px 0}
+.factor{padding:8px 0 2px}
+.factor h3{font-size:12.5px}
+.factor p{font-size:12px;line-height:1.5}
+.two{gap:0 26px}
+#footer{max-width:none;margin:14px 0 0;padding:11px 0 0;border-top:1px solid var(--line);font-size:10.5px}
+@media(max-width:1100px){
+ body{overflow:auto}
+ #app{height:auto;display:block}
+ #main-area{grid-template-columns:1fr}
+ #map{height:400px;flex:none}
+ #deck{height:auto}
+ .tabpanes{position:static}
+ .pane{position:static}
+}
+
+/* ---------- Where patients come from — added tab ---------- */
+#pane-pz .pz-top{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+#pane-pz .pzlbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}
+#pane-pz select{font:inherit;font-size:12.5px;font-weight:700;color:var(--navy);background:#fff;
+ border:1px solid #C3CAD3;border-radius:6px;padding:5px 9px;cursor:pointer}
+#pane-pz .ramp{margin-top:0;margin-left:auto}
+.pzchips{display:flex;gap:20px;flex-wrap:wrap;margin:0 0 11px}
+.pzchip{border-left:3px solid var(--navy);padding:1px 0 1px 9px}
+.pzchip.r{border-left-color:var(--red)}
+.pzchip b{display:block;font-size:16px;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+.pzchip span{font-size:10.5px;color:var(--muted)}
+.pzcols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 24px}
+table.zt{width:100%;border-collapse:collapse;font-size:12.5px}
+table.zt th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+ border-bottom:1px solid var(--line);padding:0 8px 4px 0;font-weight:700}
+table.zt td{padding:4px 8px 4px 0;border-bottom:1px solid #F2F4F6}
+table.zt td.b{font-weight:800;color:var(--navy);white-space:nowrap}
+table.zt td.n,table.zt th.n{text-align:right;font-variant-numeric:tabular-nums}
+table.zt td.mut{color:var(--muted)}
+table.zt tbody tr{cursor:pointer}
+table.zt tbody tr:hover td{background:#F5F7F9}
+.pznote{font-size:10.5px;color:var(--muted);line-height:1.55;margin-top:11px;
+ border-top:1px solid var(--line);padding-top:9px}
+@media(max-width:1100px){ .pzcols{grid-template-columns:1fr} }
+
+/* ---------- Fill screen — added map button ---------- */
+body.mapfull #side{display:none}
+body.mapfull #deck{display:none}
+body.mapfull #main-area{grid-template-columns:100%}
+@media(max-width:1100px){ body.mapfull #map{height:calc(100vh - 150px)} }
+
+/* ---------- Takeaway line — added ---------- */
+.takeaway{border-left:4px solid var(--red);padding:2px 0 2px 11px;margin:0 0 9px;
+ font-size:14.5px;line-height:1.45;font-weight:700;color:var(--navy);max-width:1080px}
+@media(max-width:1100px){ .takeaway{font-size:13.5px} }
+
+/* ===== Sign-in gate - matches the Camino Market Map dashboard ===== */
+#signin-gate{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1d2839 0%,#29374D 45%,#3c4d68 100%);padding:24px}
+#signin-gate.hidden{display:none}
+.gcard{background:#fff;border-radius:10px;padding:34px 34px 26px;width:100%;max-width:400px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.gcard img.gmw{height:58px;width:auto;margin-bottom:16px}
+.gcard h1{font-size:19px;color:var(--navy);font-weight:600;margin-bottom:5px;line-height:1.3}
+.gcard p{font-size:12.5px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.gcard input{width:100%;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:13.5px;margin-bottom:10px;font-family:inherit}
+.gcard input:focus{outline:none;border-color:#3c4d68}
+.gcard button{width:100%;background:var(--red);color:#fff;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:4px}
+.gcard button:hover{background:#b81f2a}
+
+/* Client logo beside the MedWest logo on the sign-in card */
+.gcard img.gcl{height:34px;width:auto}
+.gcard .glogos{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:16px}
+.gcard .glogos img.gmw{margin-bottom:0}
+/* Disclaimer strip pinned along the bottom of the dashboard */
+#mw-disclaimer{flex:0 0 auto;text-align:center;font-size:10px;line-height:1.45;color:#8a95a5;
+  border-top:1px solid var(--line);padding:6px 10px 3px;margin-top:6px}
+#mw-disclaimer b{color:var(--muted);font-weight:600}
+.gerr{color:var(--red);font-size:11.5px;margin-bottom:8px;display:none}
+
+/* ================= Camino-style skin — visual only, no data changes ================= */
+body{background:#F5F6F8;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+#app{background:#F5F6F8}
+
+/* Header: red rule underneath, title right-aligned (Camino) */
+#header{border-bottom:3px solid var(--red)}
+.title-block{text-align:right;padding-right:16px}
+
+/* KPI cards: separate white cards with a coloured left bar (Camino shape) */
+#stats-row{background:transparent;border-bottom:0;gap:12px;padding:14px 18px 0}
+.stat-card{display:flex;flex-direction:column-reverse;align-items:flex-start;justify-content:center;
+ background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:6px;
+ padding:11px 14px;text-align:left}
+.stat-card:last-child{border-right:1px solid var(--line)}
+.stat-lbl{margin:0 0 3px;font-size:10px;font-weight:600;letter-spacing:.9px;color:var(--muted)}
+.stat-val{font-size:24px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.c1{border-top-color:var(--line);border-left-color:var(--navy)}
+.c2{border-top-color:var(--line);border-left-color:var(--red)}
+.c3{border-top-color:var(--line);border-left-color:#2E6F8E}
+.c4{border-top-color:var(--line);border-left-color:#37A05F}
+.c5{border-top-color:var(--line);border-left-color:#C98A12}
+.c6{border-top-color:var(--line);border-left-color:#6B5B95}
+
+/* Layer bar, map, side panel and bottom deck become floating cards with gutters */
+#layers{margin:14px 18px 0;border:1px solid var(--line);border-radius:8px;border-bottom:1px solid var(--line);
+ padding:9px 13px}
+#main-area{padding:14px 18px 0;gap:14px;background:transparent}
+#map-wrap{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+#side{border:1px solid var(--line);border-left:1px solid var(--line);border-radius:8px}
+#deck{margin:14px 18px 18px;border:1px solid var(--line);border-top:1px solid var(--line);
+ border-radius:8px;overflow:hidden}
+
+/* Side-panel section titles in Camino's sentence-case navy */
+.s-title{font-size:14.5px;font-weight:600;text-transform:none;letter-spacing:0;color:var(--navy)}
+
+/* Navy table header rows (Camino) */
+.pane table.sc thead th,
+.pane table.dt thead th,
+.pane table.zt thead th{background:var(--navy);color:#fff;font-size:10.5px;font-weight:600;
+ letter-spacing:.6px;text-transform:uppercase;border-bottom:0;padding:9px 12px}
+.pane table.dt thead th{padding-left:0;padding-right:12px;text-indent:8px}
+
+/* ========== Where patients come from — second map and tables (Camino-style) ========== */
+.pz2{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.pz2-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.pz2lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--muted)}
+.pz2lbl.pz2gap{margin-left:12px}
+.pz2btn{font:inherit;font-size:12px;font-weight:600;padding:6px 13px;border:1px solid var(--line);
+ border-radius:6px;background:#fff;color:var(--muted);cursor:pointer;white-space:nowrap}
+.pz2btn:hover{background:#F5F7F9}
+.pz2btn.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.pz2sum{margin-left:auto;font-size:11.5px;color:var(--muted)}
+.pz2-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px 16px 12px;margin-bottom:14px}
+.pz2-h{font-size:14.5px;font-weight:600;color:var(--navy)}
+.pz2-sub{font-size:11.5px;color:var(--muted);line-height:1.5;margin:3px 0 11px}
+#pz2-map{height:380px;width:100%;border:1px solid var(--line);border-radius:6px}
+.pz2-legend{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:9px;font-size:10.5px;color:var(--muted)}
+.pz2-lg{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pz2-lg i{width:22px;height:9px;border-radius:2px;display:inline-block;border:1px solid rgba(41,55,77,.2)}
+.pz2-hint{margin-left:auto}
+.pz2-tables{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pz2-tbl{border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.pz2-cap{display:flex;align-items:center;gap:7px;padding:8px 12px;background:#FAFBFC;
+ border-bottom:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--navy)}
+.pz2-cap b{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted)}
+.pz2-dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.pz2-dot.r{background:var(--red)}
+.pz2-dot.n{background:var(--navy)}
+.pz2-scroll{max-height:320px;overflow:auto}
+table.zt2{width:100%;border-collapse:collapse;font-size:12.5px}
+table.zt2 thead th{position:sticky;top:0;background:var(--navy);color:#fff;font-size:10px;font-weight:600;
+ letter-spacing:.5px;text-transform:uppercase;text-align:left;padding:8px 10px;z-index:2;line-height:1.3}
+table.zt2 th.n,table.zt2 td.n{text-align:right;font-variant-numeric:tabular-nums}
+table.zt2 td{padding:6px 10px;border-bottom:1px solid #F2F4F6}
+table.zt2 td.b{font-weight:800;color:var(--navy);white-space:nowrap}
+table.zt2 td.mut{color:var(--muted)}
+table.zt2 tbody tr{cursor:pointer}
+table.zt2 tbody tr:hover td{background:#F5F7F9}
+.pz2-foot{font-size:10.5px;color:var(--muted);line-height:1.55;margin-top:11px;
+ border-top:1px solid var(--line);padding-top:9px}
+@media(max-width:1100px){ .pz2-tables{grid-template-columns:1fr} }
+
+/* ===== Whole page scrolls — replaces the locked single-screen layout ===== */
+html,body{height:auto}
+body{overflow:auto}
+#app{height:auto;display:block;overflow:visible}
+#main-area{height:560px}
+#deck{height:auto}
+.tabpanes{position:static;flex:none;min-height:0}
+.pane{position:static;overflow:visible}
+.pane.on{display:block}
+#filter-row{position:static}
+body.mapfull #main-area{height:calc(100vh - 170px)}
+.pz2{margin-top:0;padding-top:0;border-top:0}
+.pz2-scroll{max-height:420px}
+@media(max-width:1100px){ #main-area{height:auto} body.mapfull #main-area{height:auto} }
+</style></head><body>
+<div id="signin-gate">
+  <div class="gcard">
+    <div class="glogos">
+      <img class="gmw" src="mw-logo.png" alt="MedWest Realty">
+      <img class="gcl" src="livwell-logo.png" alt="LivWell Infusions">
+    </div>
+    <h1>LivWell Infusion Portfolio and Patient Draw</h1>
+    <p>Site selection intelligence prepared by MedWest Realty.</p>
+    <input type="text" id="signin-name" placeholder="Your name" autocomplete="name">
+    <input type="email" id="signin-email" placeholder="Email address" autocomplete="email">
+    <div class="gerr" id="signin-err">This dashboard is restricted. If you should have access, please contact MedWest Realty.</div>
+    <button id="g_go">Enter Dashboard</button>
+  </div>
+</div>
+
+
+<div id="app">
+<div id="header">
+  <div class="mw-brand">
+    <img class="mw-logo-img" id="mw-logo" src="mw-logo.png" alt="MedWest Realty"
+         onerror="this.style.display='none';document.getElementById('mw-fb').style.display='flex'">
+    <div class="mw-box" id="mw-fb" style="display:none">MW</div>
+    <div><div class="mw-name">MedWest Realty</div><div class="mw-sub">Site Selection</div></div>
+  </div>
+  <div class="title-block">
+    <h1>LivWell Infusions — Portfolio &amp; Patient Draw</h1>
+    <p>MedWest Realty &nbsp;·&nbsp; 29-location isolation analysis &nbsp;·&nbsp; Monterey vs. Burbank patient origin</p>
+  </div>
+  <div class="client-chip">
+    <img class="client-logo" alt="LivWell Infusions"
+         src="livwell-logo.png"
+         onerror="this.style.display='none';document.getElementById('client-fb').style.display='block'">
+    <span class="client-fb" id="client-fb" style="display:none">LivWell<span>Infusions</span></span>
+  </div>
+</div>
+
+<div id="stats-row">
+  <div class="stat-card c1"><div class="stat-val" id="s-loc">29</div><div class="stat-lbl">Locations · 21 CA / 8 AZ</div></div>
+  <div class="stat-card c2"><div class="stat-val">32.8<span style="font-size:12px"> mi</span></div><div class="stat-lbl">Temecula — most isolated</div></div>
+  <div class="stat-card c3"><div class="stat-val" id="s-pat">7,143</div><div class="stat-lbl">Patient addresses mapped</div></div>
+  <div class="stat-card c4"><div class="stat-val">6.9×</div><div class="stat-lbl">Monterey vs Burbank volume</div></div>
+  <div class="stat-card c5"><div class="stat-val">3.6×</div><div class="stat-lbl">Per month open</div></div>
+  <div class="stat-card c6"><div class="stat-val">17<span style="font-size:12px"> vs </span>13</div><div class="stat-lbl">Catchment reach, mi (p90)</div></div>
+</div>
+
+<div id="layers">
+  <span class="lbl">Map layers:</span>
+  <div class="lbtn active" id="lb-clin" style="color:#29374D;border-color:#29374D;background:#EEF1F5"><span class="dot"></span>Clinics (29)</div>
+  <div class="lbtn active" id="lb-ring" style="color:#29374D"><span class="dot"></span>Catchment rings</div>
+  <div class="sep"></div>
+  <div class="lbtn" id="lb-hm" style="color:#C98A12"><span class="dot"></span>Patient heat — Monterey</div>
+  <div class="lbtn" id="lb-hb" style="color:#C98A12"><span class="dot"></span>Patient heat — Burbank</div>
+  <div class="lbtn" id="lb-city" style="color:#2E6F8E"><span class="dot"></span>City bubbles</div>
+  <div class="lbtn" id="pz-heat" style="color:#DC2F3A"><span class="dot"></span>Patient heat — every California location</div>
+  <div class="lbtn" id="pz-bub" style="color:#2E6F8E"><span class="dot"></span>Patient bubbles by ZIP</div>
+  <div class="sep"></div>
+  <div class="lbtn" id="lb-iso" style="color:#6B5B95"><span class="dot"></span>Isolation score</div>
+  <div class="sep"></div>
+  <div class="lbtn" id="lb-c0" style="color:#6D3FA3"><span class="dot"></span>Infusion For Health (45)</div>
+  <div class="lbtn" id="lb-c1" style="color:#17808F"><span class="dot"></span>IVX Health (12)</div>
+  <div class="lbtn" id="lb-c2" style="color:#A9541B"><span class="dot"></span>Clinivoy (7)</div>
+  <div class="radbox">Catchment radius <input type="range" id="rad" min="5" max="40" step="1" value="30"><b id="radv">30 mi</b></div>
+</div>
+
+<div id="main-area">
+<div id="map-wrap">
+<div class="hl-block" id="hl-comp">
+  <div class="hl-title">◆ COMPETITOR CLINICS — CALIFORNIA</div>
+  <div class="hl-note" id="hl-comp-note"></div>
+</div>
+<div class="hl-block" id="hl-heat">
+  <div class="hl-title">🌡 PATIENT ORIGIN HEAT — WHERE PATIENTS ACTUALLY COME FROM</div>
+  <div class="hl-note" id="hl-heat-note"></div>
+  <div class="ramp"><span>Low</span>
+    <i style="background:#29374D"></i><i style="background:#2E6F8E"></i><i style="background:#37A05F"></i><i style="background:#F0B429"></i><i style="background:#DC2F3A"></i>
+    <span>High</span><span style="margin-left:10px;opacity:.75">Intensity = patients per home city, normalized within the selected clinic.</span></div>
+</div>
+<div class="hl-block" id="hl-iso">
+  <div class="hl-title">◎ ISOLATION SCORE — DISTANCE TO NEAREST SIBLING CLINIC</div>
+  <div class="hl-note">Clinics recolored by how far the nearest other LivWell sits. <b>Blue = isolated</b> (owns its catchment) · amber = moderate · <b>red = clustered</b> (splitting demand with siblings). Temecula is the only location with zero siblings inside 30 miles, and it has never been graded — though the competitor layers show it is not isolated from the market.</div>
+</div>
+<div id="map"></div>
+</div>
+<aside id="side">
+    <div class="s-section">
+      <div class="s-title">Best vs. worst — as LivWell grades them</div>
+      <div class="s-sub">Revenue is LivWell's measure; patient volume shown as the available proxy. Patient figures come from the 7,143-address California export.</div>
+      <div class="dcards">
+        <div class="dcard best"><div class="dcard-hdr">Monterey, CA<span class="badge">BEST</span></div>
+          <div class="dcard-body" id="dc-best"></div></div>
+        <div class="dcard worst"><div class="dcard-hdr">Burbank, CA<span class="badge">WORST</span></div>
+          <div class="dcard-body" id="dc-worst"></div></div>
+      </div>
+    </div>
+    <div class="s-section">
+      <div class="s-title">Patient draw by home city</div>
+      <div class="s-sub">Top 10 cities · switch clinic below</div>
+      <div class="toggle-mini"><button id="tb-m" class="on">Monterey</button><button id="tb-b">Burbank</button></div>
+      <div class="chart-wrap tall"><canvas id="drawChart"></canvas></div>
+    </div>
+    <div class="s-section">
+      <div class="s-title">Portfolio by isolation band</div>
+      <div class="s-sub">All 29 locations · nearest-sibling distance</div>
+      <div class="chart-wrap"><canvas id="isoChart"></canvas></div>
+    </div>
+  </aside>
+</div>
+
+<div id="deck">
+<div id="tabbar">
+<button class="tab on" data-t="sc">Scorecard</button>
+<button class="tab" data-t="dt">All 29 locations</button>
+<button class="tab" data-t="wy">Why Monterey outperforms</button>
+<button class="tab" data-t="pz">Where patients come from</button>
+<button class="tab" data-t="cv">Patient coverage by ZIP code</button>
+</div>
+<div class="tabpanes">
+<div class="pane on" id="pane-sc"><div class="card">
+    <h2>Monterey vs. Burbank scorecard</h2>
+    <div class="takeaway">Burbank sits in the bigger, better-connected market. Monterey still draws several times the patients — and the reason is not distance or demographics.</div>
+    <p class="lede">On paper Burbank sits in a far larger, better-connected market. In practice Monterey draws 7.4× the patients — 3.9× once you account for Monterey being open 34 months against Burbank's 18.</p>
+    <table class="sc"><thead><tr><th style="width:23%">Factor</th><th style="width:15%">Monterey (best)</th><th style="width:15%">Burbank (worst)</th><th>Why it matters</th></tr></thead>
+    <tbody id="sc-body"></tbody></table>
+  </div></div>
+<div class="pane" id="pane-dt"><div class="card">
+    <h2>All 29 locations by isolation</h2>
+    <div class="takeaway">The portfolio ranked by how alone each clinic is. Temecula is the most isolated of all 29 and has never been graded.</div>
+    <p class="lede">Sibling counts recompute against the catchment radius set above. Click any row to fly the map to that clinic.</p>
+    <div id="filter-row">
+      <select id="f-state"><option value="">All states (29)</option><option value="CA">California (21)</option><option value="AZ">Arizona (8)</option></select>
+      <select id="f-band"><option value="">All isolation bands</option><option value="iso">Isolated — 20+ mi</option><option value="mid">Moderate — 10–20 mi</option><option value="clu">Clustered — under 10 mi</option></select>
+      <input id="f-search" type="search" placeholder="Search clinic or nearest sibling…">
+      <button class="btn" id="f-clear">Clear</button>
+      <span style="font-size:12px;color:var(--muted);align-self:center" id="rec-count"></span>
+    </div>
+    <div class="tbl-scroll"><table class="dt"><thead><tr>
+      <th data-k="rank">Rank <span class="ar">▾</span></th>
+      <th data-k="name">Clinic <span class="ar">▾</span></th>
+      <th data-k="st">State <span class="ar">▾</span></th>
+      <th data-k="near">Nearest sibling <span class="ar">▾</span></th>
+      <th data-k="mi" class="n">Distance (mi) <span class="ar">▾</span></th>
+      <th data-k="w" class="n">Siblings <span class="ar">▾</span></th>
+      <th data-k="cw" class="n">Competitors <span class="ar">▾</span></th>
+      <th data-k="tw" class="n">Total in radius <span class="ar">▾</span></th>
+      <th data-k="nc" class="n">Nearest comp <span class="ar">▾</span></th>
+      <th data-k="band">Density <span class="ar">▾</span></th>
+    </tr></thead><tbody id="dt-body"></tbody></table></div>
+  </div></div>
+<div class="pane" id="pane-wy"><div class="card">
+    <h2>Why Monterey outperforms</h2>
+    <div class="takeaway">Monterey wins by having its region to itself. Burbank patients travel just as far — they simply have more places to choose from.</div>
+    <p class="lede">What actually differs between the two locations — and why it isn't distance or demographics.</p>
+    <div class="two">
+      <div>
+        <div class="factor"><h3>Market saturation, not distance</h3><p>Patients travel about as far to reach Burbank (5.1 mi weighted average) as they do to reach Monterey (6.8 mi). Average distance isn't what's holding Burbank back.</p></div>
+        <div class="factor"><h3>But catchment <em>reach</em> is a differentiator</h3><p>The averages match; the shapes don't. Monterey's 90th-percentile patient sits 26.6 miles out and 103 patients come from its own ZIP. Burbank's 90th percentile stops at 14.6 miles — roughly where its nearest siblings sit — and just 4 patients come from its own ZIP. Monterey owns a corridor; Burbank owns neither a core nor a periphery.</p></div>
+        <div class="factor"><h3>Captive geography vs. abundant alternatives</h3><p>Monterey's clinic is one of only a handful of options across an entire region — just 4 hospitals cover the whole Monterey Peninsula and Salinas Valley, and the southernmost of those, in King City, is nearly an hour away. Burbank sits inside the Los Angeles basin, surrounded by 6+ hospitals in the immediate area and dozens more (Kaiser, Cedars-Sinai, UCLA-affiliated systems) a short drive away. Patients there have far less reason to stay loyal to any single location.</p></div>
+        <div class="factor"><h3>Highway access cuts both ways</h3><p>Burbank benefits from excellent freeway access (I-5, SR-134, SR-170) — but that same connectivity makes it just as easy for patients to drive to a competing provider. Monterey's more limited access (CA-1, CA-68, no direct Interstate) works in the location's favor once patients are already in the region: there's simply less competition to drive to.</p></div>
+      </div>
+      <div>
+        <div class="factor"><h3>LivWell may be competing with itself</h3><p>Burbank has five other LivWell clinics within 30 miles, the nearest 6.4 miles away, and draws only 8% of its patients from Burbank itself. Monterey has two siblings inside 30 miles, the nearest 23.3 miles out, and draws 19% from its own city. Across the portfolio, the two clinics LivWell has already graded land exactly where the theory predicts: Monterey is 2nd most isolated of 29, Burbank 3rd least.</p></div>
+        <div class="factor"><h3>Demographics are a smaller factor than expected</h3><p>Monterey County (median household income ~$97,200, median age 35.5) and Burbank (~$85,500–97,000 depending on source, median age 40.1) are broadly comparable. This isn't primarily an income or age story — it's a competitive-density story.</p></div>
+        <div class="factor"><h3>An affluent, part-time population</h3><p>Twelve Monterey-area patients list permanent addresses outside California — Texas, Georgia, Arizona, Tennessee, New Jersey, Pennsylvania and Alaska among them — consistent with Carmel and Pebble Beach's profile as a wealthy second-home market. Only one such address appears in the Burbank list.</p></div>
+        <div class="factor"><h3>Building and market context</h3><p>Monterey Peninsula's medical office stock is boutique and supply-constrained. Burbank sits in the Tri-Cities office submarket (Burbank/Glendale/Pasadena), running roughly 24–26% vacancy across asset classes — a market that makes it easy for competing providers and space to enter.</p></div>
+        <div class="factor"><h3>Competitors sharpen the picture — and complicate it</h3><p>Adding the three main California competitors — Infusion For Health (45 sites), IVX Health (12) and Clinivoy (7) — makes Monterey look stronger and Temecula weaker. Monterey is the only California LivWell with <em>no</em> competitor inside 30 miles; the nearest is 45 miles away in San Jose. Burbank has fourteen inside 30 miles and one a mile away. Counting siblings and competitors together, Monterey is the least crowded of the 21 California locations and Burbank the 17th.</p></div>
+        <div class="factor"><h3>The untested prediction, with a caveat</h3><p>Temecula is the most isolated clinic from LivWell siblings — 34.2 miles to the nearest, zero within 30 — and nobody has graded it. But it is <em>not</em> isolated from the market: an Infusion For Health clinic sits 1.6 miles away on Ynez Road, and four competitor sites fall inside 30 miles. So Temecula tests a narrower claim than it first appears. If sibling distance alone drives performance, it should look like Monterey. If total clinic density is what matters, it shouldn't — and Monterey's zero-competitor position becomes the better explanation of why it wins. Either way the answer sits in LivWell's own books, and either way we learn which of the two mechanisms is real.</p></div>
+      </div>
+    </div>
+  </div>
+<footer id="footer">
+  <b>Patient data.</b> Aggregated to home city for privacy and mapping clarity, from the LivWell patient address export. The address window equals each clinic's time open — Monterey since Nov 2023 (~34 months), Burbank ~18 months — so cross-clinic counts are read per month open. 647 usable patient rows (Monterey 570, Burbank 77); 23 placeholder rows were excluded as unusable. Own-city shares: Monterey 108 of 570 (18.9%), Burbank 6 of 77 (7.8%), shown rounded to 19% and 8%. 67 Monterey rows are PO boxes — counted toward volume, and reliable at city level though not at ZIP level. Distance figures exclude PO-box rows. Burbank's 77-patient base is thin; percentile figures on it are directional.<br>
+  <b>Clinic data.</b> 29 locations from livwellinfusions.com/locations (21 CA / 8 AZ). Coordinates geocoded from each clinic's street address (US Census geocoder, September 2026); distances are straight-line, not drive time, and sibling counts are recomputed in-browser from those coordinates.<br>
+  <b>Competitor data.</b> 64 California sites surveyed from each operator's own location pages: Infusion For Health 45 (32 Southern, 9 Northern, 4 Central California), IVX Health 12, Clinivoy 7. Plotted at ZIP centroid where a ZIP is published; six Clinivoy sites publish a street address without a ZIP and are plotted at city centre, which can be a mile or two off. Arizona was not surveyed, so the eight Arizona LivWell clinics show no competitor count rather than zero — note Clinivoy does list a Mesa, AZ site. Counts are of clinic locations, not capacity, chair count, or payer overlap.<br>
+  <b>Market context.</b> Hospital, highway, demographic and office-vacancy figures are drawn from public sources (Census, public hospital directories, CRE market reports) and are approximate and illustrative, not verified property records.<br>
+  <b>Patient origin map.</b> The "Where patients come from" tab maps 7,143 California patient addresses from the LivWell address export, grouped by home ZIP code — no individual home is plotted. 148 patients live outside California and 24 gave an unreadable ZIP code; both are excluded from the map. ZIP coordinates are postal-area centres and distances are straight-line, not drive time.
+  <b>MedWest Realty</b> · prepared for LivWell Infusions site selection.
+</footer></div>
+<div class="pane" id="pane-pz"><div class="card">
+    <h2>Where patients come from</h2>
+    <div class="takeaway">Half of LivWell’s California patients live within 6.4 miles of the clinic they use. The draw is local, so siting decides the catchment.</div>
+    <p class="lede" id="pz-lede"></p>
+    <div class="pz-top">
+      <span class="pzlbl">Show patients from</span>
+      <select id="pz-loc"></select>
+      <div class="ramp" id="pz-ramp"></div>
+    </div>
+    <div class="pzchips" id="pz-chips"></div>
+    <div class="pzcols" id="pz-cols"></div>
+    <div class="pznote" id="pz-note"></div>
+  </div></div>
+<div class="pane" id="pane-cv"><div class="card">
+    <div class="pz2">
+      <div class="pz2-bar">
+        <span class="pz2lbl">Show</span>
+        <button class="pz2btn on" id="pz2-near" type="button">Near a LivWell clinic (within 10 miles)</button>
+        <button class="pz2btn" id="pz2-all" type="button">All of California</button>
+        <span class="pz2lbl pz2gap">Count</span>
+        <button class="pz2btn on" id="pz2-cpat" type="button">How many patients</button>
+        <button class="pz2btn" id="pz2-cdist" type="button">How far from the nearest clinic</button>
+        <span class="pz2sum" id="pz2-sum"></span>
+      </div>
+
+      <div class="pz2-card">
+        <div class="pz2-h">Where those patients live</div>
+        <div class="pz2-sub">Every home ZIP code, drawn at its centre point. Bigger dots mean more patients live there; the colour follows whichever measure is picked above. Red dots are LivWell clinics. Switch to all of California and a red ring marks the ZIP codes that sit within 10 miles of a clinic. Scroll on the map to zoom.</div>
+        <div id="pz2-map"></div>
+        <div class="pz2-legend"><span class="pz2-lg" id="pz2-legend"></span><span class="pz2-hint">Click any dot or table row to locate it</span></div>
+      </div>
+
+      <div class="pz2-card">
+        <div class="pz2-h">The same ZIP codes, in numbers</div>
+        <div class="pz2-sub">Both lists are sorted by how many patients live there. On the left, ZIP codes within 10 miles of a LivWell clinic; on the right, everywhere else. Click any row to move the map to it.</div>
+        <div class="pz2-tables">
+          <div class="pz2-tbl">
+            <div class="pz2-cap"><i class="pz2-dot r"></i>Within 10 miles of a LivWell clinic<b id="pz2-cnt-a"></b></div>
+            <div class="pz2-scroll"><table class="zt2"><thead><tr>
+              <th>ZIP code</th><th>City</th><th>Closest LivWell site</th>
+              <th class="n">Miles away</th><th class="n">Patients</th><th class="n">Share of all patients</th>
+            </tr></thead><tbody id="pz2-body-a"></tbody></table></div>
+          </div>
+          <div class="pz2-tbl">
+            <div class="pz2-cap"><i class="pz2-dot n"></i>More than 10 miles away<b id="pz2-cnt-b"></b></div>
+            <div class="pz2-scroll"><table class="zt2"><thead><tr>
+              <th>ZIP code</th><th>City</th><th>Closest LivWell site</th>
+              <th class="n">Miles away</th><th class="n">Patients</th><th class="n">Share of all patients</th>
+            </tr></thead><tbody id="pz2-body-b"></tbody></table></div>
+          </div>
+        </div>
+        <div class="pz2-foot" id="pz2-foot"></div>
+      </div>
+    </div>
+  </div></div>
+</div>
+</div>
+<div id="mw-disclaimer"><b>Disclaimer.</b> Information from sources deemed reliable but MedWest Realty does not guarantee the accuracy. Please perform your own due diligence and consult with all appropriate advisors.</div>
+</div>
+
+<script>
+const LW = {"city":{"Monterey":[{"city":"Monterey","st":"CA","n":117,"lat":36.5821,"lon":-121.8491},{"city":"Carmel","st":"CA","n":111,"lat":36.5469,"lon":-121.9015},{"city":"Salinas","st":"CA","n":71,"lat":36.6827,"lon":-121.6539},{"city":"Pacific Grove","st":"CA","n":71,"lat":36.5816,"lon":-121.8564},{"city":"Seaside","st":"CA","n":64,"lat":36.6217,"lon":-121.7935},{"city":"Marina","st":"CA","n":44,"lat":36.6849,"lon":-121.7934},{"city":"Carmel Valley","st":"CA","n":33,"lat":36.4787,"lon":-121.7244},{"city":"Pebble Beach","st":"CA","n":27,"lat":36.5907,"lon":-121.942},{"city":"Hollister","st":"CA","n":14,"lat":36.8337,"lon":-121.3439},{"city":"King City","st":"CA","n":6,"lat":36.2028,"lon":-121.1273},{"city":"Soledad","st":"CA","n":5,"lat":36.4196,"lon":-121.3243},{"city":"East Garrison","st":"CA","n":4,"lat":36.6849,"lon":-121.7934},{"city":"Castroville","st":"CA","n":4,"lat":36.7658,"lon":-121.758},{"city":"Del Rey Oaks","st":"CA","n":4,"lat":36.5802,"lon":-121.8443},{"city":"Watsonville","st":"CA","n":3,"lat":36.9102,"lon":-121.7569},{"city":"Big Sur","st":"CA","n":2,"lat":36.2458,"lon":-121.7009},{"city":"Dallas","st":"TX","n":2,"lat":32.8609,"lon":-96.8216},{"city":"Gilroy","st":"CA","n":2,"lat":37.0139,"lon":-121.5773},{"city":"Greenfield","st":"CA","n":2,"lat":36.3202,"lon":-121.2451},{"city":"Houston","st":"TX","n":2,"lat":29.7437,"lon":-95.4732},{"city":"Prunedale","st":"CA","n":2,"lat":36.7563,"lon":-121.6703},{"city":"Aptos","st":"CA","n":2,"lat":36.9797,"lon":-121.8902},{"city":"Gonzales","st":"CA","n":2,"lat":36.49,"lon":-121.4103},{"city":"Na","st":"WY","n":2,"lat":43.4799,"lon":-110.7624},{"city":"San Juan Bautista","st":"CA","n":2,"lat":36.8463,"lon":-121.5346},{"city":"Anchorage","st":"AK","n":1,"lat":61.1633,"lon":-150.0949},{"city":"Aromas","st":"CA","n":1,"lat":36.8769,"lon":-121.6324},{"city":"Atlanta","st":"GA","n":1,"lat":33.8627,"lon":-84.42},{"city":"Berwyn","st":"PA","n":1,"lat":40.0412,"lon":-75.4475},{"city":"Cayucos","st":"CA","n":1,"lat":35.4446,"lon":-120.8908},{"city":"Chualar","st":"CA","n":1,"lat":36.595,"lon":-121.432},{"city":"Colusa","st":"CA","n":1,"lat":39.2345,"lon":-122.0277},{"city":"Fort Lee","st":"NJ","n":1,"lat":40.8503,"lon":-73.9745},{"city":"Fountain Hills","st":"AZ","n":1,"lat":33.6085,"lon":-111.7237},{"city":"Freedom","st":"CA","n":1,"lat":36.9356,"lon":-121.7767},{"city":"Fresno","st":"CA","n":1,"lat":36.8303,"lon":-119.8319},{"city":"Heber","st":"CA","n":1,"lat":32.7218,"lon":-115.4383},{"city":"Hixon","st":"TN","n":1,"lat":35.1591,"lon":-85.2182},{"city":"Indian Wells","st":"CA","n":1,"lat":33.7163,"lon":-116.3381},{"city":"Jolon","st":"CA","n":1,"lat":35.9708,"lon":-121.176},{"city":"Longs","st":"SC","n":1,"lat":33.9064,"lon":-78.7934},{"city":"Merced","st":"CA","n":1,"lat":37.2983,"lon":-120.4649},{"city":"Moss Landing","st":"CA","n":1,"lat":36.8175,"lon":-121.7773},{"city":"Paso Robles","st":"CA","n":1,"lat":35.7562,"lon":-120.6935},{"city":"Reedley","st":"CA","n":1,"lat":36.6044,"lon":-119.4378},{"city":"Royal Oaks","st":"CA","n":1,"lat":36.9102,"lon":-121.7569},{"city":"San Jose","st":"CA","n":1,"lat":37.2568,"lon":-121.8896},{"city":"San Mateo","st":"CA","n":1,"lat":37.5507,"lon":-122.3276},{"city":"Santa Ana","st":"CA","n":1,"lat":33.754,"lon":-117.7919},{"city":"Santa Rosa","st":"CA","n":1,"lat":38.4592,"lon":-122.6393},{"city":"Spreckels","st":"CA","n":1,"lat":36.6261,"lon":-121.6555}],"Burbank":[{"city":"Sherman Oaks","st":"CA","n":12,"lat":34.1543,"lon":-118.4437},{"city":"Los Angeles","st":"CA","n":10,"lat":34.1081,"lon":-118.3333},{"city":"Encino","st":"CA","n":8,"lat":34.1601,"lon":-118.5065},{"city":"Burbank","st":"CA","n":8,"lat":34.1723,"lon":-118.3335},{"city":"Glendale","st":"CA","n":7,"lat":34.1567,"lon":-118.2524},{"city":"Studio City","st":"CA","n":6,"lat":34.145,"lon":-118.3851},{"city":"North Hollywood","st":"CA","n":5,"lat":34.1689,"lon":-118.3739},{"city":"Sunland","st":"CA","n":5,"lat":34.2618,"lon":-118.3371},{"city":"La Crescenta","st":"CA","n":5,"lat":34.2316,"lon":-118.2457},{"city":"Tarzana","st":"CA","n":3,"lat":34.1671,"lon":-118.5414},{"city":"Valley Village","st":"CA","n":3,"lat":34.1672,"lon":-118.3989},{"city":"Sylmar","st":"CA","n":2,"lat":34.3054,"lon":-118.4322},{"city":"Valencia","st":"CA","n":2,"lat":34.4466,"lon":-118.5374},{"city":"Chatsworth","st":"CA","n":2,"lat":34.3775,"lon":-118.6131},{"city":"La Canada","st":"CA","n":2,"lat":34.2217,"lon":-118.2051},{"city":"Clinton","st":"WA","n":1,"lat":47.9508,"lon":-122.3916},{"city":"Hollyglen","st":"CA","n":1,"lat":33.9143,"lon":-118.3493},{"city":"Pasadena","st":"CA","n":1,"lat":34.1468,"lon":-118.1391},{"city":"Porter Ranch","st":"CA","n":1,"lat":34.2808,"lon":-118.5573},{"city":"Redding","st":"CA","n":1,"lat":40.5605,"lon":-122.4116},{"city":"Rosamond","st":"CA","n":1,"lat":34.8664,"lon":-118.3409},{"city":"San Marino","st":"CA","n":1,"lat":34.1207,"lon":-118.1117},{"city":"Sun Valley","st":"CA","n":1,"lat":34.2209,"lon":-118.3699},{"city":"Toluca Lake","st":"CA","n":1,"lat":34.151,"lon":-118.3663}]},"stats":{"Monterey":{"usable":627,"pobox":67,"mapped":613,"oos":12,"med":3.3,"p90":16.8,"w10":72,"w30":93},"Burbank":{"usable":90,"pobox":0,"mapped":89,"oos":1,"med":5.5,"p90":13.3,"w10":76,"w30":97}},"clinics":[{"name":"Temecula","lat":33.50647,"lon":-117.142859,"st":"CA","near":"Laguna Hills","mi":32.8,"w30":0,"rank":1},{"name":"Monterey","lat":36.593562,"lon":-121.895865,"st":"CA","near":"Watsonville","mi":24.1,"w30":2,"rank":2},{"name":"Pleasanton","lat":37.694144,"lon":-121.931662,"st":"CA","near":"San Jose","mi":21.5,"w30":2,"rank":3},{"name":"Westlake Village","lat":34.148235,"lon":-118.820088,"st":"CA","near":"Santa Monica (Wilshire)","mi":21.2,"w30":3,"rank":4},{"name":"Torrance","lat":33.814907,"lon":-118.348754,"st":"CA","near":"Santa Monica (Wilshire)","mi":17.0,"w30":6,"rank":5},{"name":"Glendale AZ","lat":33.649876,"lon":-112.230232,"st":"AZ","near":"Goodyear","mi":14.9,"w30":3,"rank":8},{"name":"Goodyear","lat":33.464503,"lon":-112.362882,"st":"AZ","near":"Glendale AZ","mi":14.9,"w30":3,"rank":9},{"name":"Downtown Phoenix","lat":33.462638,"lon":-112.056451,"st":"AZ","near":"Scottsdale","mi":15.6,"w30":5,"rank":6},{"name":"Scottsdale","lat":33.643878,"lon":-111.895231,"st":"AZ","near":"Downtown Phoenix","mi":15.6,"w30":5,"rank":7},{"name":"Mountain View","lat":37.367198,"lon":-122.082342,"st":"CA","near":"Los Gatos","mi":10.7,"w30":4,"rank":17},{"name":"Santa Cruz","lat":36.987951,"lon":-121.985148,"st":"CA","near":"Watsonville","mi":12.0,"w30":5,"rank":10},{"name":"Watsonville","lat":36.930148,"lon":-121.779258,"st":"CA","near":"Santa Cruz","mi":12.0,"w30":3,"rank":11},{"name":"Los Gatos","lat":37.249696,"lon":-121.955328,"st":"CA","near":"Mountain View","mi":10.7,"w30":4,"rank":18},{"name":"San Jose","lat":37.389351,"lon":-121.856783,"st":"CA","near":"Los Gatos","mi":11.1,"w30":4,"rank":16},{"name":"Tucson Carondelet","lat":32.225686,"lon":-110.852148,"st":"AZ","near":"Tucson Orange Grove","mi":11.3,"w30":1,"rank":14},{"name":"Tucson Orange Grove","lat":32.323078,"lon":-111.008492,"st":"AZ","near":"Tucson Carondelet","mi":11.3,"w30":1,"rank":15},{"name":"Pasadena","lat":34.14718,"lon":-118.138467,"st":"CA","near":"Burbank","mi":11.6,"w30":6,"rank":13},{"name":"Poway","lat":33.001605,"lon":-117.058145,"st":"CA","near":"Del Mar","mi":11.9,"w30":2,"rank":12},{"name":"Del Mar","lat":32.93248,"lon":-117.245379,"st":"CA","near":"San Diego","mi":9.9,"w30":2,"rank":19},{"name":"San Diego","lat":32.812345,"lon":-117.152966,"st":"CA","near":"Del Mar","mi":9.9,"w30":2,"rank":20},{"name":"Laguna Hills","lat":33.6080126,"lon":-117.6994642,"st":"CA","near":"Newport Beach","mi":9.9,"w30":3,"rank":21},{"name":"Newport Beach","lat":33.613251,"lon":-117.872154,"st":"CA","near":"Laguna Hills","mi":9.9,"w30":3,"rank":22},{"name":"Gilbert","lat":33.2854481,"lon":-111.7589048,"st":"AZ","near":"Mesa","mi":8.0,"w30":3,"rank":25},{"name":"Mesa","lat":33.3941574,"lon":-111.7129658,"st":"AZ","near":"Gilbert","mi":8.0,"w30":3,"rank":26},{"name":"Anaheim","lat":33.84718,"lon":-117.934369,"st":"CA","near":"Huntington Beach","mi":8.4,"w30":6,"rank":23},{"name":"Huntington Beach","lat":33.736296,"lon":-117.9955065,"st":"CA","near":"Anaheim","mi":8.4,"w30":5,"rank":24},{"name":"Burbank","lat":34.15253,"lon":-118.340892,"st":"CA","near":"Beverly Hills","mi":6.4,"w30":5,"rank":27},{"name":"Beverly Hills","lat":34.066782,"lon":-118.382903,"st":"CA","near":"Santa Monica (Wilshire)","mi":5.6,"w30":6,"rank":28},{"name":"Santa Monica (Wilshire)","lat":34.038292,"lon":-118.474731,"st":"CA","near":"Beverly Hills","mi":5.6,"w30":5,"rank":29}],"comp":[{"brand":"Infusion For Health","name":"Apple Valley","zip":"92307","lat":34.5291,"lon":-117.2132,"prec":"zip"},{"brand":"Infusion For Health","name":"Beverly Hills","zip":"90211","lat":34.0652,"lon":-118.383,"prec":"zip"},{"brand":"Infusion For Health","name":"Burbank","zip":"91505","lat":34.169,"lon":-118.3442,"prec":"zip"},{"brand":"Infusion For Health","name":"Carlsbad","zip":"92011","lat":33.1072,"lon":-117.2943,"prec":"zip"},{"brand":"Infusion For Health","name":"Chino Hills","zip":"91709","lat":33.9797,"lon":-117.7308,"prec":"zip"},{"brand":"Infusion For Health","name":"Chula Vista","zip":"91910","lat":32.6371,"lon":-117.0676,"prec":"zip"},{"brand":"Infusion For Health","name":"Los Angeles (Downtown)","zip":"90017","lat":34.0559,"lon":-118.2666,"prec":"zip"},{"brand":"Infusion For Health","name":"Escondido","zip":"92025","lat":33.1101,"lon":-117.07,"prec":"zip"},{"brand":"Infusion For Health","name":"Fountain Valley","zip":"92708","lat":33.7102,"lon":-117.9503,"prec":"zip"},{"brand":"Infusion For Health","name":"Fullerton","zip":"92835","lat":33.8994,"lon":-117.9063,"prec":"zip"},{"brand":"Infusion For Health","name":"Glendale","zip":"91203","lat":34.1517,"lon":-118.2636,"prec":"zip"},{"brand":"Infusion For Health","name":"Irvine","zip":"92614","lat":33.6829,"lon":-117.8298,"prec":"zip"},{"brand":"Infusion For Health","name":"La Jolla","zip":"92121","lat":32.8919,"lon":-117.2035,"prec":"zip"},{"brand":"Infusion For Health","name":"La Mesa","zip":"91942","lat":32.7835,"lon":-117.0189,"prec":"zip"},{"brand":"Infusion For Health","name":"La Quinta","zip":"92253","lat":33.6685,"lon":-116.3081,"prec":"zip"},{"brand":"Infusion For Health","name":"Laguna Hills","zip":"92653","lat":33.5916,"lon":-117.6985,"prec":"zip"},{"brand":"Infusion For Health","name":"Loma Linda","zip":"92354","lat":34.0528,"lon":-117.2513,"prec":"zip"},{"brand":"Infusion For Health","name":"Long Beach","zip":"90813","lat":33.782,"lon":-118.1835,"prec":"zip"},{"brand":"Infusion For Health","name":"Palm Springs","zip":"92262","lat":33.8414,"lon":-116.5347,"prec":"zip"},{"brand":"Infusion For Health","name":"Pasadena","zip":"91105","lat":34.1355,"lon":-118.1636,"prec":"zip"},{"brand":"Infusion For Health","name":"Riverside","zip":"92507","lat":33.9761,"lon":-117.3389,"prec":"zip"},{"brand":"Infusion For Health","name":"Santa Barbara","zip":"93105","lat":34.4369,"lon":-119.7285,"prec":"zip"},{"brand":"Infusion For Health","name":"Santa Clarita","zip":"91321","lat":34.3795,"lon":-118.523,"prec":"zip"},{"brand":"Infusion For Health","name":"Santa Monica","zip":"90403","lat":34.0287,"lon":-118.4924,"prec":"zip"},{"brand":"Infusion For Health","name":"Tarzana","zip":"91356","lat":34.1671,"lon":-118.5414,"prec":"zip"},{"brand":"Infusion For Health","name":"Temecula","zip":"92591","lat":33.5217,"lon":-117.1286,"prec":"zip"},{"brand":"Infusion For Health","name":"Thousand Oaks","zip":"91361","lat":34.1472,"lon":-118.8383,"prec":"zip"},{"brand":"Infusion For Health","name":"Torrance","zip":"90505","lat":33.8106,"lon":-118.3507,"prec":"zip"},{"brand":"Infusion For Health","name":"Upland","zip":"91786","lat":34.1144,"lon":-117.6583,"prec":"zip"},{"brand":"Infusion For Health","name":"Ventura","zip":"93003","lat":34.2846,"lon":-119.2222,"prec":"zip"},{"brand":"Infusion For Health","name":"West Hills","zip":"91307","lat":34.1963,"lon":-118.6389,"prec":"zip"},{"brand":"Infusion For Health","name":"Whittier","zip":"90603","lat":33.9432,"lon":-117.9927,"prec":"zip"},{"brand":"Infusion For Health","name":"Elk Grove","zip":"95758","lat":38.4243,"lon":-121.437,"prec":"zip"},{"brand":"Infusion For Health","name":"Mill Valley","zip":"94941","lat":37.8958,"lon":-122.5339,"prec":"zip"},{"brand":"Infusion For Health","name":"Oakland","zip":"94609","lat":37.8361,"lon":-122.2637,"prec":"zip"},{"brand":"Infusion For Health","name":"Sacramento","zip":"95825","lat":38.5892,"lon":-121.4057,"prec":"zip"},{"brand":"Infusion For Health","name":"San Francisco","zip":"94132","lat":37.7211,"lon":-122.4754,"prec":"zip"},{"brand":"Infusion For Health","name":"San Jose","zip":"95124","lat":37.2563,"lon":-121.9229,"prec":"zip"},{"brand":"Infusion For Health","name":"Santa Clara","zip":"95054","lat":37.3924,"lon":-121.9623,"prec":"zip"},{"brand":"Infusion For Health","name":"Santa Rosa","zip":"95403","lat":38.4822,"lon":-122.7473,"prec":"zip"},{"brand":"Infusion For Health","name":"Walnut Creek","zip":"94596","lat":37.9053,"lon":-122.0549,"prec":"zip"},{"brand":"Infusion For Health","name":"Bakersfield (Brimhall)","zip":"93312","lat":35.3935,"lon":-119.1205,"prec":"zip"},{"brand":"Infusion For Health","name":"Bakersfield (H St)","zip":"93301","lat":35.3866,"lon":-119.0171,"prec":"zip"},{"brand":"Infusion For Health","name":"Fresno","zip":"93720","lat":36.8579,"lon":-119.7655,"prec":"zip"},{"brand":"Infusion For Health","name":"Visalia","zip":"93277","lat":36.3114,"lon":-119.3065,"prec":"zip"},{"brand":"IVX Health","name":"Oakland","zip":"94611","lat":37.8471,"lon":-122.2223,"prec":"zip"},{"brand":"IVX Health","name":"Santa Rosa","zip":"95403","lat":38.4822,"lon":-122.7473,"prec":"zip"},{"brand":"IVX Health","name":"Tracy","zip":"95376","lat":37.7383,"lon":-121.4345,"prec":"zip"},{"brand":"IVX Health","name":"San Jose","zip":"95124","lat":37.2563,"lon":-121.9229,"prec":"zip"},{"brand":"IVX Health","name":"Berkeley","zip":"94710","lat":37.8696,"lon":-122.2959,"prec":"zip"},{"brand":"IVX Health","name":"Mill Valley","zip":"94941","lat":37.8958,"lon":-122.5339,"prec":"zip"},{"brand":"IVX Health","name":"Walnut Creek","zip":"94598","lat":37.9194,"lon":-122.0259,"prec":"zip"},{"brand":"IVX Health","name":"Fremont","zip":"94539","lat":37.5176,"lon":-121.9287,"prec":"zip"},{"brand":"IVX Health","name":"San Mateo","zip":"94402","lat":37.5507,"lon":-122.3276,"prec":"zip"},{"brand":"IVX Health","name":"San Ramon","zip":"94583","lat":37.7562,"lon":-121.9522,"prec":"zip"},{"brand":"IVX Health","name":"Sunnyvale","zip":"94087","lat":37.3502,"lon":-122.0349,"prec":"zip"},{"brand":"IVX Health","name":"San Francisco (Van Ness)","zip":"94109","lat":37.7917,"lon":-122.4186,"prec":"zip"},{"brand":"Clinivoy","name":"Thousand Oaks","zip":"","lat":34.1787,"lon":-118.8337,"prec":"city"},{"brand":"Clinivoy","name":"Newport Beach","zip":"92660","lat":33.6295,"lon":-117.8684,"prec":"zip"},{"brand":"Clinivoy","name":"Palm Desert (Cook St 40004)","zip":"","lat":33.7174,"lon":-116.3755,"prec":"city"},{"brand":"Clinivoy","name":"San Diego","zip":"","lat":32.7539,"lon":-117.1474,"prec":"city"},{"brand":"Clinivoy","name":"Palm Desert (Cook St 36919)","zip":"","lat":33.7174,"lon":-116.3755,"prec":"city"},{"brand":"Clinivoy","name":"Murrieta","zip":"","lat":33.562,"lon":-117.222,"prec":"city"},{"brand":"Clinivoy","name":"Riverside","zip":"","lat":33.9474,"lon":-117.3945,"prec":"city"}]};
+const NAVY='#29374D', RED='#DC2F3A';
+const CL=LW.clinics, CITY=LW.city, ST=LW.stats;
+
+/* ---------- geometry ---------- */
+function miles(a,b,c,d){
+  const R=3958.7613,p1=a*Math.PI/180,p2=c*Math.PI/180;
+  const h=Math.sin((p2-p1)/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin((d-b)*Math.PI/360)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+CL.forEach(c=>{ c.d=CL.filter(o=>o!==c).map(o=>miles(c.lat,c.lon,o.lat,o.lon)).sort((x,y)=>x-y); });
+const bandOf=mi=> mi>=20?'iso' : mi>=10?'mid' : 'clu';
+const BANDLBL={iso:'Isolated',mid:'Moderate',clu:'Clustered'};
+let radius=30;
+const within=c=>c.d.filter(v=>v<=radius).length;
+
+/* ---------- map ---------- */
+/* zoomSnap:0 lets fitBounds use fractional zoom — whole-number zoom was
+   overshooting the footprint by ~40% and padding the view with Denver. */
+const map=L.map('map',{scrollWheelZoom:true,zoomSnap:0}).setView([35.6,-119.4],6);
+const HOME=L.latLngBounds(CL.map(c=>[c.lat,c.lon]));
+const goHome=()=>map.fitBounds(HOME,{padding:[26,26]});
+const base=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+ {attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:18}).addTo(map);
+const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+ {attribution:'Esri, Maxar, Earthstar Geographics',maxZoom:18});
+let satOn=false;
+const SatCtrl=L.Control.extend({options:{position:'topright'},onAdd:function(){
+  const b=L.DomUtil.create('button','mapbtn'); b.innerHTML='🛰 Satellite';
+  L.DomEvent.disableClickPropagation(b);
+  b.onclick=()=>{ satOn=!satOn;
+    if(satOn){ map.removeLayer(base); sat.addTo(map); b.innerHTML='🗺 Map'; }
+    else { map.removeLayer(sat); base.addTo(map); b.innerHTML='🛰 Satellite'; } };
+  return b; }});
+map.addControl(new SatCtrl());
+const FullCtrl=L.Control.extend({options:{position:'topright'},onAdd:function(){
+  const b=L.DomUtil.create('button','mapbtn'); b.innerHTML='⛶ Fill screen';
+  L.DomEvent.disableClickPropagation(b);
+  b.onclick=()=>{ const on=document.body.classList.toggle('mapfull');
+    b.innerHTML = on ? '⛶ Exit fill screen' : '⛶ Fill screen';
+    setTimeout(()=>map.invalidateSize(),60); };
+  return b; }});
+map.addControl(new FullCtrl());
+const ResetCtrl=L.Control.extend({options:{position:'topleft'},onAdd:function(){
+  const b=L.DomUtil.create('button','mapbtn'); b.innerHTML='⤢ Reset view';
+  L.DomEvent.disableClickPropagation(b);
+  b.onclick=goHome;
+  return b; }});
+map.addControl(new ResetCtrl());
+
+const Lrings=L.layerGroup().addTo(map);
+const Lclin =L.layerGroup().addTo(map);
+const Lcity =L.layerGroup();
+let heatM=null, heatB=null;
+
+/* patient heat: weight = patients in that city, normalized per clinic */
+function makeHeat(key){
+  const rows=CITY[key], mx=Math.max(...rows.map(r=>r.n));
+  return L.heatLayer(rows.map(r=>[r.lat,r.lon,r.n/mx]),
+    {radius:30,blur:22,maxZoom:11,max:1.0,minOpacity:0.28,
+     gradient:{0.15:'#29374D',0.35:'#2E6F8E',0.55:'#37A05F',0.75:'#F0B429',1.0:'#DC2F3A'}});
+}
+function cityBubbles(){
+  Lcity.clearLayers();
+  ['Monterey','Burbank'].forEach(k=>{
+    const rows=CITY[k], tot=rows.reduce((a,b)=>a+b.n,0), col=k==='Monterey'?NAVY:RED;
+    rows.forEach(r=>{
+      L.circleMarker([r.lat,r.lon],{radius:3+Math.sqrt(r.n)*1.7,color:col,weight:0.8,opacity:.8,
+        fillColor:col,fillOpacity:.4}).addTo(Lcity)
+       .bindPopup('<b>'+r.city+', '+r.st+'</b><br>'+r.n+(r.n===1?' patient':' patients')+
+         ' &mdash; '+(r.n/tot*100).toFixed(1)+'% of '+k);
+    });
+  });
+}
+/* Bounds of a clinic's actual draw area. Fitting to every city in-state pulls in
+   one-off addresses hundreds of miles away (Fresno, Santa Ana) and flattens the
+   corridor to a smudge, so restrict to cities inside a 75-mile catchment. */
+function drawBounds(k){
+  const c=CL.find(x=>x.name===k);
+  const near=CITY[k].filter(r=>miles(c.lat,c.lon,r.lat,r.lon)<=75);
+  return L.latLngBounds((near.length?near:CITY[k]).map(r=>[r.lat,r.lon])).pad(0.12);
+}
+const COMP=LW.comp;
+const BRANDS=[{key:'Infusion For Health',col:'#6D3FA3',btn:'lb-c0'},
+              {key:'IVX Health',        col:'#17808F',btn:'lb-c1'},
+              {key:'Clinivoy',          col:'#A9541B',btn:'lb-c2'}];
+/* The competitor survey covers California only, so AZ clinics get no count
+   rather than a misleading zero. */
+CL.forEach(c=>{
+  c.compNA = c.st!=='CA';
+  c.cd = c.compNA ? [] : COMP.map(k=>({mi:miles(c.lat,c.lon,k.lat,k.lon),brand:k.brand,name:k.name}))
+                              .sort((a,b)=>a.mi-b.mi);
+  c.nearComp = c.cd.length ? c.cd[0] : null;
+});
+const compWithin=(c,r)=> c.compNA ? null : c.cd.filter(x=>x.mi<=r).length;
+const densBand=(t)=> t===null?'dna' : t<=5?'dlo' : t<=12?'dmd' : 'dhi';
+const DENSLBL={dlo:'Low',dmd:'Moderate',dhi:'High',dna:'n/a'};
+let isoMode=false;
+const isoColor=mi=> mi>=20?'#1F5C7A' : mi>=10?'#C98A12' : RED;
+
+function drawClinics(){
+  Lrings.clearLayers(); Lclin.clearLayers();
+  document.getElementById('radv').textContent=radius+' mi';
+  CL.forEach(c=>{
+    const w=within(c), isT=c.name==='Temecula';
+    const col=isoMode?isoColor(c.mi):((isT||c.name==='Burbank')?RED:NAVY);
+    L.circle([c.lat,c.lon],{radius:radius*1609.344,color:col,weight:isT?1.6:0.8,
+      fillColor:col,fillOpacity:isT?0.10:0.05,opacity:isT?0.65:0.3}).addTo(Lrings);
+    const sp = c.name==='Monterey'?' <span style="color:'+NAVY+';font-size:11px">(called best)</span>'
+             : c.name==='Burbank' ?' <span style="color:'+RED+';font-size:11px">(called worst)</span>'
+             : isT ? ' <span style="color:'+RED+';font-size:11px">(most isolated — untested)</span>' : '';
+    L.circleMarker([c.lat,c.lon],{radius:isT?9:(c.name==='Monterey'||c.name==='Burbank'?7:5),
+      color:'#fff',weight:isT?2.5:1.5,fillColor:col,fillOpacity:1}).addTo(Lclin)
+     .bindPopup('<b>'+c.name+', '+c.st+'</b>'+sp+
+       '<br>Isolation rank: '+c.rank+' of 29 &nbsp;·&nbsp; '+BANDLBL[bandOf(c.mi)]+
+       '<br>Nearest sibling: '+c.near+', '+c.mi.toFixed(1)+' mi'+
+       '<br>Siblings within '+radius+' mi: <b>'+w+'</b>');
+  });
+}
+
+/* ---------- layer toggles ---------- */
+function bindToggle(id,on,off,active){
+  const b=document.getElementById(id);
+  let state=!!active;
+  const paint=()=>{ b.classList.toggle('active',state);
+    b.style.background=state?'#F2F5F8':'#fff'; };
+  b.onclick=()=>{ state=!state; state?on():off(); paint(); };
+  paint(); return ()=>state;
+}
+bindToggle('lb-clin',()=>Lclin.addTo(map),()=>map.removeLayer(Lclin),true);
+bindToggle('lb-ring',()=>Lrings.addTo(map),()=>map.removeLayer(Lrings),true);
+bindToggle('lb-city',()=>{cityBubbles();Lcity.addTo(map)},()=>map.removeLayer(Lcity),false);
+
+const heatNote=document.getElementById('hl-heat-note');
+function heatBand(){
+  const on=[];
+  if(heatM&&map.hasLayer(heatM)) on.push('Monterey');
+  if(heatB&&map.hasLayer(heatB)) on.push('Burbank');
+  const el=document.getElementById('hl-heat');
+  el.classList.toggle('show',on.length>0);
+  setTimeout(()=>map.invalidateSize(),0);
+  if(!on.length) return;
+  const parts=on.map(k=>{
+    const s=ST[k], rows=CITY[k], tot=rows.reduce((a,b)=>a+b.n,0);
+    const top=rows.slice(0,4).map(r=>r.city+' ('+r.n+')').join(', ');
+    return '<b>'+k+'</b> — patients drawn from '+rows.length+' home cities; densest in '+top+
+      '. Median '+s.med+' mi from the clinic, 90th percentile '+s.p90+' mi, '+s.w10+'% inside 10 mi.';
+  });
+  heatNote.innerHTML = parts.join('<br>') + (on.length===2
+    ? '<br>Monterey’s draw runs inland down the Salinas Valley along the US-101 corridor — Salinas, Gonzales, Soledad, Greenfield, King City — a 60-mile spine with no competing LivWell on it. Burbank’s has no spine: a thin scatter across the LA basin, capped near 15 miles, which is about where its five siblings sit.'
+    : '');
+}
+document.getElementById('lb-hm').onclick=function(){
+  if(!heatM) heatM=makeHeat('Monterey');
+  if(map.hasLayer(heatM)){map.removeLayer(heatM);this.classList.remove('active');this.style.background='#fff';}
+  else{heatM.addTo(map);this.classList.add('active');this.style.background='#F2F5F8';
+       map.fitBounds(drawBounds('Monterey'));}
+  heatBand();
+};
+document.getElementById('lb-hb').onclick=function(){
+  if(!heatB) heatB=makeHeat('Burbank');
+  if(map.hasLayer(heatB)){map.removeLayer(heatB);this.classList.remove('active');this.style.background='#fff';}
+  else{heatB.addTo(map);this.classList.add('active');this.style.background='#F2F5F8';
+       map.fitBounds(drawBounds('Burbank'));}
+  heatBand();
+};
+document.getElementById('lb-iso').onclick=function(){
+  isoMode=!isoMode; this.classList.toggle('active',isoMode);
+  this.style.background=isoMode?'#F2F5F8':'#fff';
+  document.getElementById('hl-iso').classList.toggle('show',isoMode);
+  setTimeout(()=>map.invalidateSize(),0);
+  drawClinics(); renderTable();
+};
+document.getElementById('rad').oninput=function(){ radius=+this.value; drawClinics(); renderTable(); };
+
+/* ---------- side cards ---------- */
+/* Rebuilt on the 7,143-address export. Median distance travelled (3.6 vs 6.1 mi) and
+   90th-percentile reach (16.5 vs 13.9 mi) were dropped: on this data they no longer
+   separate the two clinics, so they were making the case look weaker than it is.
+   What remains is what does separate them — draw per month, own-doorstep share, and
+   how alone each clinic sits. Competitor counts come from the 64-site CA survey. */
+function dcard(el,key){
+  const c=CL.find(x=>x.name===key);
+  const pz=PZ.stats[key], rows=PZ.loc[key];
+  const months = key==='Monterey' ? 34 : 18;
+  const ownZip = rows[0][1];
+  const nf=n=>n.toLocaleString('en-US');
+  const items=[
+    ['Patients mapped',nf(pz.n)],
+    ['Months open',months],
+    ['Patients per month open',(pz.n/months).toFixed(1)],
+    ['Biggest single home ZIP code',ownZip+' · '+Math.round(ownZip/pz.n*100)+'%'],
+    ['Different home ZIP codes',pz.zips],
+    ['Nearest other LivWell',c.mi.toFixed(1)+' mi'],
+    ['Other LivWells within 30 mi',c.w30],
+    ['Competitor clinics within 30 mi',compWithin(c,30)],
+    ['Nearest competitor',c.nearComp?c.nearComp.mi.toFixed(1)+' mi':'n/a'],
+    ['Most-isolated rank',c.rank+' of 29']
+  ];
+  el.innerHTML=items.map(([l,v])=>'<div class="di"><span class="di-lbl">'+l+'</span><span class="di-val">'+v+'</span></div>').join('');
+}
+
+/* ---------- charts ---------- */
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+Chart.defaults.font.size=11;
+Chart.defaults.color='#5B6472';
+let drawKey='Monterey', drawChart=null;
+function renderDraw(){
+  const rows=CITY[drawKey].slice(0,10), col=drawKey==='Monterey'?NAVY:RED;
+  const ctx=document.getElementById('drawChart');
+  if(drawChart) drawChart.destroy();
+  drawChart=new Chart(ctx,{type:'bar',data:{labels:rows.map(r=>r.city),
+    datasets:[{data:rows.map(r=>r.n),backgroundColor:col,borderRadius:2,barPercentage:.82}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>c.parsed.x+' patients'}}},
+      scales:{x:{grid:{color:'#F0F2F4'},border:{display:false},ticks:{precision:0}},
+              y:{grid:{display:false},border:{display:false},
+                 ticks:{autoSkip:false,font:{size:9.5}}}}}});
+}
+document.getElementById('tb-m').onclick=function(){drawKey='Monterey';this.classList.add('on');
+  document.getElementById('tb-b').classList.remove('on');renderDraw();};
+document.getElementById('tb-b').onclick=function(){drawKey='Burbank';this.classList.add('on');
+  document.getElementById('tb-m').classList.remove('on');renderDraw();};
+renderDraw();
+
+const bandCount={iso:0,mid:0,clu:0};
+CL.forEach(c=>bandCount[bandOf(c.mi)]++);
+new Chart(document.getElementById('isoChart'),{type:'doughnut',
+  data:{labels:['Isolated (20+ mi)','Moderate (10–20 mi)','Clustered (<10 mi)'],
+    datasets:[{data:[bandCount.iso,bandCount.mid,bandCount.clu],
+      backgroundColor:['#1F5C7A','#C98A12',RED],borderWidth:2,borderColor:'#fff'}]},
+  options:{maintainAspectRatio:false,cutout:'58%',
+    plugins:{legend:{position:'right',labels:{boxWidth:9,padding:7,font:{size:9.5}}},
+      tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' of 29'}}}}});
+
+/* ---------- scorecard ---------- */
+const SC=[
+ ['Patients served (time open)','613','89','6.9× more patients. Monterey has been open about 34 months to Burbank’s 18, so per month open the gap is 3.6× — it narrows, but it does not close.',0],
+ ['Share drawn from own city','19%','9%','117 patients live in Monterey itself; 8 live in Burbank. Monterey owns its doorstep; Burbank does not.',0],
+ ['Typical distance traveled (median)','3.3 mi','5.5 mi','Monterey’s middle patient lives closer, not farther. What separates these two clinics shows up at the far edge of the catchment, not in the middle.',0],
+ ['Catchment reach (90th percentile)','16.8 mi','13.3 mi','This <em>is</em> the differentiator, though by less than the earlier export suggested. Burbank’s draw stops near 13 miles — about where its five siblings sit. Monterey reaches nearly 17.',1],
+ ['Patients from own ZIP','113','5','Monterey has a dense core; Burbank has effectively none.',1],
+ ['Nearest sibling LivWell','24.1 mi','6.4 mi','Monterey is 2nd most isolated of 29 locations; Burbank is 3rd least. The two clinics LivWell has graded land where the theory predicts.',1],
+ ['Competitor clinics within 30 mi','0','14','Monterey is the <em>only</em> California LivWell with no Infusion For Health, IVX or Clinivoy site inside 30 miles. Burbank has fourteen.',1],
+ ['Nearest competitor','45.8 mi','1.2 mi','The sharpest single split in the comparison \u2014 Monterey\u2019s nearest competitor is in San Jose.',1],
+ ['Total infusion clinics within 30 mi','2','19','Siblings plus competitors. On this measure Monterey is the least crowded of 21 California locations; Burbank is 17th.',1],
+ ['Hospitals covering the region','4','6+','Burbank’s 6+ sit within a few miles of each other in a saturated market; Monterey’s 4 are spread across the whole Peninsula and Salinas Valley.',0],
+ ['Freeway / highway access','Limited (CA-1, CA-68)','Excellent (I-5, SR-134, SR-170)','Double-edged: Monterey’s isolation limits patient alternatives; Burbank’s connectivity makes it easy for patients to go elsewhere.',0],
+ ['Medical office market','Supply-constrained, boutique','~24–26% vacancy (Tri-Cities)','Burbank’s submarket is oversupplied and easy for competitors to enter.',0],
+ ['Est. market penetration','~0.4%','~0.01%','Monterey captures roughly 30–40× more of its local population. Estimated.',0]
+];
+document.getElementById('sc-body').innerHTML=SC.map(r=>
+ '<tr'+(r[4]?' class="new"':'')+'><td>'+r[0]+(r[4]?'<span class="tag">NEW</span>':'')+
+ '</td><td class="b">'+r[1]+'</td><td class="w">'+r[2]+'</td><td class="why">'+r[3]+'</td></tr>').join('');
+
+/* ---------- clinic table ---------- */
+let sortK='rank', sortDir=1;
+function rowsFor(){
+  const st=document.getElementById('f-state').value;
+  const bd=document.getElementById('f-band').value;
+  const q=document.getElementById('f-search').value.trim().toLowerCase();
+  let r=CL.filter(c=>(!st||c.st===st)&&(!bd||bandOf(c.mi)===bd)&&
+    (!q||c.name.toLowerCase().includes(q)||c.near.toLowerCase().includes(q)));
+  const key=c=>{const cw=compWithin(c,radius);
+    return {rank:c.rank,name:c.name,st:c.st,near:c.near,mi:c.mi,w:within(c),
+            cw:cw===null?999:cw, tw:cw===null?999:within(c)+cw,
+            nc:c.nearComp?c.nearComp.mi:999, band:cw===null?999:within(c)+cw}[sortK];};
+  return r.sort((a,b)=>{const x=key(a),y=key(b);
+    return (typeof x==='string'? x.localeCompare(y) : x-y)*sortDir;});
+}
+function renderTable(){
+  const rows=rowsFor(), tb=document.getElementById('dt-body');
+  tb.innerHTML=rows.map(c=>{
+    const cls=c.name==='Temecula'?'hi':(c.name==='Monterey'||c.name==='Burbank'?'mo':'');
+    const cw=compWithin(c,radius), tw=cw===null?null:within(c)+cw, db=densBand(tw);
+    return '<tr class="'+cls+'" data-n="'+c.name+'"><td class="n">'+c.rank+'</td><td>'+c.name+
+      '</td><td>'+c.st+'</td><td>'+c.near+'</td><td class="n">'+c.mi.toFixed(1)+
+      '</td><td class="n">'+within(c)+'</td><td class="n">'+(cw===null?'&mdash;':cw)+
+      '</td><td class="n">'+(tw===null?'&mdash;':'<b>'+tw+'</b>')+
+      '</td><td class="n">'+(c.nearComp?c.nearComp.mi.toFixed(1):'&mdash;')+
+      '</td><td><span class="pill '+db+'">'+DENSLBL[db]+'</span></td></tr>';
+  }).join('');
+  document.getElementById('rec-count').textContent=rows.length+' of 29 shown';
+  tb.querySelectorAll('tr').forEach(tr=>{ tr.onclick=()=>{
+    const c=CL.find(x=>x.name===tr.dataset.n); if(c) map.setView([c.lat,c.lon],10);
+    document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'}); };});
+}
+document.querySelectorAll('table.dt th').forEach(th=>{ th.onclick=()=>{
+  const k=th.dataset.k; sortDir = (k===sortK)? -sortDir : 1; sortK=k;
+  document.querySelectorAll('table.dt th .ar').forEach(a=>a.textContent='▾');
+  th.querySelector('.ar').textContent = sortDir>0?'▴':'▾';
+  renderTable(); };});
+['f-state','f-band'].forEach(id=>document.getElementById(id).onchange=renderTable);
+document.getElementById('f-search').oninput=renderTable;
+document.getElementById('f-clear').onclick=()=>{
+  document.getElementById('f-state').value='';document.getElementById('f-band').value='';
+  document.getElementById('f-search').value='';renderTable();};
+
+/* ---------- competitor layers ---------- */
+const compLayers={};
+BRANDS.forEach(b=>{
+  const g=L.layerGroup();
+  COMP.filter(k=>k.brand===b.key).forEach(k=>{
+    L.marker([k.lat,k.lon],{icon:L.divIcon({className:'cpin',
+      html:'<i style="background:'+b.col+'"></i>',iconSize:[11,11],iconAnchor:[5,5]})})
+     .addTo(g)
+     .bindPopup('<b>'+k.name+'</b><br><span style="color:'+b.col+'">'+b.key+'</span>'+
+       (k.zip?'<br>ZIP '+k.zip:'')+
+       (k.prec==='city'?'<br><span style="font-size:11px;color:#5B6472">Plotted at city centre \u2014 ZIP not published</span>':''));
+  });
+  compLayers[b.key]=g;
+});
+function compBand(){
+  const on=BRANDS.filter(b=>map.hasLayer(compLayers[b.key]));
+  const el=document.getElementById('hl-comp');
+  el.classList.toggle('show',on.length>0);
+  setTimeout(()=>map.invalidateSize(),0);
+  if(!on.length) return;
+  const n=on.reduce((a,b)=>a+COMP.filter(k=>k.brand===b.key).length,0);
+  const mo=CL.find(c=>c.name==='Monterey'), bu=CL.find(c=>c.name==='Burbank'), te=CL.find(c=>c.name==='Temecula');
+  document.getElementById('hl-comp-note').innerHTML=
+    on.map(b=>b.key).join(' \u00b7 ')+' \u2014 '+n+' California sites shown. '+
+    '<b>Monterey</b> is the only California LivWell with no competitor inside 30 miles \u2014 its nearest is '+
+    mo.nearComp.mi.toFixed(1)+' miles away in '+mo.nearComp.name+'. '+
+    '<b>Burbank</b> has '+compWithin(bu,30)+' inside 30 miles, the nearest '+bu.nearComp.mi.toFixed(1)+' mi. '+
+    '<b>Temecula</b> has no LivWell sibling within 30 miles, but an Infusion For Health clinic sits '+
+    te.nearComp.mi.toFixed(1)+' miles away.';
+}
+BRANDS.forEach(b=>{
+  const btn=document.getElementById(b.btn);
+  btn.onclick=()=>{
+    const g=compLayers[b.key];
+    if(map.hasLayer(g)){map.removeLayer(g);btn.classList.remove('active');btn.style.background='#fff';}
+    else{g.addTo(map);btn.classList.add('active');btn.style.background='#F2F5F8';}
+    compBand();
+  };
+});
+
+/* ---------- init ---------- */
+drawClinics(); renderTable();
+map.invalidateSize(); goHome();
+window.addEventListener('resize',()=>{map.invalidateSize(); });
+
+/* tab deck */
+document.querySelectorAll('#tabbar .tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('#tabbar .tab').forEach(x=>x.classList.toggle('on',x===t));
+    document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id==='pane-'+t.dataset.t));
+  };
+});
+const PZ = {"zips":[[33.9731,-118.2479,"Los Angeles","Los Angeles"],[33.9497,-118.2462,"Los Angeles","Los Angeles"],[34.0762,-118.3029,"Los Angeles","Los Angeles"],[34.0585,-118.3012,"Los Angeles","Los Angeles"],[34.0493,-118.2917,"Los Angeles","Los Angeles"],[34.0116,-118.3411,"Los Angeles","Los Angeles"],[34.0614,-118.2385,"Los Angeles","Los Angeles"],[34.0448,-118.2434,"Los Angeles","Los Angeles"],[34.0443,-118.2509,"Los Angeles","Los Angeles"],[34.0434,-118.2716,"Los Angeles","Los Angeles"],[34.0298,-118.3528,"Los Angeles","Los Angeles"],[34.0559,-118.2666,"Los Angeles","Los Angeles"],[34.029,-118.3152,"Los Angeles","Los Angeles"],[34.0482,-118.3343,"Los Angeles","Los Angeles"],[34.0665,-118.3022,"Los Angeles","Los Angeles"],[34.0333,-118.2447,"Los Angeles","Los Angeles"],[34.0245,-118.1561,"Los Angeles","Los Angeles"],[34.0245,-118.1975,"Los Angeles","Los Angeles"],[34.0637,-118.4408,"Los Angeles","Los Angeles"],[34.0447,-118.4487,"Los Angeles","Los Angeles"],[34.0766,-118.2646,"Los Angeles","Los Angeles"],[34.104,-118.2925,"Los Angeles","Los Angeles"],[34.1005,-118.3254,"Los Angeles","Los Angeles"],[34.09,-118.2944,"Los Angeles","Los Angeles"],[34.0783,-118.2113,"Los Angeles","Los Angeles"],[34.0818,-118.1753,"Los Angeles","Los Angeles"],[34.0487,-118.2084,"Los Angeles","Los Angeles"],[34.029,-118.4005,"Los Angeles","Los Angeles"],[34.0531,-118.3806,"Los Angeles","Los Angeles"],[34.0699,-118.3492,"Los Angeles","Los Angeles"],[34.003,-118.2863,"Los Angeles","Los Angeles"],[34.0898,-118.3215,"Los Angeles","Los Angeles"],[34.1121,-118.2594,"Los Angeles","Los Angeles"],[34.1339,-118.2082,"Los Angeles","Los Angeles"],[34.1145,-118.1929,"Los Angeles","Los Angeles"],[33.9871,-118.3321,"Los Angeles","Los Angeles"],[33.9631,-118.3941,"Los Angeles","Los Angeles"],[34.1074,-118.3652,"Los Angeles","Los Angeles"],[33.9569,-118.3073,"Los Angeles","Los Angeles"],[34.0737,-118.372,"Los Angeles","Los Angeles"],[34.066,-118.474,"Los Angeles","Los Angeles"],[33.9853,-118.3707,"Los Angeles","Los Angeles"],[33.9293,-118.2463,"Los Angeles","Los Angeles"],[34.0451,-118.1859,"Los Angeles","Los Angeles"],[34.0353,-118.4259,"Los Angeles","Los Angeles"],[34.1073,-118.2266,"Los Angeles","Los Angeles"],[34.003,-118.4298,"Los Angeles","Los Angeles"],[34.0551,-118.4095,"Los Angeles","Los Angeles"],[34.1156,-118.3305,"Los Angeles","Los Angeles"],[34.0906,-118.3788,"West Hollywood","Los Angeles"],[34.1112,-118.4502,"Los Angeles","Los Angeles"],[34.0522,-118.2437,"Los Angeles","Los Angeles"],[33.9728,-118.4276,"Playa Vista","Los Angeles"],[33.9653,-118.1515,"Bell Gardens","Los Angeles"],[34.0736,-118.4004,"Beverly Hills","Los Angeles"],[34.0901,-118.4065,"Beverly Hills","Los Angeles"],[34.0652,-118.383,"Beverly Hills","Los Angeles"],[34.0619,-118.3995,"Beverly Hills","Los Angeles"],[34.0736,-118.4004,"Beverly Hills","Los Angeles"],[33.8748,-118.2402,"Compton","Los Angeles"],[33.9949,-118.3991,"Culver City","Los Angeles"],[34.0211,-118.3965,"Culver City","Los Angeles"],[34.0168,-118.3973,"Culver City","Los Angeles"],[33.9416,-118.1306,"Downey","Los Angeles"],[33.9218,-118.1395,"Downey","Los Angeles"],[33.9243,-118.4119,"El Segundo","Los Angeles"],[33.9143,-118.3493,"Hawthorne","Los Angeles"],[33.8643,-118.3955,"Hermosa Beach","Los Angeles"],[33.8879,-118.351,"Lawndale","Los Angeles"],[34.005,-118.8101,"Malibu","Los Angeles"],[34.0402,-118.7351,"Malibu","Los Angeles"],[33.8896,-118.3996,"Manhattan Beach","Los Angeles"],[34.0481,-118.5265,"Pacific Palisades","Los Angeles"],[33.7669,-118.3806,"Palos Verdes Peninsula","Los Angeles"],[33.7515,-118.367,"Rancho Palos Verdes","Los Angeles"],[33.8307,-118.3832,"Redondo Beach","Los Angeles"],[33.8707,-118.3715,"Redondo Beach","Los Angeles"],[33.9462,-118.2013,"South Gate","Los Angeles"],[34.1076,-118.6023,"Topanga","Los Angeles"],[33.9938,-118.4635,"Venice","Los Angeles"],[33.9779,-118.4525,"Marina Del Rey","Los Angeles"],[33.9577,-118.4373,"Playa Del Rey","Los Angeles"],[33.7866,-118.2987,"Marina Del Rey","Los Angeles"],[33.955,-118.3556,"Inglewood","Los Angeles"],[33.9745,-118.3548,"Inglewood","Los Angeles"],[33.9377,-118.3321,"Inglewood","Los Angeles"],[33.9583,-118.3259,"Inglewood","Los Angeles"],[34.0176,-118.4907,"Santa Monica","Los Angeles"],[34.0349,-118.503,"Santa Monica","Los Angeles"],[34.0287,-118.4924,"Santa Monica","Los Angeles"],[34.0268,-118.4733,"Santa Monica","Los Angeles"],[34.01,-118.4717,"Santa Monica","Los Angeles"],[33.8268,-118.3118,"Torrance","Los Angeles"],[33.8397,-118.3542,"Torrance","Los Angeles"],[33.8106,-118.3507,"Torrance","Los Angeles"],[34.0011,-118.0371,"Whittier","Los Angeles"],[33.9693,-118.0337,"Whittier","Los Angeles"],[33.9432,-117.9927,"Whittier","Los Angeles"],[33.9299,-118.0121,"Whittier","Los Angeles"],[33.9413,-118.0356,"Whittier","Los Angeles"],[33.9777,-118.0658,"Whittier","Los Angeles"],[33.8439,-118.008,"Buena Park","Orange"],[33.8772,-117.9893,"Buena Park","Orange"],[33.8462,-118.0031,"Buena Park","Orange"],[33.8491,-118.0398,"La Palma","Orange"],[33.8181,-118.0357,"Cypress","Orange"],[33.9331,-117.9493,"La Habra","Orange"],[33.9067,-118.0101,"La Mirada","Los Angeles"],[34.0133,-118.113,"Montebello","Los Angeles"],[33.9056,-118.0818,"Norwalk","Los Angeles"],[33.9886,-118.0883,"Pico Rivera","Los Angeles"],[33.7991,-117.9956,"Stanton","Orange"],[33.8654,-118.0731,"Artesia","Los Angeles"],[33.8669,-118.0686,"Cerritos","Los Angeles"],[33.8512,-118.1457,"Lakewood","Los Angeles"],[33.8473,-118.1115,"Lakewood","Los Angeles"],[33.8296,-118.073,"Hawaiian Gardens","Los Angeles"],[33.7938,-118.3172,"Lomita","Los Angeles"],[33.7956,-118.0648,"Los Alamitos","Orange"],[33.7339,-118.2914,"San Pedro","Los Angeles"],[33.742,-118.3121,"San Pedro","Los Angeles"],[33.7602,-118.0808,"Seal Beach","Orange"],[33.823,-118.2684,"Carson","Los Angeles"],[33.8584,-118.2554,"Carson","Los Angeles"],[33.7706,-118.182,"Long Beach","Los Angeles"],[33.7619,-118.1341,"Long Beach","Los Angeles"],[33.7857,-118.1357,"Long Beach","Los Angeles"],[33.8635,-118.1801,"Long Beach","Los Angeles"],[33.8045,-118.1876,"Long Beach","Los Angeles"],[33.8315,-118.1811,"Long Beach","Los Angeles"],[33.8241,-118.1103,"Long Beach","Los Angeles"],[33.7716,-118.148,"Long Beach","Los Angeles"],[33.7939,-118.1192,"Long Beach","Los Angeles"],[34.1912,-118.1392,"Altadena","Los Angeles"],[34.1324,-118.0264,"Arcadia","Los Angeles"],[34.1243,-118.0515,"Arcadia","Los Angeles"],[34.149,-117.9644,"Duarte","Los Angeles"],[34.1407,-117.9567,"Duarte","Los Angeles"],[34.2217,-118.2051,"La Canada Flintridge","Los Angeles"],[34.144,-118.0014,"Monrovia","Los Angeles"],[34.2114,-118.2305,"Montrose","Los Angeles"],[34.1651,-118.0519,"Sierra Madre","Los Angeles"],[34.1109,-118.1547,"South Pasadena","Los Angeles"],[34.2618,-118.3371,"Sunland","Los Angeles"],[34.2544,-118.2849,"Tujunga","Los Angeles"],[34.2114,-118.2395,"Verdugo City","Los Angeles"],[34.1468,-118.1391,"Pasadena","Los Angeles"],[34.1669,-118.1551,"Pasadena","Los Angeles"],[34.1678,-118.1261,"Pasadena","Los Angeles"],[34.1355,-118.1636,"Pasadena","Los Angeles"],[34.1435,-118.1266,"Pasadena","Los Angeles"],[34.151,-118.0889,"Pasadena","Los Angeles"],[34.1207,-118.1117,"San Marino","Los Angeles"],[34.1478,-118.1445,"Pasadena","Los Angeles"],[34.1478,-118.1445,"Pasadena","Los Angeles"],[34.1652,-118.2656,"Glendale","Los Angeles"],[34.1517,-118.2636,"Glendale","Los Angeles"],[34.1379,-118.2599,"Glendale","Los Angeles"],[34.1378,-118.2425,"Glendale","Los Angeles"],[34.1556,-118.2322,"Glendale","Los Angeles"],[34.1649,-118.2451,"Glendale","Los Angeles"],[34.1921,-118.235,"Glendale","Los Angeles"],[34.2316,-118.2457,"La Crescenta","Los Angeles"],[34.1227,-118.7573,"Agoura Hills","Los Angeles"],[34.1419,-118.6641,"Calabasas","Los Angeles"],[34.2197,-118.6111,"Canoga Park","Los Angeles"],[34.2092,-118.5749,"Winnetka","Los Angeles"],[34.1963,-118.6389,"West Hills","Los Angeles"],[34.2583,-118.5914,"Chatsworth","Los Angeles"],[34.1655,-118.5175,"Encino","Los Angeles"],[34.1774,-118.9358,"Newbury Park","Ventura"],[34.2367,-118.5466,"Northridge","Los Angeles"],[34.2353,-118.5188,"Northridge","Los Angeles"],[34.2808,-118.5573,"Porter Ranch","Los Angeles"],[34.2007,-118.5391,"Reseda","Los Angeles"],[34.3054,-118.4322,"Sylmar","Los Angeles"],[34.2366,-118.4758,"North Hills","Los Angeles"],[34.2771,-118.4992,"Granada Hills","Los Angeles"],[34.2619,-118.4587,"Mission Hills","Los Angeles"],[34.4336,-118.5007,"Santa Clarita","Los Angeles"],[34.2209,-118.3699,"Sun Valley","Los Angeles"],[34.4466,-118.5374,"Valencia","Los Angeles"],[34.3985,-118.5535,"Valencia","Los Angeles"],[34.1671,-118.5414,"Tarzana","Los Angeles"],[34.2092,-118.8739,"Thousand Oaks","Ventura"],[34.1472,-118.8383,"Westlake Village","Ventura"],[34.1948,-118.8232,"Thousand Oaks","Ventura"],[34.1557,-118.6,"Woodland Hills","Los Angeles"],[34.1767,-118.6159,"Woodland Hills","Los Angeles"],[34.185,-118.7669,"Oak Park","Ventura"],[34.3775,-118.6131,"Stevenson Ranch","Los Angeles"],[34.4827,-118.6254,"Castaic","Los Angeles"],[34.4436,-118.6095,"Valencia","Los Angeles"],[34.4132,-118.426,"Canyon Country","Los Angeles"],[34.4684,-118.5261,"Santa Clarita","Los Angeles"],[34.1802,-118.4324,"Van Nuys","Los Angeles"],[34.1514,-118.4603,"Sherman Oaks","Los Angeles"],[34.2001,-118.4456,"Van Nuys","Los Angeles"],[34.2006,-118.4868,"Van Nuys","Los Angeles"],[34.1781,-118.4574,"Van Nuys","Los Angeles"],[34.1511,-118.4492,"Sherman Oaks","Los Angeles"],[34.1526,-118.4322,"Sherman Oaks","Los Angeles"],[34.1592,-118.5012,"Encino","Los Angeles"],[34.151,-118.4882,"Encino","Los Angeles"],[34.1862,-118.3009,"Burbank","Los Angeles"],[34.2001,-118.3264,"Burbank","Los Angeles"],[34.169,-118.3442,"Burbank","Los Angeles"],[34.1717,-118.3231,"Burbank","Los Angeles"],[34.1687,-118.3713,"North Hollywood","Los Angeles"],[34.151,-118.3663,"North Hollywood","Los Angeles"],[34.143,-118.3913,"Studio City","Los Angeles"],[34.2057,-118.4001,"North Hollywood","Los Angeles"],[34.1872,-118.3865,"North Hollywood","Los Angeles"],[34.1672,-118.3989,"Valley Village","Los Angeles"],[34.1248,-117.9031,"Azusa","Los Angeles"],[34.0964,-117.9682,"Baldwin Park","Los Angeles"],[33.954,-117.6404,"Chino","San Bernardino"],[33.9797,-117.7308,"Chino Hills","San Bernardino"],[34.0125,-117.6844,"Chino","San Bernardino"],[34.1092,-117.7183,"Claremont","Los Angeles"],[34.0972,-117.9065,"Covina","Los Angeles"],[34.0938,-117.856,"Covina","Los Angeles"],[34.107,-117.5941,"Rancho Cucamonga","San Bernardino"],[34.0791,-118.0371,"El Monte","Los Angeles"],[34.1467,-117.5803,"Rancho Cucamonga","San Bernardino"],[34.1705,-117.5182,"Rancho Cucamonga","San Bernardino"],[34.1287,-117.8552,"Glendora","Los Angeles"],[34.1537,-117.8437,"Glendora","Los Angeles"],[34.0289,-117.9373,"La Puente","Los Angeles"],[33.9977,-117.9652,"Hacienda Heights","Los Angeles"],[34.0443,-117.9862,"La Puente","Los Angeles"],[33.9818,-117.8969,"Rowland Heights","Los Angeles"],[34.1159,-117.7708,"La Verne","Los Angeles"],[33.9938,-117.5236,"Mira Loma","Riverside"],[34.0534,-118.1271,"Monterey Park","Los Angeles"],[34.048,-118.115,"Monterey Park","Los Angeles"],[34.0763,-117.6254,"Ontario","San Bernardino"],[34.0066,-117.8098,"Diamond Bar","Los Angeles"],[34.0658,-118.0853,"Rosemead","Los Angeles"],[34.1023,-117.8169,"San Dimas","Los Angeles"],[34.1155,-118.0857,"San Gabriel","Los Angeles"],[34.089,-118.0955,"San Gabriel","Los Angeles"],[34.1016,-118.0537,"Temple City","Los Angeles"],[34.141,-117.6581,"Upland","San Bernardino"],[34.0183,-117.8546,"Walnut","Los Angeles"],[34.0673,-117.9366,"West Covina","Los Angeles"],[34.0653,-117.8978,"West Covina","Los Angeles"],[34.0229,-117.8975,"West Covina","Los Angeles"],[34.0914,-118.1293,"Alhambra","Los Angeles"],[34.0745,-118.1434,"Alhambra","Los Angeles"],[32.8282,-116.7543,"Alpine","San Diego"],[32.6671,-117.0221,"Bonita","San Diego"],[32.8351,-116.7664,"Alpine","San Diego"],[32.6719,-116.32,"Boulevard","San Diego"],[32.6578,-117.03,"Bonita","San Diego"],[32.6371,-117.0676,"Chula Vista","San Diego"],[32.6084,-117.0565,"Chula Vista","San Diego"],[32.6513,-116.9852,"Chula Vista","San Diego"],[32.6315,-116.9408,"Chula Vista","San Diego"],[32.873,-116.6027,"Descanso","San Diego"],[32.5783,-117.1148,"Imperial Beach","San Diego"],[32.7604,-117.0115,"La Mesa","San Diego"],[32.7835,-117.0189,"La Mesa","San Diego"],[32.7332,-117.0326,"Lemon Grove","San Diego"],[32.6749,-117.0897,"National City","San Diego"],[32.724,-116.9976,"Spring Valley","San Diego"],[32.7329,-116.9596,"Spring Valley","San Diego"],[32.5889,-116.6192,"Tecate","San Diego"],[33.294,-117.1897,"Bonsall","San Diego"],[33.023,-117.2745,"Cardiff By The Sea","San Diego"],[33.1602,-117.325,"Carlsbad","San Diego"],[33.0954,-117.2619,"Carlsbad","San Diego"],[33.1639,-117.3009,"Carlsbad","San Diego"],[33.1072,-117.2943,"Carlsbad","San Diego"],[32.9665,-117.249,"Del Mar","San Diego"],[33.1581,-117.3506,"Carlsbad","San Diego"],[32.7777,-116.9191,"El Cajon","San Diego"],[32.7928,-116.9665,"El Cajon","San Diego"],[32.8178,-116.9223,"El Cajon","San Diego"],[33.036,-117.292,"Encinitas","San Diego"],[33.0535,-117.2689,"Encinitas","San Diego"],[33.1101,-117.07,"Escondido","San Diego"],[33.1605,-117.0978,"Escondido","San Diego"],[33.1388,-117.052,"Escondido","San Diego"],[33.369,-117.229,"Fallbrook","San Diego"],[33.0895,-117.1128,"Escondido","San Diego"],[32.8455,-117.2521,"La Jolla","San Diego"],[32.8473,-117.2742,"La Jolla","San Diego"],[32.8562,-116.9201,"Lakeside","San Diego"],[33.1959,-117.3795,"Oceanside","San Diego"],[33.1959,-117.3795,"Oceanside","San Diego"],[33.2072,-117.3573,"Oceanside","San Diego"],[33.1968,-117.2831,"Oceanside","San Diego"],[33.2407,-117.3025,"Oceanside","San Diego"],[33.1959,-117.3795,"Oceanside","San Diego"],[33.3777,-117.0717,"Pala","San Diego"],[32.9756,-117.0402,"Poway","San Diego"],[33.0293,-116.8535,"Ramona","San Diego"],[33.005,-117.2157,"Rancho Santa Fe","San Diego"],[33.1444,-117.1697,"San Marcos","San Diego"],[33.1476,-116.6963,"Santa Ysabel","San Diego"],[32.8486,-116.9862,"Santee","San Diego"],[32.9937,-117.2598,"Solana Beach","San Diego"],[33.1193,-117.185,"San Marcos","San Diego"],[33.1644,-117.2403,"Vista","San Diego"],[33.249,-117.0122,"Valley Center","San Diego"],[33.1978,-117.2482,"Vista","San Diego"],[33.2131,-117.2243,"Vista","San Diego"],[33.3096,-116.6527,"Warner Springs","San Diego"],[33.3764,-117.2511,"Fallbrook","San Diego"],[32.9623,-117.0462,"Rancho Santa Fe","San Diego"],[32.7185,-117.1593,"San Diego","San Diego"],[32.7139,-117.1219,"San Diego","San Diego"],[32.7466,-117.1636,"San Diego","San Diego"],[32.7454,-117.1272,"San Diego","San Diego"],[32.7423,-117.0947,"San Diego","San Diego"],[32.7272,-117.2268,"San Diego","San Diego"],[32.7425,-117.2433,"San Diego","San Diego"],[32.7783,-117.1335,"San Diego","San Diego"],[32.7969,-117.2405,"San Diego","San Diego"],[32.7635,-117.2028,"San Diego","San Diego"],[32.7972,-117.1708,"San Diego","San Diego"],[32.697,-117.1153,"San Diego","San Diego"],[32.7059,-117.0524,"San Diego","San Diego"],[32.7607,-117.0721,"San Diego","San Diego"],[32.7624,-117.1242,"San Diego","San Diego"],[32.8239,-117.1965,"San Diego","San Diego"],[32.6807,-117.1698,"Coronado","San Diego"],[32.8036,-117.0261,"San Diego","San Diego"],[32.7958,-117.0707,"San Diego","San Diego"],[32.8919,-117.2035,"San Diego","San Diego"],[32.8577,-117.2115,"San Diego","San Diego"],[32.7973,-117.1392,"San Diego","San Diego"],[32.8201,-117.0986,"San Diego","San Diego"],[32.9161,-117.1402,"San Diego","San Diego"],[33.0279,-117.0856,"San Diego","San Diego"],[33.0067,-117.069,"San Diego","San Diego"],[32.9652,-117.1213,"San Diego","San Diego"],[32.9555,-117.2252,"San Diego","San Diego"],[32.9123,-117.0898,"San Diego","San Diego"],[32.8538,-117.1197,"San Diego","San Diego"],[32.6806,-117.0474,"San Diego","San Diego"],[32.5753,-117.0707,"San Diego","San Diego"],[32.7153,-117.1573,"San Diego","San Diego"],[32.7153,-117.1573,"San Diego","San Diego"],[32.7153,-117.1573,"San Diego","San Diego"],[33.7207,-116.2168,"Indio","Riverside"],[33.7163,-116.3381,"Indian Wells","Riverside"],[33.9171,-117.0001,"Beaumont","Riverside"],[33.5987,-114.6525,"Blythe","Riverside"],[32.9792,-115.5296,"Brawley","Imperial"],[33.8098,-116.4665,"Cathedral City","Riverside"],[33.9531,-116.5219,"Desert Hot Springs","Riverside"],[32.7893,-115.5665,"El Centro","Imperial"],[32.7218,-115.4383,"Heber","Imperial"],[33.6685,-116.3081,"La Quinta","Riverside"],[33.7225,-116.377,"Palm Desert","Riverside"],[33.7643,-116.4225,"Rancho Mirage","Riverside"],[34.4698,-117.1927,"Apple Valley","San Bernardino"],[34.2112,-117.0796,"Blue Jay","San Bernardino"],[33.9946,-117.043,"Calimesa","Riverside"],[34.2544,-117.3265,"Cedarpines Park","San Bernardino"],[34.4239,-117.4075,"Hesperia","San Bernardino"],[34.2606,-117.2016,"Lake Arrowhead","San Bernardino"],[34.0397,-117.1804,"Redlands","San Bernardino"],[34.0282,-117.0489,"Yucaipa","San Bernardino"],[34.1083,-117.2898,"San Bernardino","San Bernardino"],[34.0831,-117.2711,"San Bernardino","San Bernardino"],[33.9208,-117.4589,"Riverside","Riverside"],[33.9455,-117.3757,"Riverside","Riverside"],[33.6598,-117.3485,"Lake Elsinore","Riverside"],[33.6681,-117.3273,"Lake Elsinore","Riverside"],[33.6927,-117.303,"Lake Elsinore","Riverside"],[33.4473,-116.7997,"Aguanga","Riverside"],[33.7416,-116.973,"Hemet","Riverside"],[33.739,-116.9243,"Hemet","Riverside"],[33.7399,-117.0151,"Hemet","Riverside"],[33.7453,-117.1118,"Homeland","Riverside"],[33.9377,-117.1851,"Moreno Valley","Riverside"],[33.5631,-117.2738,"Murrieta","Riverside"],[33.569,-117.1783,"Murrieta","Riverside"],[33.5539,-117.2139,"Murrieta","Riverside"],[33.8123,-117.1048,"Nuevo","Riverside"],[33.7852,-117.3166,"Perris","Riverside"],[33.7883,-116.9819,"San Jacinto","Riverside"],[33.7967,-116.9324,"San Jacinto","Riverside"],[33.6647,-117.1743,"Menifee","Riverside"],[33.7467,-117.1721,"Menifee","Riverside"],[33.7044,-117.1969,"Menifee","Riverside"],[33.707,-117.245,"Menifee","Riverside"],[33.4936,-117.1484,"Temecula","Riverside"],[33.4903,-117.1824,"Temecula","Riverside"],[33.5217,-117.1286,"Temecula","Riverside"],[33.4983,-117.0958,"Temecula","Riverside"],[33.4936,-117.1484,"Temecula","Riverside"],[33.6021,-117.264,"Wildomar","Riverside"],[33.6243,-117.0885,"Winchester","Riverside"],[33.7419,-117.7467,"Irvine","Orange"],[33.6245,-117.794,"Irvine","Orange"],[33.6899,-117.7868,"Irvine","Orange"],[33.6951,-117.8224,"Irvine","Orange"],[33.5269,-117.7117,"Laguna Niguel","Orange"],[33.6748,-117.6649,"Foothill Ranch","Orange"],[33.6607,-117.8264,"Irvine","Orange"],[33.6829,-117.8298,"Irvine","Orange"],[33.7074,-117.7054,"Irvine","Orange"],[33.6706,-117.7645,"Irvine","Orange"],[33.7009,-117.7564,"Irvine","Orange"],[33.46,-117.6632,"Capistrano Beach","Orange"],[33.6021,-117.8743,"Corona Del Mar","Orange"],[33.6801,-117.9085,"Costa Mesa","Orange"],[33.6483,-117.9155,"Costa Mesa","Orange"],[33.4743,-117.6964,"Dana Point","Orange"],[33.6437,-117.6868,"Lake Forest","Orange"],[33.6103,-117.7253,"Laguna Woods","Orange"],[33.6654,-117.9686,"Huntington Beach","Orange"],[33.721,-118.0033,"Huntington Beach","Orange"],[33.6773,-118.0051,"Huntington Beach","Orange"],[33.718,-118.0505,"Huntington Beach","Orange"],[33.5429,-117.7813,"Laguna Beach","Orange"],[33.5916,-117.6985,"Laguna Hills","Orange"],[33.6042,-117.7154,"Laguna Hills","Orange"],[33.7446,-117.984,"Midway City","Orange"],[33.5701,-117.7086,"Aliso Viejo","Orange"],[33.5943,-117.8334,"Newport Coast","Orange"],[33.6422,-117.8631,"Newport Beach","Orange"],[33.6222,-117.9235,"Newport Beach","Orange"],[33.6295,-117.8684,"Newport Beach","Orange"],[33.6062,-117.8931,"Newport Beach","Orange"],[33.621,-117.9321,"Newport Beach","Orange"],[33.4361,-117.6231,"San Clemente","Orange"],[33.4615,-117.6375,"San Clemente","Orange"],[33.4409,-117.6211,"San Clemente","Orange"],[33.5085,-117.6565,"San Juan Capistrano","Orange"],[33.5145,-117.7084,"Laguna Niguel","Orange"],[33.6643,-117.5896,"Trabuco Canyon","Orange"],[33.6625,-117.5903,"Trabuco Canyon","Orange"],[33.7524,-117.9939,"Westminster","Orange"],[33.7627,-118.0072,"Westminster","Orange"],[33.6512,-117.5938,"Rancho Santa Margarita","Orange"],[33.6128,-117.6622,"Mission Viejo","Orange"],[33.6144,-117.6433,"Mission Viejo","Orange"],[33.5472,-117.6238,"Ladera Ranch","Orange"],[33.7523,-117.8541,"Santa Ana","Orange"],[33.7489,-117.9072,"Santa Ana","Orange"],[33.7249,-117.909,"Santa Ana","Orange"],[33.754,-117.7919,"Santa Ana","Orange"],[33.7691,-117.8855,"Santa Ana","Orange"],[33.7086,-117.8701,"Santa Ana","Orange"],[33.7102,-117.9503,"Fountain Valley","Orange"],[33.7364,-117.8229,"Tustin","Orange"],[33.7369,-117.8181,"Tustin","Orange"],[33.7346,-117.7869,"Tustin","Orange"],[33.8428,-117.9546,"Anaheim","Orange"],[33.8085,-117.9228,"Anaheim","Orange"],[33.8186,-117.9729,"Anaheim","Orange"],[33.8359,-117.9086,"Anaheim","Orange"],[33.8356,-117.8681,"Anaheim","Orange"],[33.8544,-117.7858,"Anaheim","Orange"],[33.8579,-117.7513,"Anaheim","Orange"],[33.9291,-117.8845,"Brea","Orange"],[33.923,-117.798,"Brea","Orange"],[33.8873,-117.8946,"Fullerton","Orange"],[33.868,-117.9265,"Fullerton","Orange"],[33.8766,-117.9551,"Fullerton","Orange"],[33.8994,-117.9063,"Fullerton","Orange"],[33.7869,-117.9273,"Garden Grove","Orange"],[33.7817,-117.9766,"Garden Grove","Orange"],[33.7671,-117.929,"Garden Grove","Orange"],[33.7661,-117.9738,"Garden Grove","Orange"],[33.7787,-118.0267,"Garden Grove","Orange"],[33.9247,-117.5517,"Norco","Riverside"],[33.8205,-117.8104,"Villa Park","Orange"],[33.8153,-117.8273,"Orange","Orange"],[33.8263,-117.8511,"Orange","Orange"],[33.7877,-117.8423,"Orange","Orange"],[33.811,-117.8493,"Orange","Orange"],[33.7875,-117.8776,"Orange","Orange"],[33.7868,-117.7934,"Orange","Orange"],[33.8744,-117.8543,"Placentia","Orange"],[33.8753,-117.5664,"Corona","Riverside"],[33.8797,-117.5354,"Corona","Riverside"],[33.9208,-117.6096,"Corona","Riverside"],[33.8241,-117.5198,"Corona","Riverside"],[33.8419,-117.6043,"Corona","Riverside"],[33.7541,-117.474,"Corona","Riverside"],[33.9058,-117.7865,"Yorba Linda","Orange"],[33.8841,-117.7304,"Yorba Linda","Orange"],[34.2846,-119.2222,"Ventura","Ventura"],[34.2788,-119.1651,"Ventura","Ventura"],[34.2313,-119.0464,"Camarillo","Ventura"],[34.2218,-118.9866,"Camarillo","Ventura"],[34.2856,-118.882,"Moorpark","Ventura"],[34.2784,-118.8771,"Moorpark","Ventura"],[34.2141,-119.175,"Oxnard","Ventura"],[34.1822,-119.216,"Oxnard","Ventura"],[34.2351,-119.182,"Oxnard","Ventura"],[34.3046,-118.6844,"Simi Valley","Ventura"],[34.2656,-118.7653,"Simi Valley","Ventura"],[34.2798,-119.0115,"Somis","Ventura"],[34.4378,-119.6159,"Santa Barbara","Santa Barbara"],[34.4418,-119.7647,"Santa Barbara","Santa Barbara"],[35.9877,-120.1227,"Avenal","Kings"],[35.3661,-119.6196,"Mc Kittrick","Kern"],[35.497,-119.2801,"Shafter","Kern"],[36.3551,-119.301,"Visalia","Tulare"],[36.3302,-119.2921,"Visalia","Tulare"],[35.3867,-118.9391,"Bakersfield","Kern"],[35.3384,-119.0627,"Bakersfield","Kern"],[35.3935,-119.1205,"Bakersfield","Kern"],[35.2635,-120.6509,"San Luis Obispo","San Luis Obispo"],[35.4446,-120.8908,"Cayucos","San Luis Obispo"],[35.121,-120.6173,"Grover Beach","San Luis Obispo"],[35.0298,-120.4894,"Nipomo","San Luis Obispo"],[35.7562,-120.6935,"Paso Robles","San Luis Obispo"],[34.8286,-120.4268,"Santa Maria","Santa Barbara"],[34.9535,-120.4957,"Santa Maria","Santa Barbara"],[34.7471,-118.3687,"Lancaster","Los Angeles"],[37.6094,-118.8656,"Mammoth Lakes","Mono"],[34.6017,-118.231,"Palmdale","Los Angeles"],[35.6225,-117.6709,"Ridgecrest","Kern"],[34.8664,-118.3409,"Rosamond","Kern"],[34.5794,-118.1165,"Palmdale","Los Angeles"],[34.6019,-117.8123,"Palmdale","Los Angeles"],[37.2214,-119.7455,"Coarsegold","Madera"],[37.0025,-120.6333,"Dos Palos","Merced"],[37.0627,-120.8544,"Los Banos","Merced"],[37.0402,-120.0335,"Madera","Madera"],[36.6044,-119.4378,"Reedley","Fresno"],[36.8236,-119.7621,"Fresno","Fresno"],[36.8303,-119.8319,"Fresno","Fresno"],[36.6677,-121.6596,"Salinas","Monterey"],[36.6811,-121.6176,"Salinas","Monterey"],[36.7103,-121.6438,"Salinas","Monterey"],[36.7563,-121.6703,"Salinas","Monterey"],[36.6011,-121.6729,"Salinas","Monterey"],[36.6777,-121.6555,"Salinas","Monterey"],[36.2458,-121.7009,"Big Sur","Monterey"],[36.5552,-121.9233,"Carmel By The Sea","Monterey"],[36.5433,-121.9263,"Carmel","Monterey"],[36.5457,-121.8949,"Carmel","Monterey"],[36.4787,-121.7244,"Carmel Valley","Monterey"],[36.595,-121.432,"Chualar","Monterey"],[36.49,-121.4103,"Gonzales","Monterey"],[36.3202,-121.2451,"Greenfield","Monterey"],[35.9708,-121.176,"Jolon","Monterey"],[36.2028,-121.1273,"King City","Monterey"],[36.6849,-121.7934,"Marina","Monterey"],[36.5802,-121.8443,"Monterey","Monterey"],[36.6002,-121.8947,"Monterey","Monterey"],[36.6062,-121.9089,"Monterey","Monterey"],[36.6167,-121.922,"Pacific Grove","Monterey"],[36.5907,-121.942,"Pebble Beach","Monterey"],[36.6217,-121.7935,"Seaside","Monterey"],[36.4196,-121.3243,"Soledad","Monterey"],[36.6261,-121.6555,"Spreckels","Monterey"],[37.5671,-122.3676,"Burlingame","San Mateo"],[37.4791,-122.4459,"Half Moon Bay","San Mateo"],[37.2726,-122.2495,"La Honda","San Mateo"],[37.3814,-122.1258,"Los Altos","Santa Clara"],[37.3547,-122.0862,"Los Altos","Santa Clara"],[37.4396,-122.1864,"Menlo Park","San Mateo"],[37.3702,-122.2182,"Portola Valley","San Mateo"],[37.3861,-122.0839,"Mountain View","Santa Clara"],[37.3855,-122.088,"Mountain View","Santa Clara"],[37.3893,-122.0783,"Mountain View","Santa Clara"],[37.4056,-122.0775,"Mountain View","Santa Clara"],[37.2065,-122.3649,"Pescadero","San Mateo"],[37.4647,-122.2304,"Redwood City","San Mateo"],[37.4815,-122.2091,"Redwood City","San Mateo"],[37.3764,-122.0238,"Sunnyvale","Santa Clara"],[37.3502,-122.0349,"Sunnyvale","Santa Clara"],[37.3983,-122.0006,"Sunnyvale","Santa Clara"],[37.7917,-122.4186,"San Francisco","San Francisco"],[37.7509,-122.4153,"San Francisco","San Francisco"],[37.7195,-122.4411,"San Francisco","San Francisco"],[37.7856,-122.4358,"San Francisco","San Francisco"],[37.7812,-122.4614,"San Francisco","San Francisco"],[37.7999,-122.4342,"San Francisco","San Francisco"],[37.7354,-122.4571,"San Francisco","San Francisco"],[37.745,-122.4383,"San Francisco","San Francisco"],[37.8002,-122.4091,"San Francisco","San Francisco"],[37.4673,-122.1388,"Palo Alto","San Mateo"],[37.4334,-122.1842,"Palo Alto","Santa Clara"],[37.418,-122.1274,"Palo Alto","Santa Clara"],[37.5507,-122.3276,"San Mateo","San Mateo"],[37.5395,-122.2998,"San Mateo","San Mateo"],[37.5538,-122.27,"San Mateo","San Mateo"],[37.7706,-122.2648,"Alameda","Alameda"],[37.8989,-121.6054,"Discovery Bay","Contra Costa"],[37.5605,-121.9999,"Fremont","Alameda"],[37.5308,-121.9712,"Fremont","Alameda"],[37.5176,-121.9287,"Fremont","Alameda"],[37.6374,-122.067,"Hayward","Alameda"],[37.8961,-122.1119,"Lafayette","Contra Costa"],[37.683,-121.763,"Livermore","Alameda"],[37.7526,-121.77,"Livermore","Alameda"],[37.5368,-122.032,"Newark","Alameda"],[37.6658,-121.8755,"Pleasanton","Alameda"],[37.7205,-122.1587,"San Leandro","Alameda"],[37.6873,-121.8957,"Pleasanton","Alameda"],[37.9053,-122.0549,"Walnut Creek","Contra Costa"],[37.8571,-122.25,"Berkeley","Alameda"],[37.8738,-122.2549,"Berkeley","Alameda"],[37.9693,-122.2901,"El Sobrante","Contra Costa"],[37.8958,-122.5339,"Mill Valley","Marin"],[36.979,-121.898,"Aptos","Santa Cruz"],[36.9797,-121.8902,"Aptos","Santa Cruz"],[36.8769,-121.6324,"Aromas","Monterey"],[37.0882,-122.0887,"Ben Lomond","Santa Cruz"],[37.1547,-122.1365,"Boulder Creek","Santa Cruz"],[37.1063,-122.105,"Brookdale","Santa Cruz"],[37.2803,-121.9539,"Campbell","Santa Clara"],[37.2872,-121.9488,"Campbell","Santa Clara"],[36.9767,-121.9555,"Capitola","Santa Cruz"],[36.7658,-121.758,"Castroville","Monterey"],[37.318,-122.0449,"Cupertino","Santa Clara"],[37.0423,-122.2137,"Davenport","Santa Cruz"],[37.0662,-122.0618,"Felton","Santa Cruz"],[36.9356,-121.7767,"Freedom","Santa Cruz"],[37.0139,-121.5773,"Gilroy","Santa Clara"],[36.8337,-121.3439,"Hollister","San Benito"],[36.8586,-121.3982,"Hollister","San Benito"],[37.2296,-121.9834,"Los Gatos","Santa Clara"],[37.1574,-121.9676,"Los Gatos","Santa Clara"],[37.2417,-121.9554,"Los Gatos","Santa Clara"],[37.1539,-121.9816,"Los Gatos","Santa Cruz"],[37.4352,-121.895,"Milpitas","Santa Clara"],[37.424,-121.906,"Milpitas","Santa Clara"],[37.1353,-121.6501,"Morgan Hill","Santa Clara"],[37.1525,-121.6722,"Morgan Hill","Santa Clara"],[36.8175,-121.7773,"Moss Landing","Monterey"],[37.0511,-122.0575,"Mount Hermon","Santa Cruz"],[37.1771,-121.8207,"New Almaden","Santa Clara"],[36.8463,-121.5346,"San Juan Bautista","San Benito"],[37.0911,-121.5999,"San Martin","Santa Clara"],[37.3492,-121.953,"Santa Clara","Santa Clara"],[37.3483,-121.9844,"Santa Clara","Santa Clara"],[37.3498,-121.9378,"Santa Clara","Santa Clara"],[37.3924,-121.9623,"Santa Clara","Santa Clara"],[37.3451,-121.9769,"Santa Clara","Santa Clara"],[37.3997,-121.9608,"Santa Clara","Santa Clara"],[37.0313,-122.1198,"Santa Cruz","Santa Cruz"],[36.9721,-121.9881,"Santa Cruz","Santa Cruz"],[36.9792,-122.0088,"Santa Cruz","Santa Cruz"],[37.0089,-121.9849,"Santa Cruz","Santa Cruz"],[37.0597,-122.0152,"Scotts Valley","Santa Cruz"],[37.0511,-122.0136,"Scotts Valley","Santa Cruz"],[37.2713,-122.0227,"Saratoga","Santa Clara"],[37.0048,-121.9507,"Soquel","Santa Cruz"],[36.767,-121.3017,"Tres Pinos","San Benito"],[36.9102,-121.7569,"Watsonville","Santa Cruz"],[36.9116,-121.7575,"Watsonville","Santa Cruz"],[37.3391,-121.9016,"San Jose","Santa Clara"],[37.2827,-121.8265,"San Jose","Santa Clara"],[37.3476,-121.887,"San Jose","Santa Clara"],[37.3329,-121.8916,"San Jose","Santa Clara"],[37.3518,-121.8508,"San Jose","Santa Clara"],[37.3108,-121.9623,"San Jose","Santa Clara"],[37.2568,-121.8896,"San Jose","Santa Clara"],[37.2329,-121.7875,"San Jose","Santa Clara"],[37.2144,-121.8574,"San Jose","Santa Clara"],[37.3042,-121.8099,"San Jose","Santa Clara"],[37.3293,-121.8339,"San Jose","Santa Clara"],[37.2458,-121.8306,"San Jose","Santa Clara"],[37.2563,-121.9229,"San Jose","Santa Clara"],[37.296,-121.8939,"San Jose","Santa Clara"],[37.3249,-121.9153,"San Jose","Santa Clara"],[37.3692,-121.8208,"San Jose","Santa Clara"],[37.3163,-121.9356,"San Jose","Santa Clara"],[37.3066,-122.0002,"San Jose","Santa Clara"],[37.2886,-121.9818,"San Jose","Santa Clara"],[37.3864,-121.88,"San Jose","Santa Clara"],[37.4031,-121.8585,"San Jose","Santa Clara"],[37.3729,-121.856,"San Jose","Santa Clara"],[37.4087,-121.9406,"San Jose","Santa Clara"],[37.2974,-121.7562,"San Jose","Santa Clara"],[37.2685,-121.849,"San Jose","Santa Clara"],[37.2602,-121.7709,"San Jose","Santa Clara"],[37.2252,-121.7687,"San Jose","Santa Clara"],[37.3682,-121.6853,"Mount Hamilton","Santa Clara"],[37.3304,-121.7913,"San Jose","Santa Clara"],[37.3866,-121.897,"San Jose","Santa Clara"],[37.2625,-121.8779,"San Jose","Santa Clara"],[37.2187,-121.8601,"San Jose","Santa Clara"],[37.3103,-122.0093,"San Jose","Santa Clara"],[37.334,-121.8847,"San Jose","Santa Clara"],[37.944,-120.6423,"Copperopolis","Calaveras"],[37.8298,-120.1037,"Groveland","Tuolumne"],[37.2001,-121.0047,"Gustine","Merced"],[37.2983,-120.4649,"Merced","Merced"],[37.2308,-120.5144,"Merced","Merced"],[37.3302,-120.508,"Merced","Merced"],[37.6236,-120.9966,"Modesto","Stanislaus"],[37.4826,-121.1648,"Patterson","Stanislaus"],[37.7695,-121.5397,"Tracy","San Joaquin"],[38.4592,-122.6393,"Santa Rosa","Sonoma"],[38.5443,-122.8073,"Windsor","Sonoma"],[40.8742,-124.0765,"Arcata","Humboldt"],[40.2147,-123.3911,"Zenia","Trinity"],[38.6284,-121.3287,"Carmichael","Sacramento"],[38.6554,-121.2611,"Fair Oaks","Sacramento"],[38.8071,-121.1698,"Loomis","Placer"],[38.6845,-121.2256,"Orangevale","Sacramento"],[38.685,-121.068,"El Dorado Hills","El Dorado"],[39.2345,-122.0277,"Colusa","Colusa"],[39.2081,-121.0069,"Grass Valley","Nevada"],[40.5605,-122.4116,"Redding","Shasta"],[40.6278,-122.353,"Redding","Shasta"],[40.376,-122.937,"Platina","Trinity"],[38.9039,-119.995,"South Lake Tahoe","El Dorado"],[38.8981,-119.9984,"South Lake Tahoe","El Dorado"],[39.3385,-120.1729,"Truckee","Nevada"]],"loc":{"Anaheim":[[446,16],[486,14],[453,11],[458,11],[476,10],[478,9],[113,8],[459,8],[474,8],[487,8],[106,7],[455,7],[445,6],[460,5],[457,5],[462,5],[471,5],[237,4],[484,4],[461,4],[450,4],[479,4],[463,4],[101,4],[100,3],[472,3],[229,3],[414,3],[447,3],[448,3],[475,3],[233,2],[217,2],[466,2],[244,2],[482,2],[454,2],[464,2],[102,2],[469,2],[416,2],[120,2],[441,2],[483,2],[104,2],[118,2],[115,2],[399,2],[407,2],[368,2],[480,1],[236,1],[109,1],[319,1],[228,1],[465,1],[125,1],[246,1],[116,1],[385,1],[397,1],[99,1],[359,1],[477,1],[107,1],[209,1],[485,1],[231,1],[216,1],[230,1],[410,1],[415,1],[133,1],[430,1],[400,1],[419,1],[239,1],[456,1],[425,1],[111,1],[451,1],[13,1],[105,1],[470,1],[132,1],[127,1],[110,1],[358,1],[128,1],[437,1],[98,1],[467,1],[434,1],[444,1],[452,1],[97,1],[271,1]],"All California":[[651,272],[55,161],[548,117],[18,115],[661,93],[607,93],[643,90],[280,88],[540,81],[40,76],[642,75],[271,71],[665,71],[625,71],[551,70],[666,67],[553,67],[28,65],[612,65],[648,63],[39,58],[393,58],[47,57],[379,57],[57,53],[44,52],[49,52],[286,52],[547,52],[629,49],[386,46],[37,45],[621,44],[284,42],[659,42],[664,42],[623,42],[29,41],[620,40],[273,39],[19,38],[210,38],[646,37],[149,36],[274,36],[541,36],[677,35],[645,34],[133,32],[380,32],[2,31],[298,31],[56,30],[303,30],[649,30],[434,29],[164,29],[616,29],[50,28],[138,28],[338,28],[676,28],[552,28],[201,27],[48,27],[533,27],[46,26],[269,26],[626,26],[614,26],[619,26],[446,25],[414,25],[27,25],[420,25],[88,24],[203,24],[72,24],[152,24],[441,23],[270,23],[413,23],[610,23],[151,23],[135,23],[431,22],[491,22],[150,22],[186,22],[534,22],[538,22],[13,21],[80,21],[670,21],[532,21],[21,20],[302,20],[292,20],[415,19],[79,19],[184,19],[162,19],[291,19],[121,19],[423,19],[427,19],[395,19],[185,19],[169,18],[196,18],[396,18],[449,18],[668,18],[535,18],[148,18],[392,18],[188,17],[70,17],[213,17],[142,17],[293,17],[335,17],[609,17],[321,16],[376,16],[637,16],[498,16],[170,16],[430,15],[436,15],[673,15],[669,15],[635,15],[560,15],[667,15],[134,15],[147,15],[486,14],[209,14],[437,14],[418,14],[412,14],[618,14],[531,14],[389,14],[458,13],[416,13],[419,13],[71,13],[34,13],[146,13],[272,13],[439,13],[440,13],[564,13],[248,13],[33,13],[319,12],[89,12],[14,12],[417,12],[240,12],[671,12],[658,12],[571,12],[493,12],[163,12],[113,11],[453,11],[183,11],[52,11],[36,11],[326,11],[313,11],[370,11],[459,10],[476,10],[478,10],[118,10],[73,10],[155,10],[32,10],[331,10],[336,10],[296,10],[442,10],[679,10],[681,10],[559,10],[141,10],[108,10],[608,10],[539,10],[387,10],[388,10],[487,9],[445,9],[91,9],[60,9],[20,9],[160,9],[314,9],[307,9],[304,9],[282,9],[339,9],[678,9],[674,9],[297,9],[372,9],[195,9],[549,9],[474,8],[450,8],[45,8],[310,8],[429,8],[409,8],[662,8],[660,8],[526,8],[161,8],[139,8],[94,8],[106,7],[455,7],[125,7],[132,7],[206,7],[168,7],[5,7],[143,7],[337,7],[634,7],[655,7],[654,7],[570,7],[627,7],[187,7],[606,7],[546,7],[615,7],[471,6],[479,6],[239,6],[31,6],[189,6],[12,6],[159,6],[173,6],[327,6],[328,6],[130,6],[405,6],[636,6],[672,6],[663,6],[234,6],[249,6],[554,6],[62,6],[460,5],[457,5],[462,5],[484,5],[452,5],[181,5],[22,5],[182,5],[75,5],[74,5],[212,5],[294,5],[334,5],[299,5],[260,5],[320,5],[251,5],[324,5],[311,5],[403,5],[653,5],[657,5],[561,5],[232,5],[285,5],[375,5],[76,5],[3,5],[237,4],[466,4],[461,4],[229,4],[385,4],[482,4],[485,4],[463,4],[410,4],[101,4],[120,4],[448,4],[115,4],[81,4],[10,4],[41,4],[11,4],[199,4],[315,4],[329,4],[316,4],[67,4],[278,4],[281,4],[131,4],[124,4],[411,4],[598,4],[377,4],[590,4],[24,4],[167,4],[241,4],[227,4],[25,4],[357,4],[6,4],[306,4],[262,4],[391,4],[644,4],[647,4],[390,4],[93,4],[35,4],[78,4],[100,3],[217,3],[472,3],[246,3],[447,3],[400,3],[475,3],[105,3],[399,3],[467,3],[407,3],[4,3],[92,3],[84,3],[23,3],[179,3],[175,3],[207,3],[208,3],[158,3],[341,3],[318,3],[283,3],[279,3],[317,3],[288,3],[332,3],[322,3],[325,3],[261,3],[333,3],[276,3],[323,3],[355,3],[255,3],[301,3],[408,3],[433,3],[424,3],[398,3],[584,3],[582,3],[566,3],[575,3],[656,3],[592,3],[565,3],[362,3],[137,3],[144,3],[16,3],[214,3],[544,3],[235,3],[277,3],[305,3],[652,3],[382,3],[373,3],[515,3],[495,3],[490,3],[171,3],[497,3],[488,3],[54,3],[347,3],[480,2],[233,2],[109,2],[228,2],[116,2],[244,2],[397,2],[477,2],[454,2],[107,2],[464,2],[231,2],[216,2],[102,2],[469,2],[456,2],[483,2],[470,2],[127,2],[104,2],[358,2],[368,2],[97,2],[198,2],[85,2],[9,2],[519,2],[222,2],[66,2],[180,2],[330,2],[258,2],[641,2],[428,2],[126,2],[468,2],[443,2],[402,2],[481,2],[624,2],[568,2],[630,2],[684,2],[557,2],[691,2],[682,2],[675,2],[562,2],[579,2],[639,2],[574,2],[153,2],[26,2],[215,2],[243,2],[242,2],[238,2],[350,2],[250,2],[287,2],[256,2],[266,2],[595,2],[542,2],[346,2],[360,2],[295,2],[308,2],[374,2],[64,2],[123,2],[83,2],[114,2],[650,2],[177,2],[509,2],[513,2],[506,2],[90,2],[58,2],[500,2],[165,2],[507,2],[520,2],[543,2],[537,2],[236,1],[465,1],[99,1],[359,1],[230,1],[425,1],[111,1],[451,1],[110,1],[128,1],[98,1],[444,1],[503,1],[38,1],[1,1],[502,1],[87,1],[77,1],[30,1],[51,1],[8,1],[361,1],[53,1],[156,1],[707,1],[204,1],[521,1],[517,1],[190,1],[254,1],[345,1],[275,1],[343,1],[257,1],[253,1],[289,1],[353,1],[312,1],[252,1],[290,1],[706,1],[129,1],[473,1],[422,1],[406,1],[432,1],[401,1],[404,1],[421,1],[435,1],[356,1],[688,1],[702,1],[638,1],[712,1],[597,1],[556,1],[601,1],[686,1],[563,1],[698,1],[710,1],[701,1],[588,1],[583,1],[704,1],[587,1],[605,1],[591,1],[524,1],[695,1],[581,1],[628,1],[685,1],[573,1],[683,1],[578,1],[569,1],[577,1],[603,1],[586,1],[572,1],[599,1],[576,1],[558,1],[247,1],[7,1],[140,1],[363,1],[223,1],[220,1],[145,1],[136,1],[176,1],[224,1],[43,1],[95,1],[221,1],[604,1],[219,1],[0,1],[226,1],[523,1],[157,1],[580,1],[703,1],[593,1],[300,1],[265,1],[264,1],[263,1],[259,1],[267,1],[342,1],[340,1],[344,1],[693,1],[640,1],[602,1],[589,1],[687,1],[600,1],[596,1],[680,1],[426,1],[567,1],[489,1],[694,1],[617,1],[711,1],[611,1],[700,1],[633,1],[708,1],[529,1],[613,1],[709,1],[632,1],[309,1],[383,1],[348,1],[438,1],[371,1],[699,1],[367,1],[378,1],[365,1],[351,1],[268,1],[349,1],[384,1],[381,1],[364,1],[352,1],[394,1],[96,1],[68,1],[117,1],[119,1],[122,1],[510,1],[525,1],[692,1],[689,1],[527,1],[166,1],[172,1],[499,1],[492,1],[191,1],[61,1],[174,1],[63,1],[154,1],[496,1],[82,1],[245,1],[508,1],[193,1],[202,1],[178,1],[697,1],[505,1],[200,1],[518,1],[366,1],[501,1],[86,1],[504,1],[594,1],[516,1],[225,1],[194,1],[218,1],[42,1],[65,1],[211,1],[369,1],[69,1],[59,1],[205,1],[15,1],[512,1],[112,1],[192,1],[103,1],[17,1],[494,1],[197,1],[514,1],[545,1],[536,1],[354,1],[622,1],[585,1],[696,1],[555,1],[530,1],[631,1],[522,1],[511,1],[690,1],[528,1],[550,1],[705,1]],"Beverly Hills":[[55,43],[18,29],[39,17],[28,16],[40,15],[57,13],[49,10],[47,10],[72,10],[44,9],[46,9],[37,8],[50,7],[88,7],[29,7],[56,6],[79,6],[2,6],[13,6],[19,5],[183,5],[71,5],[210,5],[201,4],[21,4],[164,4],[14,4],[52,4],[196,4],[89,3],[73,3],[169,3],[10,3],[11,3],[27,3],[4,3],[70,3],[91,2],[81,2],[203,2],[80,2],[85,2],[31,2],[188,2],[36,2],[209,2],[5,2],[503,1],[60,1],[38,1],[149,1],[181,1],[22,1],[41,1],[198,1],[1,1],[20,1],[502,1],[9,1],[34,1],[431,1],[138,1],[160,1],[184,1],[155,1],[182,1],[48,1],[189,1],[491,1],[87,1],[75,1],[74,1],[213,1],[12,1],[519,1],[212,1],[92,1],[97,1],[206,1],[84,1],[23,1],[168,1],[179,1],[77,1],[222,1],[30,1],[51,1],[8,1],[32,1],[45,1],[361,1],[467,1],[53,1],[142,1]],"Burbank":[[201,7],[143,5],[210,5],[162,5],[169,5],[206,5],[196,4],[37,4],[21,4],[203,3],[183,3],[209,3],[213,3],[48,2],[181,2],[175,2],[207,2],[138,2],[212,2],[160,2],[208,2],[155,2],[156,1],[707,1],[204,1],[521,1],[146,1],[159,1],[66,1],[199,1],[517,1],[168,1],[152,1],[173,1],[158,1],[190,1],[180,1]],"Del Mar":[[280,86],[271,68],[273,38],[286,36],[274,35],[298,27],[269,26],[338,26],[270,21],[302,19],[292,19],[291,18],[303,15],[293,14],[272,13],[319,11],[321,8],[331,7],[326,6],[310,6],[314,5],[335,5],[334,5],[329,4],[282,4],[251,4],[315,3],[283,3],[304,3],[294,3],[279,3],[260,3],[324,3],[318,2],[307,2],[380,2],[327,2],[317,2],[336,2],[258,2],[325,2],[278,2],[320,2],[261,2],[313,2],[337,2],[284,2],[339,2],[311,2],[255,2],[296,2],[341,1],[254,1],[345,1],[330,1],[275,1],[343,1],[299,1],[257,1],[288,1],[332,1],[419,1],[253,1],[289,1],[322,1],[316,1],[328,1],[67,1],[55,1],[333,1],[353,1],[396,1],[312,1],[252,1],[276,1],[290,1],[323,1],[355,1],[641,1],[301,1],[649,1],[281,1],[430,1],[376,1]],"Huntington Beach":[[121,18],[449,18],[415,18],[418,12],[437,12],[417,11],[416,10],[118,8],[130,5],[132,5],[125,5],[131,4],[427,4],[445,3],[162,2],[126,2],[105,2],[113,2],[411,2],[428,1],[116,1],[423,1],[124,1],[487,1],[706,1],[459,1],[385,1],[466,1],[115,1],[468,1],[443,1],[446,1],[470,1],[429,1],[73,1],[129,1],[467,1],[403,1]],"Laguna Hills":[[434,26],[420,24],[413,23],[414,21],[431,21],[441,20],[423,18],[436,15],[412,14],[430,13],[439,13],[440,11],[419,10],[442,10],[427,5],[446,5],[450,4],[405,4],[408,3],[433,3],[424,3],[402,2],[452,2],[485,2],[400,2],[403,1],[458,1],[473,1],[294,1],[409,1],[481,1],[422,1],[406,1],[432,1],[484,1],[240,1],[429,1],[401,1],[548,1],[125,1],[404,1],[410,1],[421,1],[435,1],[448,1],[407,1],[356,1],[398,1]],"Los Gatos":[[661,86],[625,71],[665,68],[612,64],[666,62],[648,61],[629,42],[664,41],[623,41],[659,40],[677,30],[620,25],[626,22],[676,21],[670,18],[616,15],[669,14],[637,14],[668,12],[667,12],[671,11],[658,11],[673,10],[635,10],[679,10],[678,8],[681,7],[660,7],[662,6],[560,6],[636,6],[571,6],[674,6],[654,6],[621,5],[564,5],[559,5],[610,4],[653,4],[657,4],[642,3],[672,3],[575,3],[624,2],[607,2],[547,2],[553,2],[584,2],[651,2],[630,2],[643,2],[646,2],[684,2],[582,2],[557,2],[590,2],[655,2],[649,2],[682,2],[562,2],[561,2],[570,2],[627,2],[688,1],[568,1],[702,1],[598,1],[535,1],[548,1],[552,1],[377,1],[380,1],[468,1],[634,1],[526,1],[638,1],[712,1],[597,1],[556,1],[601,1],[686,1],[691,1],[563,1],[609,1],[698,1],[566,1],[663,1],[710,1],[355,1],[701,1],[675,1],[588,1],[583,1],[704,1],[587,1],[605,1],[591,1],[524,1],[695,1],[656,1],[579,1],[581,1],[628,1],[210,1],[639,1],[685,1],[573,1],[592,1],[683,1]],"Mountain View":[[616,12],[560,9],[564,8],[571,6],[559,5],[570,5],[565,3],[561,2],[637,2],[566,2],[578,1],[584,1],[670,1],[569,1],[677,1],[574,1],[577,1],[603,1],[568,1],[656,1],[586,1],[572,1],[582,1],[590,1],[623,1],[620,1],[599,1],[458,1],[576,1],[558,1]],"Newport Beach":[[409,7],[427,7],[403,3],[429,3],[479,2],[446,2],[410,2],[411,2],[187,1],[434,1],[443,1],[478,1],[398,1],[419,1],[416,1],[452,1],[477,1],[141,1]],"Pasadena":[[149,34],[133,31],[138,25],[152,22],[150,22],[151,22],[135,22],[148,18],[142,15],[147,14],[134,13],[248,12],[146,12],[162,11],[34,11],[240,10],[141,9],[33,9],[108,8],[161,8],[139,7],[234,6],[249,6],[232,5],[239,5],[45,5],[159,4],[241,4],[227,4],[137,3],[155,3],[214,3],[160,3],[20,3],[25,3],[362,2],[144,2],[16,2],[153,2],[26,2],[215,2],[164,2],[181,2],[167,2],[246,2],[182,2],[243,2],[242,2],[238,2],[158,2],[235,2],[6,2],[14,1],[247,1],[143,1],[7,1],[140,1],[24,1],[491,1],[544,1],[298,1],[339,1],[441,1],[186,1],[115,1],[363,1],[223,1],[169,1],[40,1],[357,1],[19,1],[55,1],[220,1],[427,1],[183,1],[228,1],[145,1],[136,1],[176,1],[493,1],[21,1],[231,1],[224,1],[67,1],[43,1],[207,1],[95,1],[221,1],[393,1],[604,1],[355,1],[219,1],[498,1],[229,1],[0,1],[226,1],[523,1],[358,1],[216,1],[157,1],[481,1],[217,1]],"Pleasanton":[[598,2],[574,1],[580,1],[579,1],[703,1],[593,1]],"Poway":[[303,15],[335,10],[297,9],[296,8],[336,6],[304,6],[307,5],[337,5],[285,5],[339,4],[282,4],[306,4],[281,3],[299,3],[288,2],[305,2],[270,2],[284,1],[294,1],[350,1],[328,1],[277,1],[310,1],[300,1],[250,1],[298,1],[292,1],[392,1]],"San Diego":[[286,16],[313,9],[321,8],[326,5],[314,4],[262,4],[327,4],[328,4],[311,3],[320,3],[316,3],[331,3],[323,2],[322,2],[260,2],[301,2],[287,2],[278,2],[277,2],[324,2],[341,2],[276,2],[298,2],[336,2],[280,2],[335,2],[256,2],[338,2],[332,2],[333,2],[339,2],[266,2],[271,2],[255,1],[265,1],[318,1],[274,1],[264,1],[261,1],[250,1],[317,1],[263,1],[330,1],[273,1],[434,1],[259,1],[302,1],[267,1],[342,1],[340,1],[293,1],[315,1],[251,1],[350,1],[325,1],[391,1],[344,1]],"San Jose":[[629,7],[676,6],[661,6],[668,6],[673,5],[666,5],[655,5],[663,5],[627,5],[677,4],[672,3],[674,3],[665,3],[681,3],[616,2],[667,2],[670,2],[648,2],[595,2],[662,2],[592,2],[660,1],[693,1],[620,1],[639,1],[640,1],[602,1],[669,1],[589,1],[621,1],[678,1],[657,1],[598,1],[687,1],[654,1],[147,1],[653,1],[659,1],[641,1],[590,1],[600,1],[656,1],[596,1],[671,1],[658,1],[675,1],[680,1]],"Santa Cruz":[[651,199],[643,82],[607,81],[642,67],[645,34],[646,33],[649,25],[614,24],[619,17],[610,17],[621,16],[609,13],[618,11],[608,7],[606,6],[534,5],[644,4],[533,4],[620,4],[647,4],[626,4],[634,4],[635,3],[526,3],[652,2],[541,2],[539,2],[426,1],[532,1],[567,1],[489,1],[548,1],[694,1],[551,1],[667,1],[547,1],[617,1],[711,1],[676,1],[546,1],[615,1],[611,1],[540,1],[553,1],[700,1],[531,1],[633,1],[612,1],[708,1],[529,1],[535,1],[664,1],[613,1],[542,1],[661,1],[709,1],[632,1],[538,1]],"Temecula":[[393,57],[379,56],[386,46],[284,39],[380,29],[395,19],[396,17],[392,17],[376,15],[389,14],[370,11],[387,10],[388,10],[372,9],[375,5],[390,4],[391,3],[377,3],[382,3],[373,3],[346,2],[360,2],[295,2],[440,2],[308,2],[385,2],[293,2],[374,2],[307,2],[482,2],[362,1],[309,1],[383,1],[348,1],[399,1],[438,1],[371,1],[429,1],[428,1],[471,1],[699,1],[367,1],[378,1],[365,1],[351,1],[485,1],[282,1],[268,1],[349,1],[384,1],[381,1],[305,1],[299,1],[364,1],[480,1],[352,1],[394,1],[357,1]],"Torrance":[[94,7],[74,4],[75,4],[73,3],[93,3],[76,2],[71,2],[92,2],[96,1],[64,1],[68,1],[123,1],[83,1],[117,1],[119,1],[120,1],[291,1],[132,1],[122,1],[124,1],[127,1],[114,1],[515,1]],"Watsonville":[[651,67],[621,9],[607,8],[619,8],[532,8],[620,7],[643,6],[533,6],[642,5],[526,4],[618,3],[609,3],[649,2],[646,2],[531,2],[650,2],[614,2],[608,2],[610,2],[615,2],[635,2],[541,1],[548,1],[510,1],[691,1],[525,1],[606,1],[692,1],[689,1],[652,1],[554,1],[534,1],[527,1]],"Westlake Village":[[185,17],[491,16],[186,16],[170,16],[184,15],[498,13],[164,11],[188,10],[493,10],[163,10],[70,6],[189,5],[168,4],[490,3],[187,3],[495,2],[509,2],[47,1],[166,1],[40,1],[172,1],[177,1],[499,1],[203,1],[171,1],[497,1],[492,1],[183,1],[357,1],[213,1],[513,1],[191,1],[167,1]],"Monterey":[[548,113],[540,80],[551,69],[553,64],[547,49],[541,33],[552,27],[538,21],[533,17],[535,16],[534,16],[621,13],[532,12],[531,11],[549,9],[539,8],[546,6],[554,5],[615,4],[651,4],[544,2],[543,2],[607,2],[537,2],[634,2],[620,2],[446,1],[514,1],[542,1],[545,1],[608,1],[619,1],[536,1],[354,1],[561,1],[622,1],[585,1],[659,1],[160,1],[696,1],[555,1],[530,1],[631,1],[522,1],[511,1],[347,1],[690,1],[528,1],[550,1],[705,1]],"Santa Monica (Wilshire)":[[55,116],[18,86],[40,59],[28,49],[47,46],[44,43],[49,42],[39,41],[57,40],[29,34],[37,33],[19,32],[210,27],[2,25],[48,24],[56,24],[27,22],[50,21],[80,19],[203,18],[46,17],[88,17],[201,16],[72,14],[13,14],[79,13],[213,12],[164,12],[21,11],[196,10],[169,9],[36,9],[89,9],[32,9],[195,9],[209,8],[60,8],[70,8],[14,7],[52,7],[91,7],[71,6],[62,6],[188,5],[20,5],[186,5],[12,5],[5,5],[173,5],[3,5],[155,4],[31,4],[35,4],[33,4],[491,4],[22,4],[78,4],[199,3],[73,3],[76,3],[488,3],[41,3],[54,3],[187,3],[184,3],[24,3],[185,2],[124,2],[81,2],[23,2],[67,2],[515,2],[506,2],[429,2],[134,2],[212,2],[497,2],[45,2],[90,2],[182,2],[58,2],[498,2],[179,2],[171,2],[418,2],[405,2],[347,2],[160,2],[500,2],[6,2],[84,2],[165,2],[507,2],[108,2],[163,2],[520,2],[427,2],[452,1],[183,1],[61,1],[114,1],[437,1],[174,1],[63,1],[154,1],[130,1],[113,1],[235,1],[496,1],[456,1],[82,1],[245,1],[25,1],[508,1],[120,1],[248,1],[159,1],[193,1],[83,1],[109,1],[202,1],[357,1],[144,1],[459,1],[93,1],[495,1],[178,1],[208,1],[175,1],[162,1],[121,1],[697,1],[505,1],[200,1],[518,1],[64,1],[180,1],[366,1],[198,1],[66,1],[9,1],[501,1],[86,1],[139,1],[16,1],[420,1],[167,1],[152,1],[519,1],[504,1],[206,1],[594,1],[516,1],[414,1],[143,1],[397,1],[225,1],[94,1],[168,1],[194,1],[34,1],[398,1],[10,1],[149,1],[218,1],[42,1],[310,1],[466,1],[123,1],[65,1],[177,1],[107,1],[211,1],[369,1],[69,1],[222,1],[59,1],[205,1],[417,1],[135,1],[379,1],[15,1],[11,1],[493,1],[512,1],[112,1],[192,1],[151,1],[103,1],[513,1],[17,1],[494,1],[142,1],[197,1],[240,1]]},"stats":{"Anaheim":{"n":277,"zips":97,"med":9.1,"p90":21.2,"w10":60,"w25":95,"topzip":"92705","topcity":"Santa Ana","topn":16,"toppct":5.8},"All California":{"n":7143,"zips":713,"med":6.4,"p90":18.6,"w10":69,"w25":94,"topzip":"95076","topcity":"Watsonville","topn":272,"toppct":3.8},"Beverly Hills":{"n":369,"zips":94,"med":4.1,"p90":12.3,"w10":86,"w25":97,"topzip":"90210","topcity":"Beverly Hills","topn":43,"toppct":11.7},"Burbank":{"n":89,"zips":37,"med":5.5,"p90":13.3,"w10":76,"w25":97,"topzip":"91423","topcity":"Sherman Oaks","topn":7,"toppct":7.9},"Del Mar":{"n":616,"zips":84,"med":11.3,"p90":20.1,"w10":47,"w25":97,"topzip":"92024","topcity":"Encinitas","topn":86,"toppct":14.0},"Huntington Beach":{"n":162,"zips":38,"med":5.0,"p90":10.2,"w10":88,"w25":98,"topzip":"90740","topcity":"Seal Beach","topn":18,"toppct":11.1},"Laguna Hills":{"n":297,"zips":48,"med":6.8,"p90":11.2,"w10":79,"w25":98,"topzip":"92677","topcity":"Laguna Niguel","topn":26,"toppct":8.8},"Los Gatos":{"n":991,"zips":109,"med":5.9,"p90":18.6,"w10":74,"w25":93,"topzip":"95120","topcity":"San Jose","topn":86,"toppct":8.7},"Mountain View":{"n":74,"zips":30,"med":3.3,"p90":16.9,"w10":78,"w25":91,"topzip":"95014","topcity":"Cupertino","topn":12,"toppct":16.2},"Newport Beach":{"n":38,"zips":18,"med":3.8,"p90":12.8,"w10":74,"w25":95,"topzip":"92625","topcity":"Corona Del Mar","topn":7,"toppct":18.4},"Pasadena":{"n":476,"zips":102,"med":4.8,"p90":18.7,"w10":83,"w25":93,"topzip":"91105","topcity":"Pasadena","topn":34,"toppct":7.1},"Pleasanton":{"n":7,"zips":6,"med":26.7,"p90":28.9,"w10":43,"w25":43,"topzip":"94566","topcity":"Pleasanton","topn":2,"toppct":28.6},"Poway":{"n":104,"zips":28,"med":11.0,"p90":17.5,"w10":41,"w25":97,"topzip":"92078","topcity":"San Marcos","topn":15,"toppct":14.4},"San Diego":{"n":132,"zips":57,"med":7.3,"p90":16.3,"w10":67,"w25":95,"topzip":"92037","topcity":"La Jolla","topn":16,"toppct":12.1},"San Jose":{"n":106,"zips":47,"med":7.7,"p90":20.9,"w10":70,"w25":92,"topzip":"95037","topcity":"Morgan Hill","topn":7,"toppct":6.6},"Santa Cruz":{"n":704,"zips":58,"med":8.0,"p90":20.9,"w10":55,"w25":93,"topzip":"95076","topcity":"Watsonville","topn":199,"toppct":28.3},"Temecula":{"n":418,"zips":58,"med":10.7,"p90":20.4,"w10":49,"w25":93,"topzip":"92592","topcity":"Temecula","topn":57,"toppct":13.6},"Torrance":{"n":42,"zips":23,"med":4.1,"p90":11.9,"w10":81,"w25":95,"topzip":"90505","topcity":"Torrance","topn":7,"toppct":16.7},"Watsonville":{"n":164,"zips":33,"med":7.0,"p90":25.0,"w10":53,"w25":90,"topzip":"95076","topcity":"Watsonville","topn":67,"toppct":40.9},"Westlake Village":{"n":175,"zips":33,"med":8.7,"p90":15.1,"w10":68,"w25":97,"topzip":"91361","topcity":"Westlake Village","topn":17,"toppct":9.7},"Monterey":{"n":613,"zips":50,"med":3.3,"p90":16.8,"w10":72,"w25":91,"topzip":"93940","topcity":"Monterey","topn":113,"toppct":18.4},"Santa Monica (Wilshire)":{"n":1289,"zips":195,"med":5.6,"p90":17.2,"w10":78,"w25":94,"topzip":"90210","topcity":"Beverly Hills","topn":116,"toppct":9.0}},"order":["All California","Santa Monica (Wilshire)","Los Gatos","Santa Cruz","Del Mar","Monterey","Pasadena","Temecula","Beverly Hills","Laguna Hills","Anaheim","Westlake Village","Watsonville","Huntington Beach","San Diego","San Jose","Poway","Burbank","Mountain View","Torrance","Newport Beach","Pleasanton"],"clinic":{"Temecula":[33.50647,-117.142859],"Monterey":[36.593562,-121.895865],"Pleasanton":[37.694144,-121.931662],"Westlake Village":[34.148235,-118.820088],"Torrance":[33.814907,-118.348754],"Mountain View":[37.367198,-122.082342],"Santa Cruz":[36.987951,-121.985148],"Watsonville":[36.930148,-121.779258],"Los Gatos":[37.249696,-121.955328],"San Jose":[37.389351,-121.856783],"Pasadena":[34.14718,-118.138467],"Poway":[33.001605,-117.058145],"Del Mar":[32.93248,-117.245379],"San Diego":[32.812345,-117.152966],"Laguna Hills":[33.6080126,-117.6994642],"Newport Beach":[33.613251,-117.872154],"Anaheim":[33.84718,-117.934369],"Huntington Beach":[33.736296,-117.9955065],"Burbank":[34.15253,-118.340892],"Beverly Hills":[34.066782,-118.382903],"Santa Monica (Wilshire)":[34.038292,-118.474731]},"note":{"total":7276,"mapped":7143,"oos":120,"badzip":13,"pobox":260},"code":["90001","90002","90004","90005","90006","90008","90012","90013","90014","90015","90016","90017","90018","90019","90020","90021","90022","90023","90024","90025","90026","90027","90028","90029","90031","90032","90033","90034","90035","90036","90037","90038","90039","90041","90042","90043","90045","90046","90047","90048","90049","90056","90059","90063","90064","90065","90066","90067","90068","90069","90077","90078","90094","90201","90209","90210","90211","90212","90213","90220","90230","90231","90232","90241","90242","90245","90250","90254","90260","90264","90265","90266","90272","90274","90275","90277","90278","90280","90290","90291","90292","90293","90295","90301","90302","90303","90305","90401","90402","90403","90404","90405","90501","90503","90505","90601","90602","90603","90604","90605","90606","90620","90621","90622","90623","90630","90631","90638","90640","90650","90660","90680","90701","90703","90712","90713","90716","90717","90720","90731","90732","90740","90745","90746","90802","90803","90804","90805","90806","90807","90808","90814","90815","91001","91006","91007","91008","91010","91011","91016","91020","91024","91030","91040","91042","91046","91101","91103","91104","91105","91106","91107","91108","91109","91115","91202","91203","91204","91205","91206","91207","91208","91214","91301","91302","91304","91306","91307","91311","91316","91320","91324","91325","91326","91335","91342","91343","91344","91345","91350","91352","91354","91355","91356","91360","91361","91362","91364","91367","91377","91381","91384","91385","91387","91390","91401","91403","91405","91406","91411","91413","91423","91426","91436","91501","91504","91505","91506","91601","91602","91604","91605","91606","91607","91702","91706","91708","91709","91710","91711","91722","91724","91730","91731","91737","91739","91740","91741","91744","91745","91746","91748","91750","91752","91754","91755","91764","91765","91770","91773","91775","91776","91780","91784","91789","91790","91791","91792","91801","91803","91901","91902","91903","91905","91908","91910","91911","91913","91915","91916","91932","91941","91942","91945","91950","91977","91978","91980","92003","92007","92008","92009","92010","92011","92014","92018","92019","92020","92021","92023","92024","92025","92026","92027","92028","92029","92037","92038","92040","92049","92052","92054","92056","92057","92058","92059","92064","92065","92067","92069","92070","92071","92075","92078","92081","92082","92083","92084","92086","92088","92091","92101","92102","92103","92104","92105","92106","92107","92108","92109","92110","92111","92113","92114","92115","92116","92117","92118","92119","92120","92121","92122","92123","92124","92126","92127","92128","92129","92130","92131","92137","92139","92154","92163","92169","92198","92201","92210","92223","92226","92227","92234","92240","92243","92249","92253","92260","92270","92308","92317","92320","92322","92344","92352","92373","92399","92403","92408","92503","92506","92530","92531","92532","92536","92543","92544","92545","92548","92555","92562","92563","92564","92567","92570","92582","92583","92584","92585","92586","92587","92589","92590","92591","92592","92593","92595","92596","92602","92603","92604","92606","92607","92610","92612","92614","92618","92619","92620","92624","92625","92626","92627","92629","92630","92637","92646","92647","92648","92649","92651","92653","92654","92655","92656","92657","92658","92659","92660","92662","92663","92672","92673","92674","92675","92677","92678","92679","92683","92684","92688","92691","92692","92694","92701","92703","92704","92705","92706","92707","92708","92780","92781","92782","92801","92802","92804","92805","92806","92807","92808","92821","92823","92831","92832","92833","92835","92840","92841","92843","92844","92845","92860","92861","92863","92865","92866","92867","92868","92869","92870","92878","92879","92880","92881","92882","92883","92886","92887","93003","93004","93010","93012","93020","93021","93030","93035","93036","93063","93065","93066","93108","93110","93204","93251","93263","93291","93292","93306","93309","93312","93401","93430","93433","93444","93447","93455","93458","93536","93546","93551","93555","93560","93590","93591","93614","93620","93635","93638","93654","93710","93711","93901","93905","93906","93907","93908","93912","93920","93921","93922","93923","93924","93925","93926","93927","93928","93930","93933","93940","93942","93944","93950","93953","93955","93960","93962","94010","94019","94020","94022","94024","94025","94028","94039","94040","94041","94043","94060","94061","94063","94086","94087","94089","94109","94110","94112","94115","94118","94123","94127","94131","94133","94303","94304","94306","94402","94403","94404","94501","94505","94536","94538","94539","94544","94549","94550","94551","94560","94566","94577","94588","94596","94705","94720","94803","94941","95001","95003","95004","95005","95006","95007","95008","95009","95010","95012","95014","95017","95018","95019","95020","95023","95024","95030","95031","95032","95033","95035","95036","95037","95038","95039","95041","95042","95045","95046","95050","95051","95053","95054","95055","95056","95060","95062","95063","95065","95066","95067","95070","95073","95075","95076","95077","95110","95111","95112","95113","95116","95117","95118","95119","95120","95121","95122","95123","95124","95125","95126","95127","95128","95129","95130","95131","95132","95133","95134","95135","95136","95138","95139","95140","95148","95150","95158","95160","95170","95172","95228","95321","95322","95340","95341","95348","95351","95363","95391","95409","95492","95521","95595","95608","95628","95650","95662","95762","95932","95945","96001","96003","96076","96151","96158","96161"]};
+
+/* ================= Where patients come from — added tab ================= */
+(function(){
+  const zips=PZ.zips, LOC=PZ.loc, ST=PZ.stats, CLIN=PZ.clinic, NOTE=PZ.note, CODE=PZ.code;
+  const nf=n=>n.toLocaleString('en-US');
+  const sel=document.getElementById('pz-loc');
+  let cur='All California', hl=null, on=false, mode='heat';
+  const Lsel=L.layerGroup();
+
+  PZ.order.forEach(k=>{
+    const o=document.createElement('option'); o.value=k;
+    o.textContent = (k==='All California')
+      ? 'All 21 California locations — '+nf(ST[k].n)+' patients'
+      : k+' — '+nf(ST[k].n)+' patients';
+    sel.appendChild(o);
+  });
+
+  /* Layer button. Kept separate from bindToggle so opening the tab can switch
+     the layer on without the user hunting for the button. */
+  const btn=document.getElementById('pz-heat');
+  const btnB=document.getElementById('pz-bub');
+  const paint=()=>{
+    [[btn,'heat'],[btnB,'bubbles']].forEach(([b,m])=>{
+      const lit = on && mode===m;
+      b.classList.toggle('active',lit); b.style.background=lit?'#EEF1F5':'#fff';
+    });
+  };
+  function setOn(v){
+    on=v;
+    if(on){ if(hl) hl.addTo(map); Lsel.addTo(map); }
+    else  { if(hl) map.removeLayer(hl); map.removeLayer(Lsel); }
+    paint();
+  }
+  /* The two buttons pick how the same patient layer is drawn. Clicking the lit
+     one switches the layer off; clicking the other swaps the drawing style. */
+  function pick(m){
+    if(on && mode===m){ setOn(false); return; }
+    mode=m; draw(); ramp(); setOn(true);
+  }
+  btn.onclick =()=>pick('heat');
+  btnB.onclick=()=>pick('bubbles');
+  paint();
+
+  const BAND=n=> n>=100?'#DC2F3A' : n>=40?'#F0B429' : n>=15?'#37A05F' : n>=5?'#2E6F8E' : '#29374D';
+
+  function draw(){
+    if(hl){ map.removeLayer(hl); hl=null; }
+    const rows=LOC[cur];
+    if(mode==='bubbles'){
+      /* Biggest ZIPs drawn last so a busy one is never buried under a quiet one. */
+      hl=L.layerGroup();
+      rows.slice().reverse().forEach(([i,n])=>{
+        const z=zips[i];
+        L.circleMarker([z[0],z[1]],{radius:3.2+Math.sqrt(n)*1.55,color:'#fff',weight:1,
+          fillColor:BAND(n),fillOpacity:.62,opacity:.9}).addTo(hl)
+         .bindPopup('<b>'+CODE[i]+' — '+z[2]+'</b><br>'+z[3]+' County<br>'+nf(n)+
+           (n===1?' patient':' patients')+' — '+(n/ST[cur].n*100).toFixed(1)+'% of '+
+           (cur==='All California'?'all California patients':cur));
+      });
+    } else {
+      const mx=rows[0][1];
+      hl=L.heatLayer(rows.map(([i,n])=>[zips[i][0],zips[i][1],Math.pow(n/mx,0.55)]),
+        {radius:26,blur:18,maxZoom:7,max:1.0+3.0*Math.min(1,rows.length/700),minOpacity:0.28,
+         gradient:{0.15:'#29374D',0.35:'#2E6F8E',0.55:'#37A05F',0.75:'#F0B429',1.0:'#DC2F3A'}});
+    }
+    if(on) hl.addTo(map);
+  }
+
+  function marker(){
+    Lsel.clearLayers();
+    if(cur==='All California' || !CLIN[cur]) return;
+    L.circleMarker(CLIN[cur],{radius:9,color:'#fff',weight:2.5,fillColor:RED,fillOpacity:1})
+      .addTo(Lsel).bindPopup('<b>'+cur+'</b><br>'+nf(ST[cur].n)+' patients mapped');
+  }
+
+  /* Frame on where the patients actually are. A handful of one-off addresses
+     hundreds of miles out would otherwise flatten the map to a smudge, so the
+     view trims the farthest 1.5% on each edge. */
+  function fit(){
+    const la=[], lo=[];
+    LOC[cur].forEach(([i,n])=>{ for(let k=0;k<n;k++){ la.push(zips[i][0]); lo.push(zips[i][1]); } });
+    la.sort((a,b)=>a-b); lo.sort((a,b)=>a-b);
+    const q=(a,p)=>a[Math.min(a.length-1,Math.max(0,Math.floor(a.length*p)))];
+    map.fitBounds([[q(la,0.015),q(lo,0.015)],[q(la,0.985),q(lo,0.985)]],{padding:[28,28],maxZoom:12});
+  }
+
+  function chips(){
+    const s=ST[cur];
+    document.getElementById('pz-chips').innerHTML=
+      '<div class="pzchip"><b>'+nf(s.n)+'</b><span>Patient addresses mapped</span></div>'+
+      '<div class="pzchip"><b>'+nf(s.zips)+'</b><span>Different home ZIP codes</span></div>'+
+      '<div class="pzchip r"><b>'+s.med+' mi</b><span>Half of patients live closer than this</span></div>'+
+      '<div class="pzchip r"><b>'+s.w25+'%</b><span>Live within 25 miles of the clinic</span></div>'+
+      '<div class="pzchip"><b>'+s.topzip+'</b><span>Busiest ZIP — '+s.topcity+', '+nf(s.topn)+' patients</span></div>';
+  }
+
+  function cols(){
+    const rows=LOC[cur].slice(0,18), tot=ST[cur].n;
+    let html='';
+    for(let c=0;c<3;c++){
+      const part=rows.slice(c*6,c*6+6);
+      if(!part.length) continue;
+      html+='<table class="zt"><thead><tr><th>ZIP</th><th>City</th>'+
+            '<th class="n">Patients</th><th class="n">Share</th></tr></thead><tbody>'+
+        part.map(([i,n])=>'<tr data-i="'+i+'"><td class="b">'+CODE[i]+'</td><td>'+zips[i][2]+
+          '</td><td class="n">'+nf(n)+'</td><td class="n mut">'+(n/tot*100).toFixed(1)+
+          '%</td></tr>').join('')+'</tbody></table>';
+    }
+    document.getElementById('pz-cols').innerHTML=html;
+    document.querySelectorAll('#pz-cols tr[data-i]').forEach(tr=>{
+      tr.onclick=()=>{ const z=zips[+tr.dataset.i]; setOn(true); map.setView([z[0],z[1]],11); };
+    });
+  }
+
+  function words(){
+    const s=ST[cur];
+    document.getElementById('pz-lede').innerHTML = (cur==='All California')
+      ? 'Every California patient address, grouped by home ZIP code and drawn as a heat map on the map above. '+
+        'Warmer color means more patients live there. Pick a single location to see just its own draw.'
+      : cur+' draws '+nf(s.n)+' patients from '+nf(s.zips)+' ZIP codes. '+
+        'The clinic is marked in red on the map above.';
+    let t='<b>Where they come from.</b> Half of '+
+      (cur==='All California'?'all California patients':cur+"'s patients")+
+      ' live within '+s.med+' miles of the clinic and '+s.w25+'% live within 25 miles; '+
+      'the farthest tenth travel more than '+s.p90+' miles. The busiest single ZIP code is '+
+      s.topzip+' ('+s.topcity+') with '+nf(s.topn)+' patients, '+s.toppct.toFixed(1)+'% of the total.';
+    if(cur==='Santa Monica (Wilshire)')
+      t+=' The address export calls this location <b>Wilshire</b>. It is the Santa Monica clinic on '+
+         'Wilshire Blvd, shown here under both names so either one is recognizable.';
+    if(cur==='Pleasanton')
+      t+=' <b>Small sample — read with care.</b> Only 7 patient addresses could be placed for this '+
+         'location (10 records once placeholder entries were removed), so the distances shown here '+
+         'are indicative rather than reliable.';
+    if(cur==='All California')
+      t+='<br><br><b>Not on this map.</b> '+NOTE.oos+' patients live outside California and '+
+         NOTE.badzip+' more gave a ZIP code that could not be read, out of '+nf(NOTE.total)+
+         ' addresses supplied. Addresses are grouped by ZIP code — no individual home is plotted.';
+    document.getElementById('pz-note').innerHTML=t;
+  }
+
+  /* Stat card 3 reports the full California address export, not the old two-clinic set. */
+  document.getElementById('s-pat').textContent=nf(ST['All California'].n);
+
+  function ramp(){
+    const sw=(c,w)=>'<i style="background:'+c+';width:'+w+'px"></i>';
+    document.getElementById('pz-ramp').innerHTML = (mode==='bubbles')
+      ? '<span>Bubble size and colour = patients in that ZIP code</span>'+
+        sw('#29374D',10)+'<span>1–4</span>'+sw('#2E6F8E',14)+'<span>5–14</span>'+
+        sw('#37A05F',18)+'<span>15–39</span>'+sw('#F0B429',24)+'<span>40–99</span>'+
+        sw('#DC2F3A',30)+'<span>100+</span>'
+      : '<span>Fewer patients</span>'+sw('#29374D',34)+sw('#2E6F8E',34)+sw('#37A05F',34)+
+        sw('#F0B429',34)+sw('#DC2F3A',34)+'<span>More patients</span>';
+  }
+
+  dcard(document.getElementById('dc-best'),'Monterey');
+  dcard(document.getElementById('dc-worst'),'Burbank');
+
+  function render(){ draw(); marker(); chips(); cols(); words(); ramp(); }
+
+  sel.onchange=()=>{ cur=sel.value; render(); setOn(true); fit(); };
+
+  const pzTab=document.querySelector('#tabbar .tab[data-t="pz"]');
+  if(pzTab) pzTab.addEventListener('click',()=>{ setOn(true); fit(); });
+
+  render();
+})();
+
+/* ========== Where patients come from — second map and tables (Camino-style) ==========
+   Everything below is derived at load from data already in the file: PZ.zips /
+   PZ.code / PZ.loc['All California'] for the ZIP codes and their patient counts,
+   and LW.clinics for the clinic coordinates. No figures are added or restated. */
+(function(){
+  const zips=PZ.zips, CODE=PZ.code, CLINICS=LW.clinics;
+  const nf=n=>n.toLocaleString('en-US');
+  const NEAR_MI=10;
+
+  /* Great-circle distance in miles. */
+  function miles(aLat,aLon,bLat,bLon){
+    const R=3958.7615, r=Math.PI/180;
+    const dLa=(bLat-aLat)*r, dLo=(bLon-aLon)*r;
+    const h=Math.sin(dLa/2)**2+Math.cos(aLat*r)*Math.cos(bLat*r)*Math.sin(dLo/2)**2;
+    return 2*R*Math.asin(Math.sqrt(h));
+  }
+
+  /* One row per home ZIP code: where it is, how many patients, and which
+     LivWell clinic is closest to it. */
+  const ROWS=PZ.loc['All California'].map(function(pair){
+    const i=pair[0], n=pair[1], z=zips[i];
+    let best=null, bestMi=Infinity;
+    for(let k=0;k<CLINICS.length;k++){
+      const d=miles(z[0],z[1],CLINICS[k].lat,CLINICS[k].lon);
+      if(d<bestMi){ bestMi=d; best=CLINICS[k]; }
+    }
+    return {i:i, zip:CODE[i], city:z[2], county:z[3], lat:z[0], lon:z[1],
+            n:n, site:best.name, mi:bestMi, near:bestMi<=NEAR_MI};
+  }).sort(function(a,b){ return b.n-a.n; });
+
+  const TOTAL=ROWS.reduce(function(s,r){ return s+r.n; },0);
+
+  /* Light-to-navy ramp, matching the Camino market map. */
+  const RAMP=['#DDE3EC','#B7C2D3','#8496B2','#52698C','#29374D'];
+  const patBand=n=> n>=40?4 : n>=15?3 : n>=5?2 : n>=2?1 : 0;
+  const distBand=m=> m>=50?4 : m>=25?3 : m>=10?2 : m>=5?1 : 0;
+  const PAT_LBL=['1 patient','2–4','5–14','15–39','40 or more'];
+  const DIST_LBL=['under 5 mi','5–10 mi','10–25 mi','25–50 mi','50 mi or more'];
+
+  let showNear=true, countBy='patients';
+
+  const m2=L.map('pz2-map',{scrollWheelZoom:true,zoomSnap:0});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(m2);
+  const Lzip=L.layerGroup().addTo(m2), Lsite=L.layerGroup().addTo(m2);
+
+  const Reset2=L.Control.extend({options:{position:'topleft'},onAdd:function(){
+    const d=L.DomUtil.create('div','leaflet-bar');
+    d.innerHTML='<a href="#" title="Reset view" style="width:auto;padding:0 8px;font-size:11px;'+
+      'font-weight:700;white-space:nowrap">Reset view</a>';
+    L.DomEvent.on(d,'click',function(e){ L.DomEvent.stop(e); home(); });
+    return d;
+  }});
+  m2.addControl(new Reset2());
+
+  CLINICS.filter(function(c){ return c.st==='CA'; }).forEach(function(c){
+    L.circleMarker([c.lat,c.lon],{radius:6,color:'#fff',weight:2,fillColor:RED,fillOpacity:1})
+      .addTo(Lsite).bindPopup('<b>'+c.name+'</b><br>LivWell clinic');
+  });
+
+  function shown(){ return showNear ? ROWS.filter(function(r){ return r.near; }) : ROWS; }
+
+  function home(){
+    const rows=shown();
+    if(!rows.length) return;
+    const la=rows.map(function(r){ return r.lat; }), lo=rows.map(function(r){ return r.lon; });
+    la.sort(function(a,b){return a-b;}); lo.sort(function(a,b){return a-b;});
+    const q=function(a,p){ return a[Math.min(a.length-1,Math.max(0,Math.floor(a.length*p)))]; };
+    m2.fitBounds([[q(la,0.02),q(lo,0.02)],[q(la,0.98),q(lo,0.98)]],{padding:[26,26],maxZoom:11});
+  }
+
+  function drawMap(){
+    Lzip.clearLayers();
+    const rows=shown().slice().reverse();  /* busiest drawn last, never buried */
+    rows.forEach(function(r){
+      const band = countBy==='patients' ? patBand(r.n) : distBand(r.mi);
+      /* Ringed in red only when the whole state is on screen, where the ring is
+         what separates near ZIP codes from far ones. */
+      const ring = !showNear && r.near;
+      L.circleMarker([r.lat,r.lon],{
+        radius: Math.min(15, 2.8 + Math.sqrt(r.n)*1.1),
+        color: ring ? RED : '#5A6A82', weight: ring ? 1.5 : 0.7, opacity:.9,
+        fillColor: RAMP[band], fillOpacity:.78
+      }).addTo(Lzip).bindPopup(
+        '<b>'+r.zip+' — '+r.city+'</b><br>'+r.county+' County<br>'+
+        nf(r.n)+(r.n===1?' patient':' patients')+' — '+(r.n/TOTAL*100).toFixed(1)+'% of all patients<br>'+
+        'Closest LivWell site: '+r.site+', '+r.mi.toFixed(1)+' miles');
+    });
+  }
+
+  function drawLegend(){
+    const lbl = countBy==='patients' ? PAT_LBL : DIST_LBL;
+    const cap = countBy==='patients' ? 'Patients living there:' : 'Distance to the nearest LivWell clinic:';
+    document.getElementById('pz2-legend').innerHTML =
+      '<span>'+cap+'</span>'+
+      RAMP.map(function(c,k){ return '<i style="background:'+c+'"></i><span>'+lbl[k]+'</span>'; }).join('')+
+      '<span style="margin-left:8px">&#9679;&nbsp;LivWell clinic</span>';
+  }
+
+  function rowHtml(r){
+    return '<tr data-i="'+r.i+'"><td class="b">'+r.zip+'</td><td>'+r.city+'</td>'+
+      '<td class="mut">'+r.site+'</td><td class="n">'+r.mi.toFixed(1)+'</td>'+
+      '<td class="n"><b>'+nf(r.n)+'</b></td>'+
+      '<td class="n mut">'+(r.n/TOTAL*100).toFixed(1)+'%</td></tr>';
+  }
+
+  function drawTables(){
+    const a=ROWS.filter(function(r){ return r.near; });
+    const b=ROWS.filter(function(r){ return !r.near; });
+    document.getElementById('pz2-body-a').innerHTML=a.map(rowHtml).join('');
+    document.getElementById('pz2-body-b').innerHTML=b.map(rowHtml).join('');
+    document.getElementById('pz2-cnt-a').textContent=
+      nf(a.length)+' ZIP codes · '+nf(a.reduce(function(s,r){return s+r.n;},0))+' patients';
+    document.getElementById('pz2-cnt-b').textContent=
+      nf(b.length)+' ZIP codes · '+nf(b.reduce(function(s,r){return s+r.n;},0))+' patients';
+    document.querySelectorAll('#pz2-body-a tr[data-i],#pz2-body-b tr[data-i]').forEach(function(tr){
+      tr.onclick=function(){
+        const r=ROWS.find(function(x){ return x.i===+tr.dataset.i; });
+        if(!r) return;
+        if(!r.near && showNear){ showNear=false; paint(); render(); }
+        m2.setView([r.lat,r.lon],11);
+        document.getElementById('pz2-map').scrollIntoView({behavior:'smooth',block:'nearest'});
+      };
+    });
+    const far=ROWS.filter(function(r){ return !r.near; }).reduce(function(s,r){ return s+r.n; },0);
+    document.getElementById('pz2-foot').innerHTML=
+      '<b>How to read this.</b> A ZIP code counts as near a clinic when its centre point sits within '+
+      NEAR_MI+' miles of the closest LivWell location, measured straight-line. '+
+      nf(TOTAL-far)+' of the '+nf(TOTAL)+' mapped California patients live in a near ZIP code and '+
+      nf(far)+' live beyond that. Distances use ZIP centre points, so they are approximate for large rural ZIP codes.';
+  }
+
+  function summary(){
+    const rows=shown();
+    document.getElementById('pz2-sum').textContent=
+      nf(rows.length)+' ZIP codes · '+nf(rows.reduce(function(s,r){return s+r.n;},0))+' patients shown';
+  }
+
+  function paint(){
+    document.getElementById('pz2-near').classList.toggle('on',showNear);
+    document.getElementById('pz2-all').classList.toggle('on',!showNear);
+    document.getElementById('pz2-cpat').classList.toggle('on',countBy==='patients');
+    document.getElementById('pz2-cdist').classList.toggle('on',countBy==='distance');
+  }
+  function render(){ drawMap(); drawLegend(); summary(); }
+
+  document.getElementById('pz2-near').onclick=function(){ showNear=true;  paint(); render(); home(); };
+  document.getElementById('pz2-all').onclick =function(){ showNear=false; paint(); render(); home(); };
+  document.getElementById('pz2-cpat').onclick=function(){ countBy='patients'; paint(); render(); };
+  document.getElementById('pz2-cdist').onclick=function(){ countBy='distance'; paint(); render(); };
+
+  paint(); render(); drawTables(); home();
+
+  /* The panel is hidden until its tab is opened, so the map has to be told to
+     re-measure once it is actually on screen — and framed again, because a map
+     sized 0 by 0 cannot work out which corner of California to show. */
+  let framed=false;
+  const resize=function(){ setTimeout(function(){
+    try{
+      m2.invalidateSize();
+      if(!framed && document.getElementById('pz2-map').clientWidth>0){ framed=true; home(); }
+    }catch(e){}
+  },90); };
+  document.querySelectorAll('#tabbar .tab').forEach(function(t){
+    t.addEventListener('click',function(){ if(t.dataset.t==='cv'){ resize(); } });
+  });
+  window.addEventListener('resize',resize);
+})();
+</script>
+<script>
+/* ===== Sign-in gate. Mirrors the Camino Market Map dashboard. ===== */
+(function(){
+  const el = id => document.getElementById(id);
+  const gate = el('signin-gate');
+
+  /* ===== Who may open this dashboard ==================================
+     Only these email addresses can sign in. Capital letters and extra
+     spaces are ignored, so "Kelly@LivWellInfusions.com" and
+     "kelly@livwellinfusions.com" count as the same person.
+     To add or remove someone, edit this list and nothing else.        */
+  const ALLOWED = [
+    'venessa@livwellinfusions.com',          // Venessa Coduto - LivWell
+    'kellie.galligan@livwellinfusions.com',  // Kellie Galligan - LivWell
+    'kelly@livwellinfusions.com',            // Kelly Kain - LivWell
+    'anthony.p@livwellinfusions.com',        // Anthony Peng - LivWell
+    'kellie@medwestrealty.com',              // Kellie Galligan - MedWest Realty
+    'andrea@medwestrealty.com',              // Andrea Firtel - MedWest Realty
+    'tori@medwestrealty.com'                 // Tori Smith - MedWest Realty
+  ];
+  const allowed = v => ALLOWED.indexOf(String(v||'').trim().toLowerCase()) !== -1;
+
+  let who = null;
+  try { who = JSON.parse(sessionStorage.getItem('livwell_user')||'null'); } catch(e){}
+  /* A remembered sign-in still has to be on the list, so taking someone off
+     ALLOWED removes their access even if their browser remembers them. */
+  if(who && allowed(who.email)){ gate.classList.add('hidden'); }
+  else { try { sessionStorage.removeItem('livwell_user'); } catch(e){} }
+
+  function enter(){
+    const name = el('signin-name').value.trim(), email = el('signin-email').value.trim();
+    const err = el('signin-err');
+    err.style.display = 'none';
+    el('signin-email').style.borderColor = '';
+    if(!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){
+      el('signin-email').style.borderColor = 'var(--red)'; return;
+    }
+    if(!allowed(email)){
+      el('signin-email').style.borderColor = 'var(--red)';
+      err.style.display = 'block';
+      return;
+    }
+    try { sessionStorage.setItem('livwell_user', JSON.stringify({name,email})); } catch(e){}
+    gate.classList.add('hidden');
+    /* The map was laid out behind the overlay, so nudge it to remeasure
+       once the card is out of the way. */
+    setTimeout(function(){ try { map.invalidateSize(); } catch(e){} }, 120);
+    // Records the sign-in to the shared login log (Cloudflare Pages worker + KV).
+    // Silently no-ops when the KV binding isn't configured.
+    fetch('/api/loginlog',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,email})}).catch(function(){});
+  }
+  el('g_go').addEventListener('click', enter);
+  ['signin-name','signin-email'].forEach(function(id){
+    el(id).addEventListener('keydown', function(e){ if(e.key==='Enter') enter(); });
+  });
+})();
+</script>
+</body></html>
