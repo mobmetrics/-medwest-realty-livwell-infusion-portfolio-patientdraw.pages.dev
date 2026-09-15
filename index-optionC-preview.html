@@ -480,9 +480,7 @@ body.mapfull .cmp-split,
 body.mapfull #deck,
 body.mapfull #mw-footer,
 body.mapfull #mw-disclaimer{display:none}
-body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:5000;
- grid-template-columns:1fr 296px;
- border:0;border-radius:0;margin:0}
+body.mapfull #main-area{height:calc(100vh - 215px)}
 
 @media(max-width:1180px){
   .cmp-split{grid-template-columns:1fr}
@@ -492,7 +490,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   #header{flex-wrap:wrap}
   .hspace{display:none}
   .title-block{flex-basis:100%;text-align:left;order:3;margin-top:6px}
-  body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh}
+  body.mapfull #main-area{height:auto}
 }
 
 
@@ -502,15 +500,6 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 #main-area{grid-template-columns:1fr 296px}
 .cmp-split{align-items:start}
 .cmp-split .dcards{grid-template-columns:1fr;gap:12px}
-
-/* narrow screens — restated last so it wins over the refinements above */
-@media(max-width:1180px){
-  #main-area{grid-template-columns:1fr;height:auto}
-  body.mapfull #main-area{grid-template-columns:1fr;position:static;width:auto;height:auto}
-  .cmp-split{grid-template-columns:1fr}
-  #lpanel{border-left:0;border-top:1px solid var(--line);height:auto}
-  #map{height:460px;flex:none}
-}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
