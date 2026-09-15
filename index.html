@@ -599,7 +599,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 <div id="tour-prompt-overlay" class="tour-modal-overlay">
   <div class="tour-prompt-card">
     <h3 id="tour-prompt-title">Want a quick tour?</h3>
-    <p id="tour-prompt-msg">A two-minute walkthrough of why Monterey is the strongest location.</p>
+    <p id="tour-prompt-msg">A three-minute walkthrough of why Monterey is the strongest location.</p>
     <div class="tour-prompt-actions">
       <button class="tour-btn-no" type="button" onclick="dismissTourPrompt()">No thanks</button>
       <button class="tour-btn-yes" type="button" onclick="acceptTourPrompt()">Yes, show me</button>
@@ -1637,7 +1637,7 @@ const PZ = {"zips":[[33.9731,-118.2479,"Los Angeles","Los Angeles"],[33.9497,-11
 <script>
 /* =====================================================================
    GUIDED TOUR — the case for Monterey
-   Eight steps. The viewer does the clicking: steps 3, 4, 5 and 8 point at
+   Ten steps. The viewer does the clicking: steps 3, 4, 5, 8, 9 and 10 point at
    a control and ask for it to be ticked, then Next carries on. Clicks on the
    highlighted element are deliberately left enabled (disableActiveInteraction
    is false) so the tour can be driven by hand rather than watched.
@@ -1651,7 +1651,7 @@ const PZ = {"zips":[[33.9731,-118.2479,"Los Angeles","Los Angeles"],[33.9497,-11
     return [
       { popover:{
           title:'Why Monterey is the strongest location',
-          description:'Eight steps, about two minutes. Some of them ask for a box to be ticked \u2014 '
+          description:'Ten steps, about three minutes. Some of them ask for a box to be ticked or a tab to be opened \u2014 '
             +'click where it says to, then press Next. Close the tour any time.'
       }},
       { element:'.answer', popover:{
@@ -1696,8 +1696,23 @@ const PZ = {"zips":[[33.9731,-118.2479,"Los Angeles","Los Angeles"],[33.9497,-11
       { element:'#tabbar', popover:{
           title:'Click: All 29 locations',
           description:'The rest of the portfolio, ranked by how alone each clinic sits. Monterey is 2nd of '
-            +'29; Burbank is 27th. The two locations LivWell graded land exactly where the pattern '
-            +'predicts. That is the case for Monterey.',
+            +'29; Burbank is 27th. The two locations LivWell graded land exactly where the pattern predicts.',
+          side:'top', align:'start'
+      }},
+      { element:'#tabbar', popover:{
+          title:'Click: Where patients come from',
+          description:'Every California patient address, grouped by home ZIP code \u2014 7,143 of them across '
+            +'713 ZIP codes. Half live within 6.4 miles of the clinic they use and 94% within 25 miles. '
+            +'The draw is local, so where a clinic sits decides who it reaches. The dropdown narrows to '
+            +'a single location.',
+          side:'top', align:'start'
+      }},
+      { element:'#tabbar', popover:{
+          title:'Click: Patient coverage by ZIP code',
+          description:'The same patients read as coverage: which ZIP codes sit within 10 miles of a LivWell '
+            +'clinic and which do not. 5,790 patients are close to one; 1,353 live beyond that \u2014 the '
+            +'gap where another location could go. That is the case for Monterey, and the map for where '
+            +'the next one might sit.',
           side:'top', align:'start'
       }}
     ];
