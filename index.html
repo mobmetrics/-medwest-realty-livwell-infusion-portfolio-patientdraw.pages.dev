@@ -521,6 +521,24 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
  padding:2px 8px;border-radius:9px;color:#fff;margin-top:3px}
 .cbadge.best{background:var(--navy)}
 .cbadge.worst{background:var(--red)}
+
+/* the finding, stated before the evidence */
+.answer{background:var(--navy);color:#fff;border-radius:8px;padding:16px 20px;margin-bottom:20px;
+ border-left:5px solid var(--red)}
+.answer .k{font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.55);
+ font-weight:700;margin-bottom:5px}
+.answer h3{font-size:19px;font-weight:600;line-height:1.35;margin-bottom:6px}
+.answer p{font-size:12.5px;color:rgba(255,255,255,.78);line-height:1.5;max-width:1150px}
+@media(max-width:1180px){ .answer h3{font-size:16.5px} }
+
+/* sub-heading inside a merged tab */
+.pane .card h3.subhead{font-size:15.5px;font-weight:600;color:var(--navy);
+ margin:26px 0 3px;padding-top:18px;border-top:1px solid var(--line)}
+
+/* data notes now sit at the page foot rather than inside one tab */
+#footer{max-width:none;margin:22px 0 0;padding:16px 0 0;border-top:1px solid var(--line);
+ font-size:10.5px;line-height:1.6;color:#8a95a5}
+#footer b{color:var(--muted);font-weight:600}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
@@ -571,8 +589,17 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 
 
 
+<div class="answer">
+  <div class="k">What the data says</div>
+  <h3>Monterey draws nearly seven times Burbank's patients — and the reason is competition, not demographics.</h3>
+  <p>Monterey is the only California LivWell with no competing infusion clinic inside 30 miles; the nearest is
+     45.8 miles away in San Jose. Burbank has fourteen inside 30 miles, one of them 1.2 miles away, plus five
+     other LivWell clinics drawing on the same area. Household incomes and patient travel distances in the two
+     markets are broadly comparable.</p>
+</div>
+
 <h2 class="sec">All 29 Locations, Patient Draw &amp; Competing Clinics</h2>
-<p class="sub">Toggle layers at right · Monterey and Burbank are compared below the map</p>
+<p class="sub">Opens on California, where the patient data is — zoom out for the 8 Arizona sites. Monterey and Burbank are compared below the map.</p>
 <div id="main-area">
 <div id="map-wrap">
 <div class="hl-block" id="hl-comp">
@@ -587,8 +614,8 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
     <span>High</span><span style="margin-left:10px;opacity:.75">Intensity = patients per home city, normalized within the selected clinic.</span></div>
 </div>
 <div class="hl-block" id="hl-iso">
-  <div class="hl-title">◎ ISOLATION SCORE — DISTANCE TO NEAREST SIBLING CLINIC</div>
-  <div class="hl-note">Clinics recolored by how far the nearest other LivWell sits. <b>Blue = isolated</b> (owns its catchment) · amber = moderate · <b>red = clustered</b> (splitting demand with siblings). Temecula is the only location with zero siblings inside 30 miles, and it has never been graded — though the competitor layers show it is not isolated from the market.</div>
+  <div class="hl-title">◎ HOW ALONE EACH CLINIC SITS — DISTANCE TO THE NEAREST OTHER LIVWELL</div>
+  <div class="hl-note">Clinics recoloured by how far away the nearest other LivWell sits. <b>Blue = on its own</b> (it has the area to itself) · amber = some nearby · <b>red = crowded</b> (sharing the area with other LivWell clinics). Temecula is the only location with no other LivWell inside 30 miles, and it has never been graded — though the competitor layers show it is not alone in its market.</div>
 </div>
 <div id="map"></div>
 </div>
@@ -596,7 +623,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   <div class="pgroup">
     <h4>LivWell Clinics</h4>
     <div class="lbtn active" id="lb-clin"><span class="cbx"></span><span class="sw" style="background:#29374D"></span>All 29 clinics<span class="ct">29</span></div>
-    <div class="lbtn active" id="lb-ring"><span class="cbx"></span><span class="swl" style="border-color:#29374D"></span>Area each clinic covers</div>
+    <div class="lbtn" id="lb-ring"><span class="cbx"></span><span class="swl" style="border-color:#29374D"></span>Area each clinic covers</div>
     <div class="radbox">Distance drawn <input type="range" id="rad" min="5" max="40" step="1" value="30"><b id="radv">30 mi</b></div>
   </div>
 
@@ -661,7 +688,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
     </div>
     <div class="ccard">
       <div class="s-title">Where Burbank's patients live<span class="cbadge worst">Worst</span></div>
-      <div class="s-sub">Top 10 home cities · 89 patients mapped. Each chart has its own scale — Monterey's busiest city has 117 patients, Burbank's has 12.</div>
+      <div class="s-sub">Top 10 home cities · 89 patients mapped. Drawn on the same scale as Monterey above, so the difference in volume is visible.</div>
       <div class="chart-wrap tall"><canvas id="burbChart"></canvas></div>
     </div>
   </div>
@@ -669,9 +696,8 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 
 <div id="deck">
 <div id="tabbar">
-<button class="tab on" data-t="sc">Scorecard</button>
+<button class="tab on" data-t="sc">Monterey vs Burbank — the full comparison</button>
 <button class="tab" data-t="dt">All 29 locations</button>
-<button class="tab" data-t="wy">Why Monterey outperforms</button>
 <button class="tab" data-t="pz">Where patients come from</button>
 <button class="tab" data-t="cv">Patient coverage by ZIP code</button>
 </div>
@@ -679,17 +705,36 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 <div class="pane on" id="pane-sc"><div class="card">
     <h2>Monterey vs. Burbank scorecard</h2>
     <div class="takeaway">Burbank sits in the bigger, better-connected market. Monterey still draws several times the patients — and the reason is not distance or demographics.</div>
-    <p class="lede">On paper Burbank sits in a far larger, better-connected market. In practice Monterey draws 7.4× the patients — 3.9× once you account for Monterey being open 34 months against Burbank's 18.</p>
+    <p class="lede" id="sc-lede"></p>
     <table class="sc"><thead><tr><th style="width:23%">Factor</th><th style="width:15%">Monterey (best)</th><th style="width:15%">Burbank (worst)</th><th>Why it matters</th></tr></thead>
     <tbody id="sc-body"></tbody></table>
+<h3 class="subhead">Why Monterey outperforms</h3>
+    <p class="lede">Monterey wins by having its region to itself. The gap is not about how far patients travel — Burbank's patients simply have more places to choose from.</p>
+    <p class="lede">What actually differs between the two locations — and why it isn't distance or demographics.</p>
+    <div class="two">
+      <div>
+        <div class="factor"><h3>Market saturation, not distance</h3><p>Monterey's middle patient lives 3.3 miles from the clinic; Burbank's lives 5.5 miles away. Neither clinic is asking for a long trip, and the shorter trip belongs to Monterey — so distance is not what is holding Burbank back.</p></div>
+        <div class="factor"><h3>But how far each clinic reaches <em>is</em> a difference</h3><p>The middle of each clinic&rsquo;s area looks similar; the edges do not. Nine out of ten of Monterey's patients live within 16.8 miles, and 113 of them share the clinic's own ZIP code. Burbank's outer edge stops at 13.3 miles — roughly where its nearest LivWell neighbours sit — and only 5 patients share its ZIP code. Monterey owns a corridor; Burbank owns neither a core nor a periphery.</p></div>
+        <div class="factor"><h3>Captive geography vs. abundant alternatives</h3><p>Monterey's clinic is one of only a handful of options across an entire region — just 4 hospitals cover the whole Monterey Peninsula and Salinas Valley, and the southernmost of those, in King City, is nearly an hour away. Burbank sits inside the Los Angeles basin, surrounded by 6+ hospitals in the immediate area and dozens more (Kaiser, Cedars-Sinai, UCLA-affiliated systems) a short drive away. Patients there have far less reason to stay loyal to any single location.</p></div>
+        <div class="factor"><h3>Highway access cuts both ways</h3><p>Burbank benefits from excellent freeway access (I-5, SR-134, SR-170) — but that same connectivity makes it just as easy for patients to drive to a competing provider. Monterey's more limited access (CA-1, CA-68, no direct Interstate) works in the location's favor once patients are already in the region: there's simply less competition to drive to.</p></div>
+      </div>
+      <div>
+        <div class="factor"><h3>LivWell may be competing with itself</h3><p>Burbank has five other LivWell clinics within 30 miles, the nearest 6.4 miles away, and draws only 9% of its patients from Burbank itself. Monterey has two other LivWell clinics inside 30 miles, the nearest 24.1 miles out, and draws 19% from its own city. Across the portfolio, the two clinics LivWell has already graded land exactly where the theory predicts: Monterey is 2nd most isolated of 29, Burbank 3rd least.</p></div>
+        <div class="factor"><h3>Demographics are a smaller factor than expected</h3><p>Monterey County (median household income ~$97,200, median age 35.5) and Burbank (~$85,500–97,000 depending on source, median age 40.1) are broadly comparable. This isn't primarily an income or age story — it's a competitive-density story.</p></div>
+        <div class="factor"><h3>An affluent, part-time population</h3><p>Twelve Monterey-area patients list permanent addresses outside California — Texas, Georgia, Arizona, Tennessee, New Jersey, Pennsylvania and Alaska among them — consistent with Carmel and Pebble Beach's profile as a wealthy second-home market. Only one such address appears in the Burbank list.</p></div>
+        <div class="factor"><h3>Building and market context</h3><p>Monterey Peninsula's medical office stock is boutique and supply-constrained. Burbank sits in the Tri-Cities office submarket (Burbank/Glendale/Pasadena), running roughly 24–26% vacancy across asset classes — a market that makes it easy for competing providers and space to enter.</p></div>
+        <div class="factor"><h3>Competitors sharpen the picture — and complicate it</h3><p>Adding the three main California competitors — Infusion For Health (45 sites), IVX Health (12) and Clinivoy (7) — makes Monterey look stronger and Temecula weaker. Monterey is the only California LivWell with <em>no</em> competitor inside 30 miles; the nearest is 45 miles away in San Jose. Burbank has fourteen inside 30 miles and one a mile away. Counting other LivWell clinics and competitors together, Monterey is the least crowded of the 21 California locations and Burbank the 17th.</p></div>
+        <div class="factor"><h3>The untested prediction, with a caveat</h3><p>Temecula sits further from another LivWell than any other location — 32.8 miles to the nearest, none within 30 — and nobody has graded it. But it is <em>not</em> alone in its market: an Infusion For Health clinic sits 1.3 miles away on Ynez Road, and four competing clinics fall inside 30 miles. So Temecula tests a narrower claim than it first appears. If distance from other LivWell clinics alone drives performance, it should look like Monterey. If total clinic density is what matters, it shouldn't — and Monterey's zero-competitor position becomes the better explanation of why it wins. Either way the answer sits in LivWell's own books, and either way we learn which of the two mechanisms is real.</p></div>
+      </div>
+    </div>
   </div></div>
 <div class="pane" id="pane-dt"><div class="card">
     <h2>All 29 locations by isolation</h2>
     <div class="takeaway">The portfolio ranked by how alone each clinic is. Temecula is the most isolated of all 29 and has never been graded.</div>
-    <p class="lede">Sibling counts recompute against the catchment radius set above. Click any row to fly the map to that clinic.</p>
+    <p class="lede">The counts recompute against the distance set on the map above. Click any row to fly the map to that clinic.</p>
     <div id="filter-row">
       <select id="f-state"><option value="">All states (29)</option><option value="CA">California (21)</option><option value="AZ">Arizona (8)</option></select>
-      <select id="f-band"><option value="">All isolation bands</option><option value="iso">Isolated — 20+ mi</option><option value="mid">Moderate — 10–20 mi</option><option value="clu">Clustered — under 10 mi</option></select>
+      <select id="f-band"><option value="">All crowding levels</option><option value="iso">On its own — 20 miles or more</option><option value="mid">Some nearby — 10 to 20 miles</option><option value="clu">Crowded — under 10 miles</option></select>
       <input id="f-search" type="search" placeholder="Search clinic or nearest sibling…">
       <button class="btn" id="f-clear">Clear</button>
       <span style="font-size:12px;color:var(--muted);align-self:center" id="rec-count"></span>
@@ -698,47 +743,19 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
       <th data-k="rank">Rank <span class="ar">▾</span></th>
       <th data-k="name">Clinic <span class="ar">▾</span></th>
       <th data-k="st">State <span class="ar">▾</span></th>
-      <th data-k="near">Nearest sibling <span class="ar">▾</span></th>
+      <th data-k="near">Nearest other LivWell <span class="ar">▾</span></th>
       <th data-k="mi" class="n">Distance (mi) <span class="ar">▾</span></th>
-      <th data-k="w" class="n">Siblings <span class="ar">▾</span></th>
+      <th data-k="w" class="n">Other LivWells <span class="ar">▾</span></th>
       <th data-k="cw" class="n">Competitors <span class="ar">▾</span></th>
-      <th data-k="tw" class="n">Total in radius <span class="ar">▾</span></th>
-      <th data-k="nc" class="n">Nearest comp <span class="ar">▾</span></th>
-      <th data-k="band">Density <span class="ar">▾</span></th>
+      <th data-k="tw" class="n">All clinics nearby <span class="ar">▾</span></th>
+      <th data-k="nc" class="n">Nearest competitor <span class="ar">▾</span></th>
+      <th data-k="band">How crowded <span class="ar">▾</span></th>
     </tr></thead><tbody id="dt-body"></tbody></table></div>
   </div></div>
-<div class="pane" id="pane-wy"><div class="card">
-    <h2>Why Monterey outperforms</h2>
-    <div class="takeaway">Monterey wins by having its region to itself. Burbank patients travel just as far — they simply have more places to choose from.</div>
-    <p class="lede">What actually differs between the two locations — and why it isn't distance or demographics.</p>
-    <div class="two">
-      <div>
-        <div class="factor"><h3>Market saturation, not distance</h3><p>Patients travel about as far to reach Burbank (5.1 mi weighted average) as they do to reach Monterey (6.8 mi). Average distance isn't what's holding Burbank back.</p></div>
-        <div class="factor"><h3>But catchment <em>reach</em> is a differentiator</h3><p>The averages match; the shapes don't. Monterey's 90th-percentile patient sits 26.6 miles out and 103 patients come from its own ZIP. Burbank's 90th percentile stops at 14.6 miles — roughly where its nearest siblings sit — and just 4 patients come from its own ZIP. Monterey owns a corridor; Burbank owns neither a core nor a periphery.</p></div>
-        <div class="factor"><h3>Captive geography vs. abundant alternatives</h3><p>Monterey's clinic is one of only a handful of options across an entire region — just 4 hospitals cover the whole Monterey Peninsula and Salinas Valley, and the southernmost of those, in King City, is nearly an hour away. Burbank sits inside the Los Angeles basin, surrounded by 6+ hospitals in the immediate area and dozens more (Kaiser, Cedars-Sinai, UCLA-affiliated systems) a short drive away. Patients there have far less reason to stay loyal to any single location.</p></div>
-        <div class="factor"><h3>Highway access cuts both ways</h3><p>Burbank benefits from excellent freeway access (I-5, SR-134, SR-170) — but that same connectivity makes it just as easy for patients to drive to a competing provider. Monterey's more limited access (CA-1, CA-68, no direct Interstate) works in the location's favor once patients are already in the region: there's simply less competition to drive to.</p></div>
-      </div>
-      <div>
-        <div class="factor"><h3>LivWell may be competing with itself</h3><p>Burbank has five other LivWell clinics within 30 miles, the nearest 6.4 miles away, and draws only 8% of its patients from Burbank itself. Monterey has two siblings inside 30 miles, the nearest 23.3 miles out, and draws 19% from its own city. Across the portfolio, the two clinics LivWell has already graded land exactly where the theory predicts: Monterey is 2nd most isolated of 29, Burbank 3rd least.</p></div>
-        <div class="factor"><h3>Demographics are a smaller factor than expected</h3><p>Monterey County (median household income ~$97,200, median age 35.5) and Burbank (~$85,500–97,000 depending on source, median age 40.1) are broadly comparable. This isn't primarily an income or age story — it's a competitive-density story.</p></div>
-        <div class="factor"><h3>An affluent, part-time population</h3><p>Twelve Monterey-area patients list permanent addresses outside California — Texas, Georgia, Arizona, Tennessee, New Jersey, Pennsylvania and Alaska among them — consistent with Carmel and Pebble Beach's profile as a wealthy second-home market. Only one such address appears in the Burbank list.</p></div>
-        <div class="factor"><h3>Building and market context</h3><p>Monterey Peninsula's medical office stock is boutique and supply-constrained. Burbank sits in the Tri-Cities office submarket (Burbank/Glendale/Pasadena), running roughly 24–26% vacancy across asset classes — a market that makes it easy for competing providers and space to enter.</p></div>
-        <div class="factor"><h3>Competitors sharpen the picture — and complicate it</h3><p>Adding the three main California competitors — Infusion For Health (45 sites), IVX Health (12) and Clinivoy (7) — makes Monterey look stronger and Temecula weaker. Monterey is the only California LivWell with <em>no</em> competitor inside 30 miles; the nearest is 45 miles away in San Jose. Burbank has fourteen inside 30 miles and one a mile away. Counting siblings and competitors together, Monterey is the least crowded of the 21 California locations and Burbank the 17th.</p></div>
-        <div class="factor"><h3>The untested prediction, with a caveat</h3><p>Temecula is the most isolated clinic from LivWell siblings — 34.2 miles to the nearest, zero within 30 — and nobody has graded it. But it is <em>not</em> isolated from the market: an Infusion For Health clinic sits 1.6 miles away on Ynez Road, and four competitor sites fall inside 30 miles. So Temecula tests a narrower claim than it first appears. If sibling distance alone drives performance, it should look like Monterey. If total clinic density is what matters, it shouldn't — and Monterey's zero-competitor position becomes the better explanation of why it wins. Either way the answer sits in LivWell's own books, and either way we learn which of the two mechanisms is real.</p></div>
-      </div>
-    </div>
-  </div>
-<footer id="footer">
-  <b>Patient data.</b> Aggregated to home city for privacy and mapping clarity, from the LivWell patient address export. The address window equals each clinic's time open — Monterey since Nov 2023 (~34 months), Burbank ~18 months — so cross-clinic counts are read per month open. 647 usable patient rows (Monterey 570, Burbank 77); 23 placeholder rows were excluded as unusable. Own-city shares: Monterey 108 of 570 (18.9%), Burbank 6 of 77 (7.8%), shown rounded to 19% and 8%. 67 Monterey rows are PO boxes — counted toward volume, and reliable at city level though not at ZIP level. Distance figures exclude PO-box rows. Burbank's 77-patient base is thin; percentile figures on it are directional.<br>
-  <b>Clinic data.</b> 29 locations from livwellinfusions.com/locations (21 CA / 8 AZ). Coordinates geocoded from each clinic's street address (US Census geocoder, September 2026); distances are straight-line, not drive time, and sibling counts are recomputed in-browser from those coordinates.<br>
-  <b>Competitor data.</b> 64 California sites surveyed from each operator's own location pages: Infusion For Health 45 (32 Southern, 9 Northern, 4 Central California), IVX Health 12, Clinivoy 7. Plotted at ZIP centroid where a ZIP is published; six Clinivoy sites publish a street address without a ZIP and are plotted at city centre, which can be a mile or two off. Arizona was not surveyed, so the eight Arizona LivWell clinics show no competitor count rather than zero — note Clinivoy does list a Mesa, AZ site. Counts are of clinic locations, not capacity, chair count, or payer overlap.<br>
-  <b>Market context.</b> Hospital, highway, demographic and office-vacancy figures are drawn from public sources (Census, public hospital directories, CRE market reports) and are approximate and illustrative, not verified property records.<br>
-  <b>Patient origin map.</b> The "Where patients come from" tab maps 7,143 California patient addresses from the LivWell address export, grouped by home ZIP code — no individual home is plotted. 148 patients live outside California and 24 gave an unreadable ZIP code; both are excluded from the map. ZIP coordinates are postal-area centres and distances are straight-line, not drive time.
-  <b>MedWest Realty</b> · prepared for LivWell Infusions site selection.
-</footer></div>
+
 <div class="pane" id="pane-pz"><div class="card">
     <h2>Where patients come from</h2>
-    <div class="takeaway">Half of LivWell’s California patients live within 6.4 miles of the clinic they use. The draw is local, so siting decides the catchment.</div>
+    <div class="takeaway">Half of LivWell’s California patients live within 6.4 miles of the clinic they use. The draw is local, so where a clinic sits decides who it reaches.</div>
     <p class="lede" id="pz-lede"></p>
     <div class="pz-top">
       <span class="pzlbl">Show patients from</span>
@@ -793,6 +810,14 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   </div></div>
 </div>
 </div>
+<footer id="footer">
+  <b>Patient data.</b> Aggregated to home city for privacy and mapping clarity, from the LivWell patient address export. The address window equals each clinic's time open — Monterey since Nov 2023 (~34 months), Burbank ~18 months — so cross-clinic counts are read per month open. 717 usable patient rows (Monterey 627, Burbank 90), of which 702 are mapped (Monterey 613, Burbank 89); the 15 not mapped are 13 out-of-state addresses and 2 with an unreadable ZIP code. Own-city shares: Monterey 117 of 613 (19.1%), Burbank 8 of 89 (9.0%), shown rounded to 19% and 9%. 67 Monterey rows are PO boxes — counted toward volume, and reliable at city level though not at ZIP level. Distance figures exclude PO-box rows. Burbank's 89-patient base is thin; figures drawn from the outer edge of its draw are directional.<br>
+  <b>Clinic data.</b> 29 locations from livwellinfusions.com/locations (21 CA / 8 AZ). Coordinates geocoded from each clinic's street address (US Census geocoder, September 2026); distances are straight-line, not drive time, and counts of nearby LivWell clinics are recomputed in-browser from those coordinates.<br>
+  <b>Competitor data.</b> 64 California sites surveyed from each operator's own location pages: Infusion For Health 45 (32 Southern, 9 Northern, 4 Central California), IVX Health 12, Clinivoy 7. Plotted at ZIP centroid where a ZIP is published; six Clinivoy sites publish a street address without a ZIP and are plotted at city centre, which can be a mile or two off. Arizona was not surveyed, so the eight Arizona LivWell clinics show no competitor count rather than zero — note Clinivoy does list a Mesa, AZ site. Counts are of clinic locations, not capacity, chair count, or payer overlap.<br>
+  <b>Market context.</b> Hospital, highway, demographic and office-vacancy figures are drawn from public sources (Census, public hospital directories, CRE market reports) and are approximate and illustrative, not verified property records.<br>
+  <b>Patient origin map.</b> The "Where patients come from" tab maps 7,143 California patient addresses from the LivWell address export, grouped by home ZIP code — no individual home is plotted. 148 patients live outside California and 24 gave an unreadable ZIP code; both are excluded from the map. ZIP coordinates are postal-area centres and distances are straight-line, not drive time.
+  <b>MedWest Realty</b> · prepared for LivWell Infusions site selection.
+</footer>
 <footer id="mw-footer">MedWest Realty · Prepared for LivWell Infusions · Portfolio &amp; Patient Draw</footer>
 <div id="mw-disclaimer"><b>Disclaimer.</b> Information from sources deemed reliable but MedWest Realty does not guarantee the accuracy. Please perform your own due diligence and consult with all appropriate advisors.</div>
 </div>
@@ -811,7 +836,7 @@ function miles(a,b,c,d){
 }
 CL.forEach(c=>{ c.d=CL.filter(o=>o!==c).map(o=>miles(c.lat,c.lon,o.lat,o.lon)).sort((x,y)=>x-y); });
 const bandOf=mi=> mi>=20?'iso' : mi>=10?'mid' : 'clu';
-const BANDLBL={iso:'Isolated',mid:'Moderate',clu:'Clustered'};
+const BANDLBL={iso:'On its own',mid:'Some nearby',clu:'Crowded'};
 let radius=30;
 const within=c=>c.d.filter(v=>v<=radius).length;
 
@@ -819,7 +844,10 @@ const within=c=>c.d.filter(v=>v<=radius).length;
 /* zoomSnap:0 lets fitBounds use fractional zoom — whole-number zoom was
    overshooting the footprint by ~40% and padding the view with Denver. */
 const map=L.map('map',{scrollWheelZoom:true,zoomSnap:0}).setView([35.6,-119.4],6);
-const HOME=L.latLngBounds(CL.map(c=>[c.lat,c.lon]));
+/* Opening view is the California sites only. All 29 are still drawn — the 8 Arizona
+   clinics simply sit outside the first frame, because every patient address is Californian
+   and the old all-29 fit padded the view with empty desert. */
+const HOME=L.latLngBounds(CL.filter(c=>c.st==='CA').map(c=>[c.lat,c.lon]));
 const goHome=()=>map.fitBounds(HOME,{padding:[26,26]});
 const base=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
  {attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:18}).addTo(map);
@@ -849,7 +877,7 @@ const ResetCtrl=L.Control.extend({options:{position:'topleft'},onAdd:function(){
   return b; }});
 map.addControl(new ResetCtrl());
 
-const Lrings=L.layerGroup().addTo(map);
+const Lrings=L.layerGroup();
 const Lclin =L.layerGroup().addTo(map);
 const Lcity =L.layerGroup();
 let heatM=null, heatB=null;
@@ -913,9 +941,9 @@ function drawClinics(){
     L.circleMarker([c.lat,c.lon],{radius:isT?9:(c.name==='Monterey'||c.name==='Burbank'?7:5),
       color:'#fff',weight:isT?2.5:1.5,fillColor:col,fillOpacity:1}).addTo(Lclin)
      .bindPopup('<b>'+c.name+', '+c.st+'</b>'+sp+
-       '<br>Isolation rank: '+c.rank+' of 29 &nbsp;·&nbsp; '+BANDLBL[bandOf(c.mi)]+
-       '<br>Nearest sibling: '+c.near+', '+c.mi.toFixed(1)+' mi'+
-       '<br>Siblings within '+radius+' mi: <b>'+w+'</b>');
+       '<br>How alone it sits: '+c.rank+' of 29 &nbsp;·&nbsp; '+BANDLBL[bandOf(c.mi)]+
+       '<br>Nearest other LivWell: '+c.near+', '+c.mi.toFixed(1)+' mi'+
+       '<br>Other LivWells within '+radius+' mi: <b>'+w+'</b>');
   });
 }
 
@@ -929,7 +957,7 @@ function bindToggle(id,on,off,active){
   paint(); return ()=>state;
 }
 bindToggle('lb-clin',()=>Lclin.addTo(map),()=>map.removeLayer(Lclin),true);
-bindToggle('lb-ring',()=>Lrings.addTo(map),()=>map.removeLayer(Lrings),true);
+bindToggle('lb-ring',()=>Lrings.addTo(map),()=>map.removeLayer(Lrings),false);
 bindToggle('lb-city',()=>{cityBubbles();Lcity.addTo(map)},()=>map.removeLayer(Lcity),false);
 
 const heatNote=document.getElementById('hl-heat-note');
@@ -994,9 +1022,9 @@ function dcard(el,key){
     ['Different home ZIP codes',pz.zips],
     ['Nearest other LivWell',c.mi.toFixed(1)+' mi'],
     ['Other LivWells within 30 mi',c.w30],
-    ['Competitor clinics within 30 mi',compWithin(c,30)],
-    ['Nearest competitor',c.nearComp?c.nearComp.mi.toFixed(1)+' mi':'n/a'],
-    ['Most-isolated rank',c.rank+' of 29']
+    ['Competing clinics within 30 mi',compWithin(c,30)],
+    ['Nearest competing clinic',c.nearComp?c.nearComp.mi.toFixed(1)+' mi':'n/a'],
+    ['How alone it sits (rank of 29)',c.rank+' of 29']
   ];
   el.innerHTML=items.map(([l,v])=>'<div class="di"><span class="di-lbl">'+l+'</span><span class="di-val">'+v+'</span></div>').join('');
 }
@@ -1010,7 +1038,7 @@ Chart.defaults.color='#5B6472';
    patients against Burbank's 12, and one shared axis would flatten Burbank to
    slivers.  The volume gap is carried by the scorecards and the KPI cards. */
 let drawChart=null, burbChart=null;
-function cityChart(canvasId,key,col,existing){
+function cityChart(canvasId,key,col,existing,maxX){
   const rows=CITY[key].slice(0,10);
   if(existing) existing.destroy();
   return new Chart(document.getElementById(canvasId),{type:'bar',
@@ -1018,34 +1046,38 @@ function cityChart(canvasId,key,col,existing){
       datasets:[{data:rows.map(r=>r.n),backgroundColor:col,borderRadius:2,barPercentage:.82}]},
     options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
       tooltip:{callbacks:{label:c=>c.parsed.x+' patients'}}},
-      scales:{x:{grid:{color:'#F0F2F4'},border:{display:false},ticks:{precision:0}},
+      scales:{x:{grid:{color:'#F0F2F4'},border:{display:false},ticks:{precision:0},
+                 max:maxX||undefined},
               y:{grid:{display:false},border:{display:false},
                  ticks:{autoSkip:false,font:{size:9.5}}}}}});
 }
 function renderDraw(){
-  drawChart = cityChart('drawChart','Monterey',NAVY,drawChart);
-  burbChart = cityChart('burbChart','Burbank',RED,burbChart);
+  /* Both charts share Monterey's scale. Burbank's bars come out short, which is the
+     point: at its own scale the two charts looked alike and hid a seven-to-one gap. */
+  const top = CITY['Monterey'][0].n;
+  drawChart = cityChart('drawChart','Monterey',NAVY,drawChart,top);
+  burbChart = cityChart('burbChart','Burbank',RED,burbChart,top);
 }
 renderDraw();
 
 /* ---------- scorecard ---------- */
 const SC=[
- ['Patients served (time open)','613','89','6.9× more patients. Monterey has been open about 34 months to Burbank’s 18, so per month open the gap is 3.6× — it narrows, but it does not close.',0],
- ['Share drawn from own city','19%','9%','117 patients live in Monterey itself; 8 live in Burbank. Monterey owns its doorstep; Burbank does not.',0],
- ['Typical distance traveled (median)','3.3 mi','5.5 mi','Monterey’s middle patient lives closer, not farther. What separates these two clinics shows up at the far edge of the catchment, not in the middle.',0],
- ['Catchment reach (90th percentile)','16.8 mi','13.3 mi','This <em>is</em> the differentiator, though by less than the earlier export suggested. Burbank’s draw stops near 13 miles — about where its five siblings sit. Monterey reaches nearly 17.',1],
- ['Patients from own ZIP','113','5','Monterey has a dense core; Burbank has effectively none.',1],
- ['Nearest sibling LivWell','24.1 mi','6.4 mi','Monterey is 2nd most isolated of 29 locations; Burbank is 3rd least. The two clinics LivWell has graded land where the theory predicts.',1],
- ['Competitor clinics within 30 mi','0','14','Monterey is the <em>only</em> California LivWell with no Infusion For Health, IVX or Clinivoy site inside 30 miles. Burbank has fourteen.',1],
- ['Nearest competitor','45.8 mi','1.2 mi','The sharpest single split in the comparison \u2014 Monterey\u2019s nearest competitor is in San Jose.',1],
- ['Total infusion clinics within 30 mi','2','19','Siblings plus competitors. On this measure Monterey is the least crowded of 21 California locations; Burbank is 17th.',1],
+ ['Patients served','613','89','6.9× more patients. Monterey has been open about 34 months to Burbank’s 18, so per month open the gap is 3.6× — it narrows, but it does not close.',0],
+ ['Patients from the clinic&rsquo;s own city','19%','9%','117 patients live in Monterey itself; 8 live in Burbank. Monterey owns its doorstep; Burbank does not.',0],
+ ['Typical distance patients travel','3.3 mi','5.5 mi','Monterey’s middle patient lives closer, not farther. What separates these two clinics shows up at the far edge of the area each one draws from, not in the middle.',0],
+ ['How far the clinic reaches','16.8 mi','13.3 mi','Nine in ten patients live closer than this. Burbank’s draw stops near 13 miles — about where its five nearest LivWell clinics sit. Monterey reaches nearly 17.',1],
+ ['Patients living in the clinic&rsquo;s own ZIP code','113','5','Monterey has a dense core on its doorstep; Burbank has effectively none.',1],
+ ['Nearest other LivWell','24.1 mi','6.4 mi','Monterey is 2nd most isolated of 29 locations; Burbank is 3rd least. The two clinics LivWell has graded land where the theory predicts.',1],
+ ['Competing clinics within 30 miles','0','14','Monterey is the <em>only</em> California LivWell with no Infusion For Health, IVX or Clinivoy site inside 30 miles. Burbank has fourteen.',1],
+ ['Nearest competing clinic','45.8 mi','1.2 mi','The sharpest single split in the comparison \u2014 Monterey\u2019s nearest competitor is in San Jose.',1],
+ ['All infusion clinics within 30 miles','2','19','Other LivWell clinics plus competitors. On this measure Monterey is the least crowded of the 21 California locations; Burbank is 17th.',1],
  ['Hospitals covering the region','4','6+','Burbank’s 6+ sit within a few miles of each other in a saturated market; Monterey’s 4 are spread across the whole Peninsula and Salinas Valley.',0],
  ['Freeway / highway access','Limited (CA-1, CA-68)','Excellent (I-5, SR-134, SR-170)','Double-edged: Monterey’s isolation limits patient alternatives; Burbank’s connectivity makes it easy for patients to go elsewhere.',0],
  ['Medical office market','Supply-constrained, boutique','~24–26% vacancy (Tri-Cities)','Burbank’s submarket is oversupplied and easy for competitors to enter.',0],
- ['Est. market penetration','~0.4%','~0.01%','Monterey captures roughly 30–40× more of its local population. Estimated.',0]
+ ['Share of the local population reached','~0.4%','~0.01%','Monterey captures roughly 30–40× more of its local population. Estimated.',0]
 ];
 document.getElementById('sc-body').innerHTML=SC.map(r=>
- '<tr'+(r[4]?' class="new"':'')+'><td>'+r[0]+(r[4]?'<span class="tag">NEW</span>':'')+
+ '<tr><td>'+r[0]+
  '</td><td class="b">'+r[1]+'</td><td class="w">'+r[2]+'</td><td class="why">'+r[3]+'</td></tr>').join('');
 
 /* ---------- clinic table ---------- */
@@ -1300,6 +1332,16 @@ const PZ = {"zips":[[33.9731,-118.2479,"Los Angeles","Los Angeles"],[33.9497,-11
 
   dcard(document.getElementById('dc-best'),'Monterey');
   dcard(document.getElementById('dc-worst'),'Burbank');
+  /* The intro line is computed from the same export as the table beneath it, so the two
+     can never drift apart the way the old hard-coded 7.4x / 3.9x did. */
+  (function(){
+    const el=document.getElementById('sc-lede'); if(!el) return;
+    const M=PZ.stats['Monterey'], B=PZ.stats['Burbank'], mMo=34, bMo=18;
+    const vol=(M.n/B.n).toFixed(1), per=((M.n/mMo)/(B.n/bMo)).toFixed(1);
+    el.textContent='On paper Burbank sits in a far larger, better-connected market. In practice '
+      +'Monterey draws '+vol+'\u00d7 the patients \u2014 '+per+'\u00d7 once you account for Monterey '
+      +'being open '+mMo+' months against Burbank\u2019s '+bMo+'.';
+  })();
 
   function render(){ draw(); marker(); chips(); cols(); words(); ramp(); }
 
