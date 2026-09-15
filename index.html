@@ -511,6 +511,16 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   #lpanel{border-left:0;border-top:1px solid var(--line);height:auto}
   #map{height:460px;flex:none}
 }
+
+/* two patient-draw charts, stretched so the right column ends level with the left */
+.cmp-split{align-items:stretch}
+.cmp-right{grid-template-rows:1fr 1fr;align-content:stretch}
+.cmp-right .ccard{display:flex;flex-direction:column;min-height:0}
+.cmp-right .chart-wrap,.cmp-right .chart-wrap.tall{flex:1;height:auto;min-height:230px}
+.cbadge{float:right;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+ padding:2px 8px;border-radius:9px;color:#fff;margin-top:3px}
+.cbadge.best{background:var(--navy)}
+.cbadge.worst{background:var(--red)}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
@@ -645,15 +655,14 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   </div>
   <div class="cmp-right">
     <div class="ccard">
-      <div class="s-title">Patient draw by home city</div>
-      <div class="s-sub">Top 10 cities · switch clinic below</div>
-      <div class="toggle-mini"><button id="tb-m" class="on">Monterey</button><button id="tb-b">Burbank</button></div>
+      <div class="s-title">Where Monterey's patients live<span class="cbadge best">Best</span></div>
+      <div class="s-sub">Top 10 home cities · 613 patients mapped</div>
       <div class="chart-wrap tall"><canvas id="drawChart"></canvas></div>
     </div>
     <div class="ccard">
-      <div class="s-title">Portfolio by isolation band</div>
-      <div class="s-sub">All 29 locations · nearest-sibling distance</div>
-      <div class="chart-wrap"><canvas id="isoChart"></canvas></div>
+      <div class="s-title">Where Burbank's patients live<span class="cbadge worst">Worst</span></div>
+      <div class="s-sub">Top 10 home cities · 89 patients mapped. Each chart has its own scale — Monterey's busiest city has 117 patients, Burbank's has 12.</div>
+      <div class="chart-wrap tall"><canvas id="burbChart"></canvas></div>
     </div>
   </div>
 </div>
@@ -996,34 +1005,28 @@ function dcard(el,key){
 Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
 Chart.defaults.font.size=11;
 Chart.defaults.color='#5B6472';
-let drawKey='Monterey', drawChart=null;
-function renderDraw(){
-  const rows=CITY[drawKey].slice(0,10), col=drawKey==='Monterey'?NAVY:RED;
-  const ctx=document.getElementById('drawChart');
-  if(drawChart) drawChart.destroy();
-  drawChart=new Chart(ctx,{type:'bar',data:{labels:rows.map(r=>r.city),
-    datasets:[{data:rows.map(r=>r.n),backgroundColor:col,borderRadius:2,barPercentage:.82}]},
+/* Monterey and Burbank each get their own top-10 chart, so both are on screen at
+   once.  They keep separate axes on purpose: Monterey's biggest city has 117
+   patients against Burbank's 12, and one shared axis would flatten Burbank to
+   slivers.  The volume gap is carried by the scorecards and the KPI cards. */
+let drawChart=null, burbChart=null;
+function cityChart(canvasId,key,col,existing){
+  const rows=CITY[key].slice(0,10);
+  if(existing) existing.destroy();
+  return new Chart(document.getElementById(canvasId),{type:'bar',
+    data:{labels:rows.map(r=>r.city),
+      datasets:[{data:rows.map(r=>r.n),backgroundColor:col,borderRadius:2,barPercentage:.82}]},
     options:{indexAxis:'y',maintainAspectRatio:false,plugins:{legend:{display:false},
       tooltip:{callbacks:{label:c=>c.parsed.x+' patients'}}},
       scales:{x:{grid:{color:'#F0F2F4'},border:{display:false},ticks:{precision:0}},
               y:{grid:{display:false},border:{display:false},
                  ticks:{autoSkip:false,font:{size:9.5}}}}}});
 }
-document.getElementById('tb-m').onclick=function(){drawKey='Monterey';this.classList.add('on');
-  document.getElementById('tb-b').classList.remove('on');renderDraw();};
-document.getElementById('tb-b').onclick=function(){drawKey='Burbank';this.classList.add('on');
-  document.getElementById('tb-m').classList.remove('on');renderDraw();};
+function renderDraw(){
+  drawChart = cityChart('drawChart','Monterey',NAVY,drawChart);
+  burbChart = cityChart('burbChart','Burbank',RED,burbChart);
+}
 renderDraw();
-
-const bandCount={iso:0,mid:0,clu:0};
-CL.forEach(c=>bandCount[bandOf(c.mi)]++);
-new Chart(document.getElementById('isoChart'),{type:'doughnut',
-  data:{labels:['Isolated (20+ mi)','Moderate (10–20 mi)','Clustered (<10 mi)'],
-    datasets:[{data:[bandCount.iso,bandCount.mid,bandCount.clu],
-      backgroundColor:['#1F5C7A','#C98A12',RED],borderWidth:2,borderColor:'#fff'}]},
-  options:{maintainAspectRatio:false,cutout:'58%',
-    plugins:{legend:{position:'right',labels:{boxWidth:9,padding:7,font:{size:9.5}}},
-      tooltip:{callbacks:{label:c=>c.label+': '+c.parsed+' of 29'}}}}});
 
 /* ---------- scorecard ---------- */
 const SC=[
