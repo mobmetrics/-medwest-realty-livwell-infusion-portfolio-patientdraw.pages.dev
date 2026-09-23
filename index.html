@@ -499,9 +499,9 @@ p.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
 .cpn b{transform:rotate(45deg);color:#fff;font-size:10px}
 button.cpn{cursor:pointer;margin:0 5px 0 0;width:16px;height:16px}
 button.cpn b{font-size:9px}
-#cmp2-out table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
-#cmp2-out th{background:var(--navy);color:#fff;text-align:left;padding:7px 6px;font-size:11.5px;vertical-align:top;line-height:1.3;overflow-wrap:anywhere}
-#cmp2-out th:first-child{width:48%}
+#cmp2-out table{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}
+#cmp2-out th{background:var(--navy);color:#fff;text-align:left;padding:7px 6px;font-size:11px;vertical-align:top;line-height:1.3;overflow-wrap:anywhere}
+#cmp2-out th:first-child{width:50%}
 #cmp2-out td{padding:5px 6px;border-bottom:1px solid #EEF0F3;vertical-align:top;line-height:1.3}
 #cmp2-out td:first-child{color:var(--muted)}
 #cmp2-out td.best{font-weight:700;color:var(--navy);background:#E8EEF5}
@@ -515,8 +515,33 @@ button.cpn b{font-size:9px}
 #cmp2-btns button{flex:1;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
 #cmp2-btns button:hover{background:#F2F5F8}
 .maplegend div.lk-off{display:none!important}
+/* ---------- panel-only search layout (23 Sep 2026) ---------- */
+#locform{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;border:0;height:auto;overflow:visible;max-width:none;min-width:0;background:transparent}
+#locform .lic{width:34px;display:flex;align-items:center;justify-content:center;color:var(--navy);flex:none}
+#locq{flex:1;min-width:0;border:0;outline:0;font-size:13px;font-family:inherit;color:var(--ink);background:transparent;padding-right:8px}
+#locgo{border:0;background:var(--navy);color:#fff;font-weight:700;font-size:13px;height:36px;border-radius:6px;cursor:pointer;font-family:inherit}
+#locgo:hover{background:#1d2838}
+#locmsg{font-size:12px;font-weight:600;color:var(--red);line-height:1.35}
+#locmsg:empty{display:none}
+#lc-card:empty{display:none}
+#lp-show{margin:12px 0 10px}
+#lp-show .lsh{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+#lp-show .lsh span{font-weight:400;letter-spacing:0;text-transform:none}
+.lchips{display:flex;flex-wrap:wrap;gap:6px}
+.shw{border:1.5px solid var(--navy);border-radius:16px;padding:4px 11px;font-size:12px;font-weight:600;background:#fff;
+ color:var(--navy);cursor:pointer;font-family:inherit;white-space:nowrap}
+.shw:hover{background:#F2F5F8}
+.shw.on{background:var(--navy);color:#fff}
+.shw.on::before{content:"\2713  "}
+.shw.anah{border-color:var(--red);color:var(--red);margin-left:0}
+.shw.anah.on{background:var(--red);color:#fff}
+.shw.clr{border-color:#9AA3AD;color:#5B6472;flex:none;margin-left:0}
+.shw.clr:hover{border-color:var(--navy);color:var(--navy)}
+#lp-foot{display:flex;gap:6px;align-items:center;margin-bottom:10px}
+#lp-foot #more-hd{flex:1;margin-bottom:0}
+@media(min-width:1181px){ body #main-area{grid-template-columns:1fr 340px;height:690px} }
 /* the panel widens while Compare two is open, so the table fits beside the map */
-@media(min-width:1181px){ #main-area.cmpwide{grid-template-columns:1fr 400px;height:640px} }
+
 
 /* map legend strip */
 .maplegend{display:flex;flex-wrap:wrap;align-items:center;gap:7px 20px;background:#fff;
@@ -740,26 +765,6 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 
 <h2 class="sec">All 29 Locations, Patient Draw &amp; Competing Clinics</h2>
 <p class="sub">Opens on California, where the patient data is — zoom out for the 8 Arizona sites. Monterey and Burbank are compared below the map.</p>
-<div id="locbar">
-  <div class="lrow">
-    <form id="locform" autocomplete="off">
-      <span class="lic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></span>
-      <input id="locq" type="text" placeholder="Type an address, city, ZIP code or county — e.g. Anaheim Hills, CA" aria-label="Check a location">
-      <button id="locgo" type="submit">Check this location</button>
-    </form>
-    <span class="lhint" id="lochint">Try a street address, a city, a ZIP code or a county</span>
-    <span id="locmsg"></span>
-  </div>
-  <div class="lrow">
-    <span class="shlbl">Show me</span>
-    <button class="shw" data-v="comp" type="button">Where competitors are</button>
-    <button class="shw" data-v="pat" type="button">Where patients live</button>
-    <button class="shw" data-v="mvb" type="button">Monterey vs Burbank</button>
-    <button class="shw" data-v="all" type="button">Everything</button>
-    <button class="shw anah" data-v="anaheim" type="button">&#9673; Anaheim area</button>
-    <button class="shw clr" id="shw-clear" type="button">&#10005; Clear map</button>
-  </div>
-</div>
 <div id="main-area">
 <div id="map-wrap">
 <div class="hl-block" id="hl-comp">
@@ -781,7 +786,14 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 </div>
 <div id="lpanel">
   <div id="lp-tabs"><button type="button" data-t="one" class="on">Check one location</button><button type="button" data-t="two">Compare two</button></div>
-  <div id="lp-one"><div id="lc-card"></div></div>
+  <div id="lp-one">
+    <form id="locform" autocomplete="off">
+      <div class="cmp2-in"><span class="lic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></span><input id="locq" type="text" placeholder="Address, city, ZIP code or county" aria-label="Check a location"></div>
+      <button id="locgo" type="submit">Search</button>
+      <div id="locmsg"></div>
+    </form>
+    <div id="lc-card"></div>
+  </div>
   <div id="lp-two" hidden>
     <form id="cmp2-bar" autocomplete="off">
       <div class="cmp2-in"><span class="cpn"><b>1</b></span><input id="cmp2-a" type="text" placeholder="First address, city or ZIP" aria-label="First location"></div>
@@ -791,7 +803,16 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
     </form>
     <div id="cmp2-out" hidden></div>
   </div>
-  <div id="more-hd"><span>More map layers</span><span class="car">&#9656;</span></div>
+  <div id="lp-show">
+    <div class="lsh">Show on map <span>— pick as many as you like</span></div>
+    <div class="lchips">
+      <button class="shw" data-v="comp" type="button">Competitors</button>
+      <button class="shw" data-v="pat" type="button">Patients</button>
+      <button class="shw" data-v="mvb" type="button">Monterey vs Burbank</button>
+      <button class="shw anah" data-v="anaheim" type="button">&#9673; Anaheim area</button>
+    </div>
+  </div>
+  <div id="lp-foot"><div id="more-hd"><span>More map layers</span><span class="car">&#9656;</span></div><button class="shw clr" id="shw-clear" type="button">&#10005; Clear map</button></div>
   <div id="more-body" hidden>
   <div class="pgroup">
     <h4>LivWell Clinics</h4>
@@ -1893,23 +1914,30 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       if(act('pz-bub'))  $('pz-bub').click();
     }
   }
-  let curView=null;
-  function mark(v){ curView=v; document.querySelectorAll('#locbar .shw').forEach(b=>b.classList.toggle('on',!!v&&b.dataset.v===v)); }
-  body.addEventListener('click',()=>{ if(!busy) mark(null); },true);
-
-  function view(v){
-    busy=true;
-    setBtn('lb-clin',true);
-    if(v==='comp'){ setBtn('lb-hm',false); setBtn('lb-hb',false); setBtn('lb-city',false); patients(false); comps(true); if(!chk) home(); }
-    if(v==='pat'){  setBtn('lb-hm',false); setBtn('lb-hb',false); setBtn('lb-city',false); comps(false); patients(true); if(!chk) home(); }
-    if(v==='mvb'){  comps(false); patients(false); setBtn('lb-city',false); setBtn('lb-hm',true); setBtn('lb-hb',true); clearCheck(); home(); }
-    if(v==='all'){  setBtn('lb-hm',false); setBtn('lb-hb',false); comps(true); patients(true); }
+  /* The map buttons are independent switches. Their lit state is read back from the real
+     layers, so they always agree with the checkboxes in "More map layers". */
+  function mark(){ lkLater(); }
+  const onState={
+    comp:()=>act('lb-c0')||act('lb-c1')||act('lb-c2'),
+    pat:()=>act('pz-bub')||act('pz-heat'),
+    mvb:()=>act('lb-hm')||act('lb-hb'),
+    anaheim:()=>!!(chk&&chk.self==='Anaheim')
+  };
+  function syncChips(){ document.querySelectorAll('#lp-show .shw[data-v]').forEach(b=>b.classList.toggle('on',onState[b.dataset.v]())); }
+  function toggle(v){
+    const on=!onState[v]();
+    busy=true; setBtn('lb-clin',true);
+    if(v==='comp') comps(on);
+    if(v==='pat') patients(on);
+    /* the two heat switches each zoom the map themselves; wait for those moves, then show all of California */
+    if(v==='mvb'){ setBtn('lb-hm',on); setBtn('lb-hb',on); if(on) setTimeout(home,450); }
     if(v==='anaheim'){
-      setBtn('lb-hm',false); setBtn('lb-hb',false); setBtn('lb-city',false); comps(true); patients(true);
-      showTab('one'); const a=CL.find(c=>c.name==='Anaheim'); $('locq').value=''; $('locmsg').textContent='';
-      runPoint({lat:a.lat,lon:a.lon,label:'LivWell Anaheim — today’s clinic',st:'CA',self:'Anaheim'});
+      if(on){ showTab('one'); const a=CL.find(c=>c.name==='Anaheim'); $('locq').value=''; $('locmsg').textContent='';
+        Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML='';
+        runPoint({lat:a.lat,lon:a.lon,label:'LivWell Anaheim, today’s clinic',st:'CA',self:'Anaheim'}); }
+      else { clearCheck(); home(); }
     }
-    busy=false; mark(v);
+    busy=false; lkLater();
   }
   /* Back to the opening map: clinics only, no pin, California view. */
   function resetMap(){
@@ -1919,19 +1947,12 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     busy=false;
     clearCheck(); clearCompare(); $('locq').value=''; $('locmsg').textContent=''; mark(null); home();
   }
-  document.querySelectorAll('#locbar .shw[data-v]').forEach(b=>b.onclick=()=>{
-    if(curView===b.dataset.v) resetMap(); else view(b.dataset.v);
-  });
+  document.querySelectorAll('#lp-show .shw[data-v]').forEach(b=>b.onclick=()=>toggle(b.dataset.v));
   $('shw-clear').onclick=resetMap;
 
   /* ---------- location check card ---------- */
   const card=$('lc-card');
-  function emptyCard(){
-    card.innerHTML='<div class="lch"><div class="t">Location check</div><div class="a">Check any location</div></div>'+
-      '<div class="lce">Type an address, city, ZIP code or county in the search bar above the map. This panel then shows:'+
-      '<ul><li>Competing infusion clinics nearby</li><li>The closest LivWell clinic</li><li>How many LivWell patients live close by</li></ul>'+
-      '<div style="margin-top:8px">Or click <b>Anaheim area</b> to see how today’s Anaheim clinic scores.</div></div>';
-  }
+  function emptyCard(){ card.innerHTML=''; }
   function clearCheck(keepBox){ chk=null; Lchk.clearLayers(); emptyCard(); if(!keepBox){ $('locq').value=''; $('locmsg').textContent=''; } if(!busy) mark(null); }
   const row=(l,v)=>'<div class="lci"><span>'+l+'</span><b>'+v+'</b></div>';
   const btns='<div class="lcb"><button type="button" data-a="zoom">Zoom to it</button><button type="button" data-a="clear">Clear</button></div>';
@@ -1952,28 +1973,23 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
 
   function runPoint(p){
     Lchk.clearLayers();
-    chk={kind:'point',lat:p.lat,lon:p.lon};
+    chk={kind:'point',lat:p.lat,lon:p.lon,self:p.self||null};
     const inCA=(p.st==='CA');
     const cd=COMP.map(k=>({k,mi:miles(p.lat,p.lon,k.lat,k.lon)})).sort((a,b)=>a.mi-b.mi);
     const w=r=>cd.filter(x=>x.mi<=r).length;
     const lw=CL.filter(c=>c.name!==p.self).map(c=>({c,mi:miles(p.lat,p.lon,c.lat,c.lon)})).sort((a,b)=>a.mi-b.mi);
     const pat6=ALLPZ.reduce((a,[i,n])=>a+(miles(p.lat,p.lon,PZ.zips[i][0],PZ.zips[i][1])<=6?n:0),0);
     const w10=w(10);
-    let verdict='';
-    if(inCA){
-      verdict = w10===0 ? '<div class="lcv open">Open area — no competing clinic within 10 miles</div>'
-              : w10<=3  ? '<div class="lcv some">Some competition — '+w10+' competing clinic'+(w10===1?'':'s')+' within 10 miles</div>'
-              :           '<div class="lcv busy">Crowded — '+w10+' competing clinics within 10 miles</div>';
-    }
+    const verdict=!inCA?'': w10===0?'<div class="lcv open">Open area</div>': w10<=3?'<div class="lcv some">Some competition</div>':'<div class="lcv busy">Crowded</div>';
     const na='—';
-    card.innerHTML='<div class="lch"><div class="t">Location check</div><div class="a">'+esc(p.label)+'</div></div>'+verdict+
-      row('Competing clinics within 5 miles', inCA?w(5):na)+
-      row('Competing clinics within 10 miles',inCA?w10:na)+
-      row('Competing clinics within 30 miles',inCA?w(30):na)+
-      row('Closest competing clinic', inCA?(esc(cd[0].k.brand)+', '+esc(cd[0].k.name)+' · '+cd[0].mi.toFixed(1)+' mi'):na)+
-      row('Closest LivWell', esc(lw[0].c.name)+' · '+lw[0].mi.toFixed(1)+' mi')+
-      row('Other LivWell clinics within 10 miles', lw.filter(x=>x.mi<=10).length)+
-      row('LivWell patients living within 6 miles', inCA?nf(pat6):na)+
+    const cut=p.label.indexOf(', '), t1=cut>0?p.label.slice(0,cut):p.label, t2=cut>0?p.label.slice(cut+2):'';
+    const hov=(v,t)=>'<span title="'+esc(t)+'">'+v+'</span>';
+    card.innerHTML='<div class="lch"><div class="a">'+esc(t1)+'</div>'+(t2?'<div class="t" style="text-transform:none;letter-spacing:0;font-weight:400;font-size:11.5px;margin-top:2px">'+esc(t2)+'</div>':'')+'</div>'+verdict+
+      row('Competitors within 5 mi', inCA?w(5):na)+
+      row('Competitors within 10 mi', inCA?w10:na)+
+      row('Closest competitor', inCA?hov(cd[0].mi.toFixed(1)+' mi',cd[0].k.brand+', '+cd[0].k.name):na)+
+      row('Closest LivWell', hov(lw[0].mi.toFixed(1)+' mi',lw[0].c.name))+
+      row('Patients within 6 mi', inCA?nf(pat6):na)+
       (inCA?'':'<div class="lcc">The patient file and the competitor survey cover California only.</div>')+
       btns;
     wireBtns();
@@ -2059,6 +2075,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       if(!r){ clearCheck(true); say('Couldn’t find that location — try adding the city and state.'); return; }
       say('');
       busy=true; comps(true); patients(true); busy=false; mark(null);
+      Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML='';
       if(r.kind==='county') runCounty(r); else runPoint(r);
     }catch(err){
       clearCheck(true);
@@ -2069,8 +2086,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
   /* =================== Compare two locations =================== */
   const Lcmp=L.layerGroup().addTo(map);
   function showTab(t){ document.querySelectorAll('#lp-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
-    $('lp-one').hidden=(t!=='one'); $('lp-two').hidden=(t!=='two');
-    $('main-area').classList.toggle('cmpwide',t==='two'); setTimeout(()=>map.invalidateSize(),60); }
+    $('lp-one').hidden=(t!=='one'); $('lp-two').hidden=(t!=='two'); }
   document.querySelectorAll('#lp-tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
   const cmsg=$('cmp2-msg'), cout=$('cmp2-out');
   const numPin=n=>L.divIcon({className:'lcpin',iconSize:[30,40],iconAnchor:[15,38],
@@ -2098,7 +2114,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     const bad=[[a,1],[b,2]].filter(([r])=>!r).map(([,n])=>n);
     if(bad.length){ cmsg.style.color='var(--red)'; cmsg.textContent='Couldn’t find location '+bad.join(' and ')+' — try adding the city and state.'; return; }
     if(a.kind==='county'||b.kind==='county'){ cmsg.style.color='var(--red)'; cmsg.textContent='Compare works with addresses, cities or ZIP codes — a county is too big to score as one site.'; return; }
-    cmsg.textContent='';
+    cmsg.textContent=''; clearCheck(true);
     const A=statsFor(a), B=statsFor(b), na='—';
     const pts=[a,b];
     busy=true; comps(true); busy=false; mark(null);
@@ -2109,17 +2125,15 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     settle(()=>map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lon])).pad(0.35),{maxZoom:12}));
 
     const rating=S=>!S.inCA?na: S.w10===0?'<span class="chip open">Open</span>': S.w10<=3?'<span class="chip some">Some</span>':'<span class="chip busy">Crowded</span>';
-    const ncv=S=>S.inCA?S.nc.mi.toFixed(1)+' mi<small title="'+esc(S.nc.k.brand)+', '+esc(S.nc.k.name)+'">'+esc(S.nc.k.name)+'</small>':na;
-    const nlv=S=>S.nl.mi.toFixed(1)+' mi<small>'+esc(S.nl.c.name)+'</small>';
+    const ncv=S=>S.inCA?'<span title="'+esc(S.nc.k.brand)+', '+esc(S.nc.k.name)+'">'+S.nc.mi.toFixed(1)+' mi</span>':na;
+    const nlv=S=>'<span title="'+esc(S.nl.c.name)+'">'+S.nl.mi.toFixed(1)+' mi</span>';
     /* each row: label, value 1, value 2, numbers used to pick the stronger one, lower-is-better */
     const rows=[
       ['Rating', rating(A), rating(B), A.inCA?A.w10:null, B.inCA?B.w10:null, true],
       ['Competitors within 5 mi', A.inCA?A.w5:na, B.inCA?B.w5:na, A.inCA?A.w5:null, B.inCA?B.w5:null, true],
       ['Competitors within 10 mi', A.inCA?A.w10:na, B.inCA?B.w10:na, A.inCA?A.w10:null, B.inCA?B.w10:null, true],
-      ['Competitors within 30 mi', A.inCA?A.w30:na, B.inCA?B.w30:na, A.inCA?A.w30:null, B.inCA?B.w30:null, true],
       ['Closest competitor', ncv(A), ncv(B), A.inCA?A.nc.mi:null, B.inCA?B.nc.mi:null, false],
       ['Closest LivWell', nlv(A), nlv(B), A.nl.mi, B.nl.mi, false],
-      ['LivWells within 10 mi', A.lw10, B.lw10, A.lw10, B.lw10, true],
       ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false]
     ];
     const cls=(x,y,low)=> (x===null||y===null||x===y)?['','']: ((low?x<y:x>y)?[' class="best"','']:['',' class="best"']);
@@ -2127,7 +2141,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     cout.innerHTML='<table><thead><tr><th></th>'+hdr(a,0)+hdr(b,1)+'</tr></thead><tbody>'+
       rows.map(r=>{ const c=cls(r[3],r[4],r[5]); return '<tr><td>'+r[0]+'</td><td'+c[0]+'>'+r[1]+'</td><td'+c[1]+'>'+r[2]+'</td></tr>'; }).join('')+
       '</tbody></table>'+
-      '<div class="cnote">Shaded = the stronger of the two. Straight-line miles.'+
+      '<div class="cnote">Shaded = the stronger of the two. Hover a distance for the place name.'+
       ((A.inCA&&B.inCA)?'':' The patient file and competitor survey cover California only.')+'</div>'+
       '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to both</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
@@ -2152,6 +2166,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       iso:act('lb-iso')
     };
     document.querySelectorAll('.maplegend [data-lk]').forEach(d=>d.classList.toggle('lk-off',!on[d.dataset.lk]));
+    syncChips();
   }
   const lkLater=()=>{ clearTimeout(lkT); lkT=setTimeout(liveKey,60); };
   map.on('layeradd layerremove',lkLater);
@@ -2243,13 +2258,13 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
             +'the next one might sit.',
           side:'top', align:'start'
       }},
-      { element:'#locbar', popover:{
-          title:'Check a new location',
-          description:'Type any address, city, ZIP code or county and press Check this location. A red pin '
-            +'drops on the map and the panel beside it counts competing clinics within 5, 10 and 30 miles, '
-            +'the closest LivWell and how many LivWell patients live within 6 miles. The Show me buttons '
-            +'switch views, and Clear map puts everything back.',
-          side:'bottom', align:'start'
+      { element:'#lpanel', popover:{
+          title:'Check or compare a location',
+          description:'Check one location: type any address, city, ZIP code or county and press Search. A red pin '
+            +'drops on the map and the panel shows competing clinics nearby, the closest LivWell and how many '
+            +'LivWell patients live within 6 miles. Compare two puts two locations side by side. The Show on map '
+            +'buttons can be switched on together, and Clear map puts everything back.',
+          side:'left', align:'start'
       }}
     ];
   }
