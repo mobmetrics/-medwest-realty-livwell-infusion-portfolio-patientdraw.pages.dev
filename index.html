@@ -483,37 +483,40 @@ p.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
 .leaflet-tooltip.lwchk{background:#fff;color:var(--red);border:1.5px solid var(--red);font-weight:700;font-size:11.5px;padding:2px 7px}
 .leaflet-tooltip.lwchk::before{display:none}
 
-/* ---------- compare two locations (added 23 Sep 2026) ---------- */
-#cmp2{margin-top:22px}
-#cmp2 h2{margin:0 0 3px}
-#cmp2 .sub{margin-bottom:10px}
-#cmp2-bar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:10px}
-.cmp2-in{flex:1;min-width:240px;display:flex;align-items:center;border:2px solid var(--navy);border-radius:6px;height:42px;overflow:hidden;background:#fff}
-.cmp2-in input{flex:1;min-width:0;border:0;outline:0;font-size:15px;font-family:inherit;color:var(--ink);background:transparent;padding-right:10px}
-.cmp2-vs{font-weight:800;color:#9AA3AD;font-size:13px}
-#cmp2-go{border:0;background:var(--navy);color:#fff;font-weight:700;font-size:14px;padding:0 22px;height:42px;border-radius:6px;cursor:pointer;font-family:inherit}
+/* ---------- compare two locations — right-hand panel (added 23 Sep 2026) ---------- */
+#lp-tabs{display:flex;border:1.5px solid var(--navy);border-radius:6px;overflow:hidden;margin-bottom:10px}
+#lp-tabs button{flex:1;border:0;background:#fff;color:var(--navy);font-family:inherit;font-size:12.5px;font-weight:700;padding:7px 4px;cursor:pointer}
+#lp-tabs button.on{background:var(--navy);color:#fff}
+#cmp2-bar{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.cmp2-in{display:flex;align-items:center;border:2px solid var(--navy);border-radius:6px;height:36px;overflow:hidden;background:#fff}
+.cmp2-in input{flex:1;min-width:0;border:0;outline:0;font-size:13px;font-family:inherit;color:var(--ink);background:transparent;padding-right:8px}
+#cmp2-go{border:0;background:var(--navy);color:#fff;font-weight:700;font-size:13px;height:36px;border-radius:6px;cursor:pointer;font-family:inherit}
 #cmp2-go:hover{background:#1d2838}
-#cmp2-msg{font-size:12.5px;font-weight:600;color:var(--red);width:100%}
+#cmp2-msg{font-size:12px;font-weight:600;color:var(--red);line-height:1.35}
 #cmp2-msg:empty{display:none}
-.cpn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50% 50% 50% 0;
- transform:rotate(-45deg);background:var(--red);margin:0 10px 0 12px;flex:none;vertical-align:middle;border:0;padding:0}
-.cpn b{transform:rotate(45deg);color:#fff;font-size:11px}
-button.cpn{cursor:pointer;margin:0 9px 0 0}
-#cmp2-out table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:13px}
-#cmp2-out th{background:var(--navy);color:#fff;text-align:left;padding:11px 14px;font-size:14px;vertical-align:top}
-#cmp2-out th .s{display:block;font-size:11.5px;font-weight:400;opacity:.8;margin:3px 0 0 31px}
-#cmp2-out td{padding:9px 14px;border-bottom:1px solid #EEF0F3}
-#cmp2-out tr:last-child td{border-bottom:0}
-#cmp2-out td:first-child{color:var(--muted);width:26%;background:#FAFBFC}
+.cpn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50% 50% 50% 0;
+ transform:rotate(-45deg);background:var(--red);margin:0 8px 0 9px;flex:none;vertical-align:middle;border:0;padding:0}
+.cpn b{transform:rotate(45deg);color:#fff;font-size:10px}
+button.cpn{cursor:pointer;margin:0 5px 0 0;width:16px;height:16px}
+button.cpn b{font-size:9px}
+#cmp2-out table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+#cmp2-out th{background:var(--navy);color:#fff;text-align:left;padding:7px 6px;font-size:11.5px;vertical-align:top;line-height:1.3;overflow-wrap:anywhere}
+#cmp2-out th:first-child{width:48%}
+#cmp2-out td{padding:5px 6px;border-bottom:1px solid #EEF0F3;vertical-align:top;line-height:1.3}
+#cmp2-out td:first-child{color:var(--muted)}
 #cmp2-out td.best{font-weight:700;color:var(--navy);background:#E8EEF5}
-#cmp2-out .chip{display:inline-block;padding:3px 9px;border-radius:12px;font-size:12px;font-weight:700}
+#cmp2-out td small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cmp2-out .chip{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700}
 #cmp2-out .chip.open{background:#E8EEF5;color:var(--navy)}
 #cmp2-out .chip.some{background:#FDF1DC;color:#8A5A00}
 #cmp2-out .chip.busy{background:#FCE8E9;color:#A5202A}
-#cmp2-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:12px;color:var(--muted)}
-#cmp2-clear{border:1.5px solid #9AA3AD;border-radius:16px;padding:5px 12px;color:#5B6472;font-weight:600;background:#fff;cursor:pointer;font-family:inherit;font-size:12px}
-#cmp2-clear:hover{border-color:var(--navy);color:var(--navy)}
+#cmp2-out .cnote{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.35}
+#cmp2-btns{display:flex;gap:6px;margin:10px 0 12px}
+#cmp2-btns button{flex:1;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+#cmp2-btns button:hover{background:#F2F5F8}
 .maplegend div.lk-off{display:none!important}
+/* the panel widens while Compare two is open, so the table fits beside the map */
+@media(min-width:1181px){ #main-area.cmpwide{grid-template-columns:1fr 400px;height:640px} }
 
 /* map legend strip */
 .maplegend{display:flex;flex-wrap:wrap;align-items:center;gap:7px 20px;background:#fff;
@@ -777,7 +780,17 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 <div id="map"></div>
 </div>
 <div id="lpanel">
-  <div id="lc-card"></div>
+  <div id="lp-tabs"><button type="button" data-t="one" class="on">Check one location</button><button type="button" data-t="two">Compare two</button></div>
+  <div id="lp-one"><div id="lc-card"></div></div>
+  <div id="lp-two" hidden>
+    <form id="cmp2-bar" autocomplete="off">
+      <div class="cmp2-in"><span class="cpn"><b>1</b></span><input id="cmp2-a" type="text" placeholder="First address, city or ZIP" aria-label="First location"></div>
+      <div class="cmp2-in"><span class="cpn"><b>2</b></span><input id="cmp2-b" type="text" placeholder="Second address, city or ZIP" aria-label="Second location"></div>
+      <button id="cmp2-go" type="submit">Compare</button>
+      <div id="cmp2-msg"></div>
+    </form>
+    <div id="cmp2-out" hidden></div>
+  </div>
   <div id="more-hd"><span>More map layers</span><span class="car">&#9656;</span></div>
   <div id="more-body" hidden>
   <div class="pgroup">
@@ -825,19 +838,6 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   <div data-lk="comp"><i style="background:#E07B24;border-radius:1px;transform:rotate(45deg) scale(.85)"></i> Competing infusion clinic (Infusion For Health, IVX Health, Clinivoy)</div>
   <div data-lk="pin"><i style="background:#DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Location you checked or compared</div>
   <div data-lk="iso"><i class="bar" style="background:linear-gradient(90deg,#1F5C7A,#C98A12,#DC2F3A)"></i> Isolation — on its own to crowded</div>
-</div>
-
-<div id="cmp2">
-  <h2 class="sec">Compare two locations</h2>
-  <p class="sub">Type any two addresses, cities or ZIP codes. Each gets a numbered pin on the map. The stronger value in each row is shaded. Straight-line miles.</p>
-  <form id="cmp2-bar" autocomplete="off">
-    <div class="cmp2-in"><span class="cpn"><b>1</b></span><input id="cmp2-a" type="text" placeholder="First location — e.g. 1234 E Lincoln Ave, Anaheim, CA" aria-label="First location"></div>
-    <span class="cmp2-vs">vs</span>
-    <div class="cmp2-in"><span class="cpn"><b>2</b></span><input id="cmp2-b" type="text" placeholder="Second location — e.g. Anaheim Hills, CA" aria-label="Second location"></div>
-    <button id="cmp2-go" type="submit">Compare</button>
-    <div id="cmp2-msg"></div>
-  </form>
-  <div id="cmp2-out" hidden></div>
 </div>
 
 <h2 class="sec" id="cmp-head">Monterey vs Burbank</h2>
@@ -1906,7 +1906,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     if(v==='all'){  setBtn('lb-hm',false); setBtn('lb-hb',false); comps(true); patients(true); }
     if(v==='anaheim'){
       setBtn('lb-hm',false); setBtn('lb-hb',false); setBtn('lb-city',false); comps(true); patients(true);
-      const a=CL.find(c=>c.name==='Anaheim'); $('locq').value=''; $('locmsg').textContent='';
+      showTab('one'); const a=CL.find(c=>c.name==='Anaheim'); $('locq').value=''; $('locmsg').textContent='';
       runPoint({lat:a.lat,lon:a.lon,label:'LivWell Anaheim — today’s clinic',st:'CA',self:'Anaheim'});
     }
     busy=false; mark(v);
@@ -2053,7 +2053,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     e.preventDefault();
     const q=$('locq').value.trim();
     if(!q){ say('Type an address, city, ZIP code or county first.'); return; }
-    say('Looking that up…',true);
+    showTab('one'); say('Looking that up\u2026',true);
     try{
       const r=await lookup(q);
       if(!r){ clearCheck(true); say('Couldn’t find that location — try adding the city and state.'); return; }
@@ -2068,6 +2068,10 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
 
   /* =================== Compare two locations =================== */
   const Lcmp=L.layerGroup().addTo(map);
+  function showTab(t){ document.querySelectorAll('#lp-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+    $('lp-one').hidden=(t!=='one'); $('lp-two').hidden=(t!=='two');
+    $('main-area').classList.toggle('cmpwide',t==='two'); setTimeout(()=>map.invalidateSize(),60); }
+  document.querySelectorAll('#lp-tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
   const cmsg=$('cmp2-msg'), cout=$('cmp2-out');
   const numPin=n=>L.divIcon({className:'lcpin',iconSize:[30,40],iconAnchor:[15,38],
     html:'<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 38C6 26 2 20 2 13a13 13 0 0 1 26 0c0 7-4 13-13 25z" fill="#DC2F3A" stroke="#fff" stroke-width="2.5"/><text x="15" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Segoe UI,Arial,sans-serif">'+n+'</text></svg>'});
@@ -2104,34 +2108,33 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       .bindPopup('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{offset:[0,-30]}));
     settle(()=>map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lon])).pad(0.35),{maxZoom:12}));
 
-    const rating=S=>!S.inCA?na: S.w10===0?'<span class="chip open">Open area</span>': S.w10<=3?'<span class="chip some">Some competition</span>':'<span class="chip busy">Crowded</span>';
-    /* each row: label, value for A, value for B, number used to pick the stronger one, and whether lower is better */
+    const rating=S=>!S.inCA?na: S.w10===0?'<span class="chip open">Open</span>': S.w10<=3?'<span class="chip some">Some</span>':'<span class="chip busy">Crowded</span>';
+    const ncv=S=>S.inCA?S.nc.mi.toFixed(1)+' mi<small title="'+esc(S.nc.k.brand)+', '+esc(S.nc.k.name)+'">'+esc(S.nc.k.name)+'</small>':na;
+    const nlv=S=>S.nl.mi.toFixed(1)+' mi<small>'+esc(S.nl.c.name)+'</small>';
+    /* each row: label, value 1, value 2, numbers used to pick the stronger one, lower-is-better */
     const rows=[
       ['Rating', rating(A), rating(B), A.inCA?A.w10:null, B.inCA?B.w10:null, true],
-      ['Competing clinics within 5 miles', A.inCA?A.w5:na, B.inCA?B.w5:na, A.inCA?A.w5:null, B.inCA?B.w5:null, true],
-      ['Competing clinics within 10 miles', A.inCA?A.w10:na, B.inCA?B.w10:na, A.inCA?A.w10:null, B.inCA?B.w10:null, true],
-      ['Competing clinics within 30 miles', A.inCA?A.w30:na, B.inCA?B.w30:na, A.inCA?A.w30:null, B.inCA?B.w30:null, true],
-      ['Closest competing clinic',
-        A.inCA?esc(A.nc.k.brand)+', '+esc(A.nc.k.name)+' · '+A.nc.mi.toFixed(1)+' mi':na,
-        B.inCA?esc(B.nc.k.brand)+', '+esc(B.nc.k.name)+' · '+B.nc.mi.toFixed(1)+' mi':na,
-        A.inCA?A.nc.mi:null, B.inCA?B.nc.mi:null, false],
-      ['Closest LivWell', esc(A.nl.c.name)+' · '+A.nl.mi.toFixed(1)+' mi', esc(B.nl.c.name)+' · '+B.nl.mi.toFixed(1)+' mi', A.nl.mi, B.nl.mi, false],
-      ['LivWell clinics within 10 miles', A.lw10, B.lw10, A.lw10, B.lw10, true],
-      ['LivWell patients living within 6 miles', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false]
+      ['Competitors within 5 mi', A.inCA?A.w5:na, B.inCA?B.w5:na, A.inCA?A.w5:null, B.inCA?B.w5:null, true],
+      ['Competitors within 10 mi', A.inCA?A.w10:na, B.inCA?B.w10:na, A.inCA?A.w10:null, B.inCA?B.w10:null, true],
+      ['Competitors within 30 mi', A.inCA?A.w30:na, B.inCA?B.w30:na, A.inCA?A.w30:null, B.inCA?B.w30:null, true],
+      ['Closest competitor', ncv(A), ncv(B), A.inCA?A.nc.mi:null, B.inCA?B.nc.mi:null, false],
+      ['Closest LivWell', nlv(A), nlv(B), A.nl.mi, B.nl.mi, false],
+      ['LivWells within 10 mi', A.lw10, B.lw10, A.lw10, B.lw10, true],
+      ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false]
     ];
     const cls=(x,y,low)=> (x===null||y===null||x===y)?['','']: ((low?x<y:x>y)?[' class="best"','']:['',' class="best"']);
-    const hdr=(p,n)=>{ const [t,sub]=splitLabel(p.label);
-      return '<th><button type="button" class="cpn" data-n="'+n+'" title="Show on the map"><b>'+(n+1)+'</b></button>'+esc(t)+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</th>'; };
+    const hdr=(p,n)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+n+'" title="Show on the map"><b>'+(n+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>';
     cout.innerHTML='<table><thead><tr><th></th>'+hdr(a,0)+hdr(b,1)+'</tr></thead><tbody>'+
       rows.map(r=>{ const c=cls(r[3],r[4],r[5]); return '<tr><td>'+r[0]+'</td><td'+c[0]+'>'+r[1]+'</td><td'+c[1]+'>'+r[2]+'</td></tr>'; }).join('')+
       '</tbody></table>'+
-      ((A.inCA&&B.inCA)?'':'<div style="font-size:12px;color:var(--muted);margin-top:6px">The patient file and the competitor survey cover California only.</div>')+
-      '<div id="cmp2-foot"><span>Click a pin number to jump to it on the map.</span><button type="button" id="cmp2-clear">✕ Clear comparison</button></div>';
+      '<div class="cnote">Shaded = the stronger of the two. Straight-line miles.'+
+      ((A.inCA&&B.inCA)?'':' The patient file and competitor survey cover California only.')+'</div>'+
+      '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to both</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
     cout.querySelectorAll('button.cpn').forEach(btn=>btn.onclick=()=>{
-      const p=pts[+btn.dataset.n]; $('map').scrollIntoView({behavior:'smooth',block:'center'});
-      settle(()=>map.setView([p.lat,p.lon],12.5));
+      const p=pts[+btn.dataset.n]; settle(()=>map.setView([p.lat,p.lon],12.5));
     });
+    $('cmp2-zoom').onclick=()=>settle(()=>map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lon])).pad(0.35),{maxZoom:12}));
     $('cmp2-clear').onclick=clearCompare;
   };
 
