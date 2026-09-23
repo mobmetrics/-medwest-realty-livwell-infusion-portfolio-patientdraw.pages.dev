@@ -1898,17 +1898,13 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       row('Closest LivWell', esc(lw[0].c.name)+' · '+lw[0].mi.toFixed(1)+' mi')+
       row('Other LivWell clinics within 10 miles', lw.filter(x=>x.mi<=10).length)+
       row('LivWell patients living within 6 miles', nf(pat6))+
-      '<div class="lcc">'+(inCA
-        ? 'For comparison: <b>Monterey</b>, the best location, has <b>0</b> competing clinics within 10 miles and 0 within 30. '+
-          '<b>Burbank</b>, the weakest, has <b>'+burW10+'</b> within 10 miles and '+burW30+' within 30.'
-        : 'The competitor survey covers California only, so competitor counts are not shown for this location.')+
-      '<br>Half of LivWell’s patients live within about 6 miles of their clinic. Distances are straight-line, not drive time.</div>'+btns;
+      btns;
     wireBtns();
 
     L.circle([p.lat,p.lon],{radius:6*1609.344,color:RED,weight:2,dashArray:'8 6',fillColor:RED,fillOpacity:.05,interactive:false}).addTo(Lchk);
     L.marker([p.lat,p.lon],{zIndexOffset:1000,icon:L.divIcon({className:'lcpin',iconSize:[30,40],iconAnchor:[15,38],
       html:'<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 38C6 26 2 20 2 13a13 13 0 0 1 26 0c0 7-4 13-13 25z" fill="#DC2F3A" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="13" r="5" fill="#fff"/></svg>'})})
-      .addTo(Lchk).bindTooltip(p.self?'Today\u2019s clinic':'Location you checked',{permanent:true,direction:'bottom',offset:[0,2],className:'lwchk'});
+      .addTo(Lchk);
     zoomTo();
   }
 
