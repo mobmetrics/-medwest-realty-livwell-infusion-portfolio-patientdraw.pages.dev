@@ -448,6 +448,8 @@ p.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
 .shw.on{background:var(--navy);color:#fff}
 .shw.anah{border-color:var(--red);color:var(--red);margin-left:10px}
 .shw.anah.on{background:var(--red);color:#fff}
+.shw.clr{border-color:#9AA3AD;color:#5B6472;margin-left:auto}
+.shw.clr:hover{border-color:var(--navy);color:var(--navy)}
 #lc-card{border:2px solid var(--navy);border-radius:8px;overflow:hidden;margin-bottom:12px}
 #lc-card .lch{background:var(--navy);color:#fff;padding:9px 12px}
 #lc-card .lch .t{font-size:10px;letter-spacing:.9px;font-weight:700;opacity:.8;text-transform:uppercase}
@@ -719,6 +721,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
     <button class="shw" data-v="mvb" type="button">Monterey vs Burbank</button>
     <button class="shw" data-v="all" type="button">Everything</button>
     <button class="shw anah" data-v="anaheim" type="button">&#9673; Anaheim area</button>
+    <button class="shw clr" id="shw-clear" type="button">&#10005; Clear map</button>
   </div>
 </div>
 <div id="main-area">
@@ -1829,7 +1832,8 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       if(act('pz-bub'))  $('pz-bub').click();
     }
   }
-  function mark(v){ document.querySelectorAll('#locbar .shw').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
+  let curView=null;
+  function mark(v){ curView=v; document.querySelectorAll('#locbar .shw').forEach(b=>b.classList.toggle('on',!!v&&b.dataset.v===v)); }
   body.addEventListener('click',()=>{ if(!busy) mark(null); },true);
 
   function view(v){
@@ -1846,7 +1850,18 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     }
     busy=false; mark(v);
   }
-  document.querySelectorAll('#locbar .shw').forEach(b=>b.onclick=()=>view(b.dataset.v));
+  /* Back to the opening map: clinics only, no pin, California view. */
+  function resetMap(){
+    busy=true;
+    setBtn('lb-clin',true); setBtn('lb-ring',false); setBtn('lb-hm',false); setBtn('lb-hb',false);
+    setBtn('lb-city',false); setBtn('lb-iso',false); comps(false); patients(false);
+    busy=false;
+    clearCheck(); $('locq').value=''; $('locmsg').textContent=''; mark(null); goHome();
+  }
+  document.querySelectorAll('#locbar .shw[data-v]').forEach(b=>b.onclick=()=>{
+    if(curView===b.dataset.v) resetMap(); else view(b.dataset.v);
+  });
+  $('shw-clear').onclick=resetMap;
 
   /* ---------- location check card ---------- */
   const card=$('lc-card');
