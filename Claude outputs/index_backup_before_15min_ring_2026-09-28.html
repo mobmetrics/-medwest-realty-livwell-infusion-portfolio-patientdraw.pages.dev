@@ -462,9 +462,6 @@ p.sub{font-size:12px;color:var(--muted);margin:0 0 12px}
 #lc-card .lci span{flex:1;min-width:0}
 #lc-card .lci b{font-size:13px;color:var(--navy);text-align:right;max-width:58%;overflow-wrap:anywhere}
 #lc-card .lcc{font-size:11.5px;color:var(--muted);padding:8px 12px;line-height:1.45}
-#lc-card .lcs{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--navy);background:#F3F5F8;padding:6px 12px;border-bottom:1px solid #EEF0F3}
-#cmp2-out tr.d15 td{background:#F7F8FA}
-#cmp2-out tr.d15 td.best{background:#E8EEF5}
 #lc-card .lcb{display:flex;gap:8px;padding:0 12px 12px}
 #lc-card .lcb button{flex:1;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:5px;padding:6px;
  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
@@ -860,7 +857,6 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   <div data-lk="heat"><i class="bar" style="background:linear-gradient(90deg,#29374D,#2E6F8E,#37A05F,#F0B429,#DC2F3A)"></i> Patient heat — few patients to many</div>
   <div data-lk="pat"><i style="background:#6F9FCF"></i> Where LivWell patients live, by ZIP code (bigger = more)</div>
   <div data-lk="comp"><i style="background:#E07B24;border-radius:1px;transform:rotate(45deg) scale(.85)"></i> Competing infusion clinic (Infusion For Health, IVX Health, Clinivoy)</div>
-  <div data-lk="drive"><i style="border:2px dashed #DC2F3A;background:none"></i> About a 15-minute drive (7-mile circle)</div>
   <div data-lk="pin"><i style="background:#DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Location you checked or compared</div>
   <div data-lk="iso"><i class="bar" style="background:linear-gradient(90deg,#1F5C7A,#C98A12,#DC2F3A)"></i> Isolation — on its own to crowded</div>
 </div>
@@ -1850,9 +1846,8 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
    - Search takes a street address, city, ZIP code or county.
        ZIP codes in the patient file are placed locally; everything else is
        looked up with OpenStreetMap's free Nominatim service.
-   - An address, city or ZIP drops a pin with a 15-minute-drive ring (a 7-mile circle,
-       added 28 Sep 2026) and scores the spot: competitors within 5 / 10 / 30 mi, nearest
-       LivWell, patients within 6 mi, and patients / competitors / LivWell inside the ring.
+   - An address, city or ZIP drops a pin with a 6-mile ring and scores the spot:
+       competitors within 5 / 10 / 30 mi, nearest LivWell, patients within 6 mi.
    - A county draws its outline and counts what sits inside it.
    - "Show me" buttons switch on the layers that belong together.
    - The detailed checkboxes live in the "More map layers" drawer.
@@ -1864,21 +1859,6 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
   const nf=n=>n.toLocaleString('en-US');
   const ALLPZ=PZ.loc['All California'];
   const TOTPAT=PZ.stats['All California'].n;
-  /* 15-minute drive area: a straight-line circle, not a road-based drive time.
-     7 miles sits between dense LA / Orange County traffic (~5 mi) and open freeway (~9 mi). */
-  const DRIVE_MI=7, DRIVE_LBL='About a 15-minute drive (7-mile circle)';
-  function drive15(p,self){
-    const zipsIn=ALLPZ.filter(([i])=>miles(p.lat,p.lon,PZ.zips[i][0],PZ.zips[i][1])<=DRIVE_MI);
-    return {
-      zipsIn:new Set(zipsIn.map(([i])=>i)),
-      pat:zipsIn.reduce((a,[,n])=>a+n,0),
-      comp:COMP.filter(k=>miles(p.lat,p.lon,k.lat,k.lon)<=DRIVE_MI).length,
-      /* other LivWell clinics: skips the clinic itself when the address is a LivWell site */
-      lw:CL.filter(c=>c.name!==self && miles(p.lat,p.lon,c.lat,c.lon)>0.25 && miles(p.lat,p.lon,c.lat,c.lon)<=DRIVE_MI).length
-    };
-  }
-  const driveRing=(p,col,txt)=>L.circle([p.lat,p.lon],{radius:DRIVE_MI*1609.344,color:col,weight:2.5,dashArray:'8 6',fillColor:col,fillOpacity:.06})
-      .bindTooltip('<b>'+esc(txt)+'</b><br>'+DRIVE_LBL+' · straight-line estimate',{sticky:true,className:'lwtip'});
   const Lchk=L.layerGroup().addTo(map);
   let chk=null;          /* the location currently checked */
   /* Leaflet ignores a new zoom while one is still animating, so several moves in a row
@@ -1985,7 +1965,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
   function zoomTo(){
     if(!chk) return;
     const c=chk;
-    settle(()=>{ if(c.kind==='county') map.fitBounds(c.bounds,{padding:[20,20]}); else map.setView([c.lat,c.lon],10.6); });
+    settle(()=>{ if(c.kind==='county') map.fitBounds(c.bounds,{padding:[20,20]}); else map.setView([c.lat,c.lon],11.3); });
   }
 
   const bur=CL.find(c=>c.name==='Burbank');
@@ -2000,7 +1980,6 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     const lw=CL.filter(c=>c.name!==p.self).map(c=>({c,mi:miles(p.lat,p.lon,c.lat,c.lon)})).sort((a,b)=>a.mi-b.mi);
     const pat6=ALLPZ.reduce((a,[i,n])=>a+(miles(p.lat,p.lon,PZ.zips[i][0],PZ.zips[i][1])<=6?n:0),0);
     const w10=w(10);
-    const d15=drive15(p,p.self);
     const verdict=!inCA?'': w10===0?'<div class="lcv open">Open area</div>': w10<=3?'<div class="lcv some">Some competition</div>':'<div class="lcv busy">Crowded</div>';
     const na='—';
     const cut=p.label.indexOf(', '), t1=cut>0?p.label.slice(0,cut):p.label, t2=cut>0?p.label.slice(cut+2):'';
@@ -2011,16 +1990,11 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       row('Closest competitor', inCA?hov(cd[0].mi.toFixed(1)+' mi',cd[0].k.brand+', '+cd[0].k.name):na)+
       row('Closest LivWell', hov(lw[0].mi.toFixed(1)+' mi',lw[0].c.name))+
       row('Patients within 6 mi', inCA?nf(pat6):na)+
-      '<div class="lcs">Within about a 15-minute drive</div>'+
-      row('LivWell patients living here', inCA?nf(d15.pat):na)+
-      row('Competitors', inCA?d15.comp:na)+
-      row('Other LivWell clinics', d15.lw)+
-      '<div class="lcc" style="padding-top:4px">Red dashed circle on the map = 7 miles, a straight-line estimate of a 15-minute drive.</div>'+
       (inCA?'':'<div class="lcc">The patient file and the competitor survey cover California only.</div>')+
       btns;
     wireBtns();
 
-    driveRing(p,RED,p.label).addTo(Lchk);
+    L.circle([p.lat,p.lon],{radius:6*1609.344,color:RED,weight:2,dashArray:'8 6',fillColor:RED,fillOpacity:.05,interactive:false}).addTo(Lchk);
     L.marker([p.lat,p.lon],{zIndexOffset:1000,icon:L.divIcon({className:'lcpin',iconSize:[30,40],iconAnchor:[15,38],
       html:'<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 38C6 26 2 20 2 13a13 13 0 0 1 26 0c0 7-4 13-13 25z" fill="#DC2F3A" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="13" r="5" fill="#fff"/></svg>'})})
       .addTo(Lchk)
@@ -2123,7 +2097,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     const w=r=>cd.filter(x=>x.mi<=r).length;
     const lw=CL.map(c=>({c,mi:miles(p.lat,p.lon,c.lat,c.lon)})).sort((a,b)=>a.mi-b.mi);
     const pat6=ALLPZ.reduce((a,[i,n])=>a+(miles(p.lat,p.lon,PZ.zips[i][0],PZ.zips[i][1])<=6?n:0),0);
-    return {inCA,w5:w(5),w10:w(10),w30:w(30),nc:cd[0],nl:lw[0],lw10:lw.filter(x=>x.mi<=10).length,pat6,d15:drive15(p,null)};
+    return {inCA,w5:w(5),w10:w(10),w30:w(30),nc:cd[0],nl:lw[0],lw10:lw.filter(x=>x.mi<=10).length,pat6};
   }
   function splitLabel(t){ const i=t.indexOf(', '); return i>0?[t.slice(0,i),t.slice(i+2)]:[t,'']; }
   function clearCompare(){ Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML=''; cmsg.textContent=''; $('cmp2-a').value=''; $('cmp2-b').value=''; }
@@ -2145,11 +2119,10 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     const pts=[a,b];
     busy=true; comps(true); busy=false; mark(null);
     Lcmp.clearLayers();
-    pts.forEach((p,i)=>driveRing(p,i?RED:NAVY,(i+1)+'. '+p.label).addTo(Lcmp));
     pts.forEach((p,i)=>L.marker([p.lat,p.lon],{zIndexOffset:1100,icon:numPin(i+1)}).addTo(Lcmp)
       .bindTooltip('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{direction:'top',offset:[0,-36],className:'lwtip'})
       .bindPopup('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{offset:[0,-30]}));
-    settle(()=>map.fitBounds(L.latLngBounds(pts.flatMap(p=>{ const dy=DRIVE_MI/69, dx=DRIVE_MI/(69*Math.cos(p.lat*Math.PI/180)); return [[p.lat-dy,p.lon-dx],[p.lat+dy,p.lon+dx]]; })).pad(0.05),{maxZoom:12}));
+    settle(()=>map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lon])).pad(0.35),{maxZoom:12}));
 
     const rating=S=>!S.inCA?na: S.w10===0?'<span class="chip open">Open</span>': S.w10<=3?'<span class="chip some">Some</span>':'<span class="chip busy">Crowded</span>';
     const ncv=S=>S.inCA?'<span title="'+esc(S.nc.k.brand)+', '+esc(S.nc.k.name)+'">'+S.nc.mi.toFixed(1)+' mi</span>':na;
@@ -2161,28 +2134,21 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       ['Competitors within 10 mi', A.inCA?A.w10:na, B.inCA?B.w10:na, A.inCA?A.w10:null, B.inCA?B.w10:null, true],
       ['Closest competitor', ncv(A), ncv(B), A.inCA?A.nc.mi:null, B.inCA?B.nc.mi:null, false],
       ['Closest LivWell', nlv(A), nlv(B), A.nl.mi, B.nl.mi, false],
-      ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false],
-      ['Patients within 15-min drive', A.inCA?nf(A.d15.pat):na, B.inCA?nf(B.d15.pat):na, A.inCA?A.d15.pat:null, B.inCA?B.d15.pat:null, false, 'd15'],
-      ['Competitors within 15-min drive', A.inCA?A.d15.comp:na, B.inCA?B.d15.comp:na, A.inCA?A.d15.comp:null, B.inCA?B.d15.comp:null, true, 'd15'],
-      ['Other LivWell clinics within 15-min drive', A.d15.lw, B.d15.lw, A.d15.lw, B.d15.lw, true, 'd15']
+      ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false]
     ];
-    /* patients whose ZIP sits inside both circles, so the two counts aren't double-read */
-    const both=ALLPZ.reduce((s,[i,n])=>s+(A.d15.zipsIn.has(i)&&B.d15.zipsIn.has(i)?n:0),0);
     const cls=(x,y,low)=> (x===null||y===null||x===y)?['','']: ((low?x<y:x>y)?[' class="best"','']:['',' class="best"']);
     const hdr=(p,n)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+n+'" title="Show on the map"><b>'+(n+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>';
     cout.innerHTML='<table><thead><tr><th></th>'+hdr(a,0)+hdr(b,1)+'</tr></thead><tbody>'+
-      rows.map(r=>{ const c=cls(r[3],r[4],r[5]); return '<tr'+(r[6]?' class="'+r[6]+'"':'')+'><td>'+r[0]+'</td><td'+c[0]+'>'+r[1]+'</td><td'+c[1]+'>'+r[2]+'</td></tr>'; }).join('')+
+      rows.map(r=>{ const c=cls(r[3],r[4],r[5]); return '<tr><td>'+r[0]+'</td><td'+c[0]+'>'+r[1]+'</td><td'+c[1]+'>'+r[2]+'</td></tr>'; }).join('')+
       '</tbody></table>'+
       '<div class="cnote">Shaded = the stronger of the two. Hover a distance for the place name.'+
-      ' 15-min drive = the dashed circles on the map (1 navy, 2 red), 7 miles each, a straight-line estimate.'+
-      ((A.inCA&&B.inCA)?(both?' <b>'+nf(both)+'</b> patients live inside both circles.':' The two circles share no patients.'):'')+
       ((A.inCA&&B.inCA)?'':' The patient file and competitor survey cover California only.')+'</div>'+
       '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to both</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
     cout.querySelectorAll('button.cpn').forEach(btn=>btn.onclick=()=>{
       const p=pts[+btn.dataset.n]; settle(()=>map.setView([p.lat,p.lon],12.5));
     });
-    $('cmp2-zoom').onclick=()=>settle(()=>map.fitBounds(L.latLngBounds(pts.flatMap(p=>{ const dy=DRIVE_MI/69, dx=DRIVE_MI/(69*Math.cos(p.lat*Math.PI/180)); return [[p.lat-dy,p.lon-dx],[p.lat+dy,p.lon+dx]]; })).pad(0.05),{maxZoom:12}));
+    $('cmp2-zoom').onclick=()=>settle(()=>map.fitBounds(L.latLngBounds(pts.map(p=>[p.lat,p.lon])).pad(0.35),{maxZoom:12}));
     $('cmp2-clear').onclick=clearCompare;
   };
 
@@ -2197,7 +2163,6 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       pat:act('pz-bub')||act('lb-city'),
       comp:act('lb-c0')||act('lb-c1')||act('lb-c2'),
       pin:Lchk.getLayers().length>0||Lcmp.getLayers().length>0,
-      drive:Lchk.getLayers().length>0||Lcmp.getLayers().length>0,
       iso:act('lb-iso')
     };
     document.querySelectorAll('.maplegend [data-lk]').forEach(d=>d.classList.toggle('lk-off',!on[d.dataset.lk]));
