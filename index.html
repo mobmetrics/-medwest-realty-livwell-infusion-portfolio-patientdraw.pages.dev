@@ -695,6 +695,26 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 .mw-tour-popover .driver-popover-progress-text{color:#8a95a5;font-size:10.5px}
 .driver-active-element{outline:2px solid var(--red)!important;outline-offset:3px;border-radius:6px}
 @media(max-width:1180px){ #tour-nav-btn{margin-left:auto} }
+<style>
+/* ===== Anaheim relocation (added Oct 2026) ===== */
+#grp-ana{margin-top:10px;border:1px solid var(--line);border-radius:6px;padding:8px 10px 6px}
+#grp-ana h4{display:flex;align-items:center;justify-content:space-between;color:var(--navy);border-bottom-color:var(--navy)}
+#ana-all{font:inherit;font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:none;border:1px solid var(--navy);
+ background:#fff;color:var(--navy);border-radius:12px;padding:2px 9px;cursor:pointer}
+#ana-all:hover{background:var(--navy);color:#fff}
+.anapin{background:none;border:0}
+.ana-strip{display:flex;flex-wrap:wrap;gap:8px 28px;font-size:12.5px;color:var(--muted);margin:2px 0 12px}
+.ana-strip b{font-size:18px;color:var(--navy);margin-right:4px}
+table.at{width:100%;border-collapse:collapse;font-size:12.5px}
+table.at th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);
+ padding:6px 8px;border-bottom:1px solid var(--line);background:#fff}
+table.at td{padding:6px 8px;border-bottom:1px solid #F2F4F6}
+table.at .n{text-align:right;font-variant-numeric:tabular-nums}
+table.at tbody tr{cursor:pointer}
+table.at tbody tr:hover td{background:#F5F7F9}
+table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px solid #29374D;border-radius:2px;vertical-align:middle;margin-left:8px}
+.ana-more{text-align:center;margin:10px 0 4px}
+.ana-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
@@ -814,6 +834,13 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
       <button class="shw" data-v="mvb" type="button">Monterey vs Burbank</button>
       <button class="shw anah" data-v="anaheim" type="button">&#9673; Anaheim area</button>
     </div>
+    <div class="pgroup" id="grp-ana">
+      <h4>Anaheim relocation <button type="button" id="ana-all">Show all</button></h4>
+      <div class="lbtn" id="ana-doc"><span class="cbx"></span><span class="sw" style="background:#C98A12;border:1.5px solid #29374D"></span>Doctors who send patients to Anaheim</div>
+      <div class="lbtn" id="ana-pat"><span class="cbx"></span><span class="sw" style="background:#6F9FCF"></span>Anaheim patients&rsquo; home areas</div>
+      <div class="lbtn" id="ana-zone"><span class="cbx"></span><span class="sw" style="border-radius:2px;background:rgba(41,55,77,.22);border:1.5px dashed #29374D"></span>Best area for a new site</div>
+      <div class="lbtn" id="ana-site"><span class="cbx"></span><span class="sw" style="background:#fff;border:2px solid #DC2F3A"></span>Sites under review (Placentia)</div>
+    </div>
   </div>
   <div id="lp-foot"><div id="more-hd"><span>More map layers</span><span class="car">&#9656;</span></div><button class="shw clr" id="shw-clear" type="button">&#10005; Clear map</button></div>
   <div id="more-body" hidden>
@@ -860,6 +887,10 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
   <div data-lk="heat"><i class="bar" style="background:linear-gradient(90deg,#29374D,#2E6F8E,#37A05F,#F0B429,#DC2F3A)"></i> Patient heat — few patients to many</div>
   <div data-lk="pat"><i style="background:#6F9FCF"></i> Where LivWell patients live, by ZIP code (bigger = more)</div>
   <div data-lk="comp"><i style="background:#E07B24;border-radius:1px;transform:rotate(45deg) scale(.85)"></i> Competing infusion clinic (Infusion For Health, IVX Health, Clinivoy)</div>
+  <div data-lk="adoc"><i style="background:#C98A12;border:1.5px solid #29374D"></i> Doctor&rsquo;s office that sends patients to Anaheim (bigger = more appointments)</div>
+  <div data-lk="apat"><i style="background:#6F9FCF"></i> Anaheim patients&rsquo; home areas, by ZIP code</div>
+  <div data-lk="azone"><i style="border-radius:2px;background:rgba(41,55,77,.22);border:1.5px dashed #29374D"></i> Best area for a new Anaheim site</div>
+  <div data-lk="asite"><i style="background:#fff;border:2px solid #DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Anaheim site under review, with its 15-minute drive</div>
   <div data-lk="drive"><i style="border:2px dashed #DC2F3A;background:none"></i> About a 15-minute drive (7-mile circle)</div>
   <div data-lk="pin"><i style="background:#DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Location you checked or compared</div>
   <div data-lk="iso"><i class="bar" style="background:linear-gradient(90deg,#1F5C7A,#C98A12,#DC2F3A)"></i> Isolation — on its own to crowded</div>
@@ -898,6 +929,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 <button class="tab" data-t="dt">All 29 locations</button>
 <button class="tab" data-t="pz">Where patients come from</button>
 <button class="tab" data-t="cv">Patient coverage by ZIP code</button>
+<button class="tab" data-t="an">Anaheim &mdash; referring doctors</button>
 </div>
 <div class="tabpanes">
 <div class="pane on" id="pane-sc"><div class="card">
@@ -1006,12 +1038,25 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
       </div>
     </div>
   </div></div>
+<div class="pane" id="pane-an"><div class="card">
+    <h2>Anaheim &mdash; which doctors send patients, and from where</h2>
+    <div class="takeaway" id="an-take"></div>
+    <p class="lede">Every appointment at LivWell Anaheim, grouped by the office of the doctor who ordered it. Click a row to find the office on the map.</p>
+    <div class="ana-strip" id="an-strip"></div>
+    <div class="tbl-scroll"><table class="at"><thead><tr>
+      <th>#</th><th>Doctor&rsquo;s office</th><th>City</th><th>Doctor(s)</th>
+      <th class="n">Appointments</th><th class="n">Share of all</th><th class="n">Miles from today&rsquo;s clinic</th>
+    </tr></thead><tbody id="an-body"></tbody></table></div>
+    <div class="ana-more"><button class="btn" id="an-more" type="button"></button></div>
+    <div class="ana-note" id="an-note"></div>
+  </div></div>
 </div>
 </div>
 <footer id="footer">
   <b>Sources.</b> Patient homes: LivWell&rsquo;s California address export, September 2026, grouped by ZIP code &mdash; no individual home is shown.
   Clinics: livwellinfusions.com. Competitors: each operator&rsquo;s own website, checked 15 September 2026 (California only).
   Hospital, highway and market figures are approximate, from public sources. All distances are straight-line miles, not drive time.
+  <b>Anaheim referrals.</b> LivWell&rsquo;s list of Anaheim appointments with each ordering doctor&rsquo;s office, October 2026, pinned by street address. The &ldquo;best area for a new site&rdquo; is a starting point drawn from where those doctors and Anaheim&rsquo;s patients are, not a site recommendation.
 </footer>
 <footer id="mw-footer">MedWest Realty · Prepared for LivWell Infusions · Portfolio &amp; Patient Draw</footer>
 <div id="mw-disclaimer"><b>Disclaimer.</b> Information from sources deemed reliable but MedWest Realty does not guarantee the accuracy. Please perform your own due diligence and consult with all appropriate advisors.</div>
@@ -1785,6 +1830,113 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
 })();
 </script>
 <script>
+/* =====================================================================
+   ANAHEIM RELOCATION (added October 2026)
+   Source: LivWell's list of Anaheim appointments and each ordering doctor's
+   office (Venessa Coduto). Cleaned: spelling fixes that merged duplicate
+   offices, four ZIP fixes, 9 copy-down rows dropped. Offices pinned by street
+   address; a few could only be placed by road or ZIP (flagged in tooltips).
+   "Best area" = 0.01-degree squares scoring within 5% of the best on an even
+   mix of (a) Anaheim patients and (b) Anaheim appointments from doctors, each
+   within a 15-minute drive (the same 7-mile circle the Compare tool uses).
+   ===================================================================== */
+const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":55,"d":["Dr. Aaron Rockoff","Dr. Priya Shah"],"lat":33.78204,"lon":-117.86025,"p":"street"},{"a":"1211 W La Palma Ave","c":"Anaheim","z":"92801","n":44,"d":["Dr. Archana Shende","Dr. Brian Riff","Dr. Dennis Riff","Dr. Josephine Vu"],"lat":33.8472,"lon":-117.93496,"p":"street"},{"a":"1140 W La Veta Ave","c":"Orange","z":"92868","n":42,"d":["Dr. Amir Shokrae","Dr. Brian Kolski","Dr. Erum Bajwa","Dr. Maged Azer","Dr. Rasoul Mokabberi","Dr. Samuel Mayeda","Dr. Shalizeh Shokooh"],"lat":33.78024,"lon":-117.86524,"p":"street"},{"a":"700 N Tustin Ave","c":"Santa Ana","z":"92705","n":33,"d":["Dr. Ali Ashtiani","Dr. Avinash Sharma","Dr. Ethan Yalvac"],"lat":33.75127,"lon":-117.83454,"p":"street"},{"a":"2414 S Fairview St","c":"Santa Ana","z":"92704","n":32,"d":["Dr. Mark Monroe"],"lat":33.71436,"lon":-117.90839,"p":"street"},{"a":"1120 W La Palma Ave","c":"Anaheim","z":"92801","n":25,"d":["Dr. Arjun Makam","Dr. Ravi Makam"],"lat":33.84677,"lon":-117.93276,"p":"street"},{"a":"5300 Katella Ave","c":"Los Alamitos","z":"90720","n":22,"d":["Dr. Bret Witter","Dr. Diana Glovaci","Dr. Robert Lee"],"lat":33.80284,"lon":-118.04057,"p":"street"},{"a":"3700 Wilshire Blvd","c":"Los Angeles","z":"90010","n":20,"d":["Dr. Kyung Cho"],"lat":34.06162,"lon":-118.30674,"p":"street"},{"a":"381 Imperial Hwy","c":"Fullerton","z":"92835","n":19,"d":["Dr. Kiran Bath"],"lat":33.91768,"lon":-117.92489,"p":"street"},{"a":"6200 E Canyon Rim Rd","c":"Anaheim","z":"92807","n":16,"d":["Dr. Christopher Celio"],"lat":33.84318,"lon":-117.77519,"p":"street"},{"a":"15040 Imperial Hwy","c":"La Mirada","z":"90638","n":13,"d":["Dr. Jungmee Kim"],"lat":33.91703,"lon":-118.01059,"p":"street"},{"a":"23961 Calle De La Magdalena","c":"Laguna Hills","z":"92653","n":12,"d":["Dr. Dean Le"],"lat":33.60971,"lon":-117.71054,"p":"street"},{"a":"8333 Iowa St","c":"Downey","z":"90241","n":12,"d":["Dr. Manpreet Multani"],"lat":33.93759,"lon":-118.13381,"p":"street"},{"a":"3440 La Palma Ave","c":"Anaheim","z":"92806","n":12,"d":["Dr. Michael Yeh"],"lat":33.85248,"lon":-117.84446,"p":"street"},{"a":"455 Main St","c":"Orange","z":"92868","n":10,"d":["Dr. Keirsten Montgomery"],"lat":33.779047,"lon":-117.876709,"p":"zip"},{"a":"751 S Weir Canyon Rd","c":"Anaheim Hills","z":"92809","n":10,"d":["Dr. Jason Berry"],"lat":33.86564,"lon":-117.74095,"p":"road"},{"a":"1234 W Chapman Ave","c":"Orange","z":"92868","n":10,"d":["Dr. Robin Fordham","Dr. Sendhil Krishnan"],"lat":33.7878,"lon":-117.86681,"p":"street"},{"a":"5030 Camino de la Siesta","c":"San Diego","z":"92108","n":8,"d":["Dr. Yuchao Jin"],"lat":32.76503,"lon":-117.16112,"p":"street"},{"a":"1240 E Chapman","c":"Orange","z":"92866","n":7,"d":["Dr. Neal Patel"],"lat":33.78754,"lon":-117.84036,"p":"street"},{"a":"2250 S Main St","c":"Corona","z":"92882","n":7,"d":["Dr. Roberto Moscoso"],"lat":33.85519,"lon":-117.56957,"p":"street"},{"a":"1736 W Medical Center Dr","c":"Anaheim","z":"92801","n":6,"d":["Dr. Chin Kim","Dr. Daniel Kim"],"lat":33.85181,"lon":-117.94395,"p":"street"},{"a":"1220 Hemlock Way","c":"Santa Ana","z":"92707","n":5,"d":["Dr. Mohammad Hajjar"],"lat":33.70954,"lon":-117.8845,"p":"street"},{"a":"630 Raymond Ave","c":"Pasadena","z":"91105","n":4,"d":["Dr. Jennifer Fricke","Dr. Joseph Pachorek"],"lat":34.13509,"lon":-118.14868,"p":"street"},{"a":"521 Superior Ave","c":"Newport Beach","z":"92663","n":4,"d":["Dr. Paul Meltzer"],"lat":33.62501,"lon":-117.93478,"p":"street"},{"a":"1336 W Valley Blvd","c":"Alhambra","z":"91801","n":4,"d":["Dr. Andrew Fung"],"lat":34.07765,"lon":-118.13757,"p":"street"},{"a":"3801 Katella Ave","c":"Los Alamitos","z":"90720","n":3,"d":["Dr. Fernando Mendoza"],"lat":33.80326,"lon":-118.06666,"p":"street"},{"a":"16300 Sand Canyon Ave","c":"Irvine","z":"92618","n":3,"d":["Dr. Mahmoud Eslami Farsani"],"lat":33.66053,"lon":-117.77283,"p":"street"},{"a":"(no street address)","c":"Beverly Hills","z":"","n":2,"d":["Dr. Christine Lee"],"lat":34.07288,"lon":-118.39796,"p":"city"},{"a":"1275 N Rose Dr","c":"Placentia","z":"92870","n":2,"d":["Dr. Saleem Waraich"],"lat":33.88609,"lon":-117.8435,"p":"street"},{"a":"1401 S Anaheim Blvd","c":"Anaheim","z":"92805","n":2,"d":["Dr. David Shek"],"lat":33.83496,"lon":-117.91373,"p":"road"},{"a":"10861 Cherry Street","c":"Los Alamitos","z":"90720","n":2,"d":["Dr. Ramandeep Brar"],"lat":33.80482,"lon":-118.06806,"p":"street"},{"a":"100 UCLA Medical Plaza","c":"Los Angeles","z":"90095","n":2,"d":["Dr. Peony Pak"],"lat":34.06537,"lon":-118.44569,"p":"street"},{"a":"1310 West Stewart Dr","c":"Orange","z":"92868","n":2,"d":["Dr. Michael Del Junco"],"lat":33.7823,"lon":-117.86677,"p":"street"},{"a":"100 E Valencia Mesa Dr","c":"Fullerton","z":"92835","n":2,"d":["Dr. William Suh"],"lat":33.89338,"lon":-117.92824,"p":"street"},{"a":"8641 Wilshire Blvd","c":"Beverly Hills","z":"90211","n":2,"d":["Dr. Stuart Silverman"],"lat":34.06609,"lon":-118.37949,"p":"street"},{"a":"9808 Venice Blvd","c":"Culver City","z":"90232","n":2,"d":["Dr. Ashley Banayan"],"lat":34.0168,"lon":-118.3973,"p":"zip"},{"a":"625 S Fair Oaks","c":"Pasadena","z":"91105","n":2,"d":["Dr. Nikhil Daga"],"lat":34.12655,"lon":-118.1503,"p":"road"},{"a":"41 Creek Road","c":"Irvine","z":"92604","n":2,"d":["Dr. Jeffrey Young"],"lat":33.67475,"lon":-117.7945,"p":"street"},{"a":"200 UCLA Medical Plaza","c":"Los Angeles","z":"90095","n":2,"d":["Dr. Kimberly Navarro"],"lat":34.0652,"lon":-118.44659,"p":"street"},{"a":"3300 Irvine Ave","c":"Newport Beach","z":"92660","n":2,"d":["Dr. Farzan Rajput"],"lat":33.65947,"lon":-117.87725,"p":"street"},{"a":"14362 Brookhurst St","c":"Garden Grove","z":"92843","n":1,"d":["Dr. Michael Dao"],"lat":33.75469,"lon":-117.95481,"p":"street"},{"a":"1010 W La Veta Ave","c":"Orange","z":"92868","n":1,"d":["Dr. Alex Zand"],"lat":33.78024,"lon":-117.86335,"p":"street"},{"a":"2617 E Chapman Ave","c":"Orange","z":"92869","n":1,"d":["Dr. Alex Dariushnia"],"lat":33.78852,"lon":-117.82568,"p":"street"},{"a":"25470 Medical Center Dr","c":"Murrieta","z":"92562","n":1,"d":["Dr. Herman Lu"],"lat":33.55729,"lon":-117.1861,"p":"street"},{"a":"320 Santa Fe Dr","c":"Encinitas","z":"92024","n":1,"d":["Dr. Patrick Mcginty"],"lat":33.03882,"lon":-117.28563,"p":"street"},{"a":"23141 Moulton Pkwy","c":"Laguna Hills","z":"92653","n":1,"d":["Dr. Shilpa Mehta"],"lat":33.62574,"lon":-117.73168,"p":"street"},{"a":"18818 Teller Ave","c":"Irvine","z":"92612","n":1,"d":["Dr. Mary Raleigh"],"lat":33.66921,"lon":-117.85305,"p":"street"},{"a":"1737 W Medical Center Dr","c":"Anaheim","z":"92802","n":1,"d":["Dr. Chin Kim"],"lat":33.85198,"lon":-117.944,"p":"street"},{"a":"7320 Woodlake Ave","c":"West Hills","z":"91307","n":1,"d":["Dr. Jordan Geller"],"lat":34.2032,"lon":-118.63204,"p":"street"},{"a":"6719 Alvarado Rd","c":"San Diego","z":"92120","n":1,"d":["Dr. Arthur Mabaquiao"],"lat":32.7769,"lon":-117.05561,"p":"street"}],"zone":[[33.79,-117.87],[33.79,-117.86],[33.8,-117.88],[33.8,-117.87],[33.8,-117.86],[33.8,-117.85],[33.81,-117.89],[33.81,-117.88],[33.81,-117.87],[33.83,-117.86],[33.83,-117.85],[33.83,-117.84],[33.84,-117.86],[33.84,-117.85],[33.84,-117.84],[33.85,-117.86],[33.85,-117.84]],"sites":[{"n":1,"label":"1041 E Yorba Linda Blvd, Placentia","lat":33.888995,"lon":-117.844939},{"n":2,"label":"1325 N Rose Dr, Placentia","lat":33.887266,"lon":-117.842201}]};
+(function(){
+  const $=id=>document.getElementById(id);
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const nf=n=>n.toLocaleString('en-US');
+  const GOLD='#C98A12', R7=7;
+  const OF=ANA_DATA.offs, TOT=OF.reduce((a,o)=>a+o.n,0);
+  const CLA=CL.find(c=>c.name==='Anaheim');
+  OF.forEach(o=>o.mi=miles(CLA.lat,CLA.lon,o.lat,o.lon));
+  const NEAR=OF.filter(o=>o.mi<=25);
+  const pct=n=>Math.round(100*n/TOT)+'%';
+  const docTxt=o=>o.d.length===1?esc(o.d[0]):o.d.length+' doctors';
+  const where=o=>o.p==='street'?'':(o.p==='road'?' <i>(placed on the street, not the exact building)</i>':o.p==='zip'?' <i>(placed at its ZIP code)</i>':' <i>(no street address given — placed at the city)</i>');
+
+  /* helpers used by the Compare tool */
+  const apptNear=p=>OF.reduce((a,o)=>a+(miles(p.lat,p.lon,o.lat,o.lon)<=R7?o.n:0),0);
+  const avgDoc=p=>NEAR.reduce((a,o)=>a+o.n*miles(p.lat,p.lon,o.lat,o.lon),0)/NEAR.reduce((a,o)=>a+o.n,0);
+  window.ANA={apptNear,avgDoc,total:TOT};
+
+  /* ---------- layers ---------- */
+  const Ldoc=L.layerGroup(), Lpat=L.layerGroup(), Lzone=L.layerGroup(), Lsite=L.layerGroup();
+  const docMk={};
+  [...OF].sort((a,b)=>b.n-a.n).forEach(o=>{
+    const m=L.circleMarker([o.lat,o.lon],{radius:4+Math.sqrt(o.n)*2.3,color:NAVY,weight:1.5,fillColor:GOLD,fillOpacity:.8})
+      .bindTooltip('<b>'+esc(o.a)+', '+esc(o.c)+'</b><br>'+o.n+' Anaheim appointment'+(o.n===1?'':'s')+' ('+pct(o.n)+')<br>'
+        +o.d.map(esc).join(', ')+'<br>'+o.mi.toFixed(1)+' mi from today&rsquo;s Anaheim clinic'+where(o),{direction:'top',className:'lwtip'})
+      .addTo(Ldoc);
+    docMk[o.a+'|'+o.c]=m;
+  });
+  (PZ.loc['Anaheim']||[]).forEach(([i,n])=>{
+    const z=PZ.zips[i];
+    L.circleMarker([z[0],z[1]],{radius:3+Math.sqrt(n)*2,color:'#fff',weight:1,fillColor:'#6F9FCF',fillOpacity:.7})
+      .bindTooltip('<b>ZIP '+PZ.code[i]+'</b> &middot; '+esc(z[2])+'<br>'+n+' Anaheim patient'+(n===1?'':'s'),{direction:'top',className:'lwtip'})
+      .addTo(Lpat);
+  });
+  const H=0.005;
+  ANA_DATA.zone.forEach(([la,lo])=>L.rectangle([[la-H,lo-H],[la+H,lo+H]],{stroke:false,fillColor:NAVY,fillOpacity:.2,interactive:false}).addTo(Lzone));
+  const zl=ANA_DATA.zone.map(z=>z[0]), zo=ANA_DATA.zone.map(z=>z[1]);
+  L.rectangle([[Math.min(...zl)-H,Math.min(...zo)-H],[Math.max(...zl)+H,Math.max(...zo)+H]],{color:NAVY,weight:2,dashArray:'6 5',fill:false})
+    .bindTooltip('<b>Best area for a new site</b><br>Reaches the most Anaheim patients and doctor referrals within a 15-minute drive.<br>A starting point to search within &mdash; not a site recommendation.',{sticky:true,className:'lwtip'})
+    .addTo(Lzone);
+  const sitePin=n=>L.divIcon({className:'anapin',iconSize:[28,38],iconAnchor:[14,36],
+    html:'<svg width="28" height="38" viewBox="0 0 30 40"><path d="M15 38C6 26 2 20 2 13a13 13 0 0 1 26 0c0 7-4 13-13 25z" fill="#fff" stroke="#DC2F3A" stroke-width="3"/><text x="15" y="18" text-anchor="middle" font-size="13" font-weight="800" fill="#DC2F3A" font-family="Segoe UI,Arial,sans-serif">'+n+'</text></svg>'});
+  ANA_DATA.sites.forEach(s=>{
+    const ap=apptNear(s), av=avgDoc(s);
+    const tip='<b>'+s.n+'. '+esc(s.label)+'</b> &middot; under review<br>Anaheim appointments from doctors within a 15-minute drive: <b>'+ap+'</b> ('+pct(ap)+')'
+      +'<br>Average distance to Anaheim&rsquo;s referring doctors: <b>'+av.toFixed(1)+' mi</b>';
+    L.circle([s.lat,s.lon],{radius:R7*1609.344,color:RED,weight:2,dashArray:'8 6',fillOpacity:0,interactive:false}).addTo(Lsite);
+    L.marker([s.lat,s.lon],{icon:sitePin(s.n),zIndexOffset:900}).bindTooltip(tip,{direction:'top',offset:[0,-34],className:'lwtip'}).addTo(Lsite);
+  });
+  bindToggle('ana-doc',()=>{Ldoc.addTo(map); Lclin.eachLayer(l=>l.bringToFront&&l.bringToFront());},()=>map.removeLayer(Ldoc),false);
+  bindToggle('ana-pat',()=>Lpat.addTo(map),()=>map.removeLayer(Lpat),false);
+  bindToggle('ana-zone',()=>{Lzone.addTo(map);Lzone.bringToBack&&Lzone.eachLayer(l=>l.bringToBack&&l.bringToBack());},()=>map.removeLayer(Lzone),false);
+  bindToggle('ana-site',()=>Lsite.addTo(map),()=>map.removeLayer(Lsite),false);
+  const on=id=>$(id).classList.contains('active');
+  const ANA_VIEW=[[33.70,-118.09],[33.97,-117.70]];
+  $('ana-all').onclick=()=>{
+    ['ana-doc','ana-pat','ana-zone','ana-site'].forEach(id=>{ if(!on(id)) $(id).click(); });
+    map.fitBounds(ANA_VIEW);
+    /* fill Compare two with the two Placentia sites, ready to press Compare */
+    const t=document.querySelector('#lp-tabs button[data-t="two"]'); if(t) t.click();
+    $('cmp2-a').value=ANA_DATA.sites[0].label; $('cmp2-b').value=ANA_DATA.sites[1].label;
+  };
+
+  /* ---------- tab: Anaheim referring doctors ---------- */
+  const top5=OF.slice(0,5).reduce((a,o)=>a+o.n,0);
+  const curNear=apptNear(CLA);
+  const docs=new Set(OF.flatMap(o=>o.d)).size;
+  $('an-take').innerHTML='Anaheim&rsquo;s referrals come from two medical hubs &mdash; W La Palma Ave in west Anaheim and the W La Veta Ave hospital district in Orange. '
+    +'Today&rsquo;s clinic is within a 15-minute drive of '+pct(curNear)+' of appointments.';
+  $('an-strip').innerHTML='<span><b>'+nf(TOT)+'</b>appointments</span><span><b>'+docs+'</b>doctors</span><span><b>'+OF.length+'</b>offices</span>'
+    +'<span><b>'+pct(top5)+'</b>come from the top 5 offices</span><span><b>'+pct(curNear)+'</b>come from within a 15-minute drive of today&rsquo;s clinic</span>';
+  const mx=OF[0].n; let all=false;
+  function rows(){
+    const list=all?OF:OF.slice(0,10);
+    $('an-body').innerHTML=list.map((o,i)=>'<tr data-k="'+esc(o.a+'|'+o.c)+'"><td>'+(i+1)+'</td><td><b>'+esc(o.a)+'</b></td><td>'+esc(o.c)+'</td>'
+      +'<td title="'+esc(o.d.join(', '))+'">'+docTxt(o)+'</td><td class="n"><b>'+o.n+'</b><span class="abar" style="width:'+Math.max(3,Math.round(150*o.n/mx))+'px"></span></td>'
+      +'<td class="n">'+pct(o.n)+'</td><td class="n">'+o.mi.toFixed(1)+' mi</td></tr>').join('');
+    $('an-more').textContent=all?'Show top 10 only':'Show all '+OF.length+' offices';
+    $('an-body').querySelectorAll('tr').forEach(tr=>tr.onclick=()=>{
+      const m=docMk[tr.dataset.k]; if(!m) return;
+      if(!on('ana-doc')) $('ana-doc').click();
+      document.getElementById('map').scrollIntoView({behavior:'smooth',block:'center'});
+      map.setView(m.getLatLng(),13); setTimeout(()=>m.openTooltip(),400);
+    });
+  }
+  $('an-more').onclick=()=>{ all=!all; rows(); };
+  rows();
+  $('an-note').innerHTML='<b>About this data:</b> '+nf(TOT)+' Anaheim appointments from '+docs+' doctors at '+OF.length+' offices, from LivWell&rsquo;s appointment list. '
+    +'Cleaned before mapping: spelling fixes that merged duplicate offices (Tustin, Chapman, Orange, Downey, San Diego); four ZIP code fixes; '
+    +'and 9 rows dropped where the address and ZIP counted up by one on each row (a copy-down error), keeping the first row of each. '
+    +'Two addresses were read as their nearest real match: &ldquo;725 West Veta Ave&rdquo; as <b>725 W La Veta Ave</b>, and &ldquo;320 Santa Dr Dr&rdquo; in Encinitas as <b>320 Santa Fe Dr</b>. '
+    +'Two Beverly Hills appointments had no street address and are placed at the city. Offices are pinned by street address; a few could only be placed by street or ZIP code, and say so when you hover. '
+    +'&ldquo;Miles&rdquo; are straight-line, and the 15-minute drive is the same 7-mile circle used across this page.';
+})();
+</script>
+<script>
 /* ===== Sign-in gate. Mirrors the Camino Market Map dashboard. ===== */
 (function(){
   const el = id => document.getElementById(id);
@@ -1964,6 +2116,7 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     busy=true;
     setBtn('lb-clin',true); setBtn('lb-ring',false); setBtn('lb-hm',false); setBtn('lb-hb',false);
     setBtn('lb-city',false); setBtn('lb-iso',false); comps(false); patients(false);
+    ['ana-doc','ana-pat','ana-zone','ana-site'].forEach(id=>setBtn(id,false));
     busy=false;
     clearCheck(); clearCompare(); $('locq').value=''; $('locmsg').textContent=''; mark(null); home();
   }
@@ -2164,7 +2317,9 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false],
       ['Patients within 15-min drive', A.inCA?nf(A.d15.pat):na, B.inCA?nf(B.d15.pat):na, A.inCA?A.d15.pat:null, B.inCA?B.d15.pat:null, false, 'd15'],
       ['Competitors within 15-min drive', A.inCA?A.d15.comp:na, B.inCA?B.d15.comp:na, A.inCA?A.d15.comp:null, B.inCA?B.d15.comp:null, true, 'd15'],
-      ['Other LivWell clinics within 15-min drive', A.d15.lw, B.d15.lw, A.d15.lw, B.d15.lw, true, 'd15']
+      ['Other LivWell clinics within 15-min drive', A.d15.lw, B.d15.lw, A.d15.lw, B.d15.lw, true, 'd15'],
+      ['Anaheim appointments from doctors within 15-min drive', nf(ANA.apptNear(a)), nf(ANA.apptNear(b)), ANA.apptNear(a), ANA.apptNear(b), false, 'd15'],
+      ['Average miles to Anaheim&rsquo;s referring doctors', ANA.avgDoc(a).toFixed(1)+' mi', ANA.avgDoc(b).toFixed(1)+' mi', +ANA.avgDoc(a).toFixed(1), +ANA.avgDoc(b).toFixed(1), true]
     ];
     /* patients whose ZIP sits inside both circles, so the two counts aren't double-read */
     const both=ALLPZ.reduce((s,[i,n])=>s+(A.d15.zipsIn.has(i)&&B.d15.zipsIn.has(i)?n:0),0);
@@ -2198,7 +2353,8 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
       comp:act('lb-c0')||act('lb-c1')||act('lb-c2'),
       pin:Lchk.getLayers().length>0||Lcmp.getLayers().length>0,
       drive:Lchk.getLayers().length>0||Lcmp.getLayers().length>0,
-      iso:act('lb-iso')
+      iso:act('lb-iso'),
+      adoc:act('ana-doc'), apat:act('ana-pat'), azone:act('ana-zone'), asite:act('ana-site')
     };
     document.querySelectorAll('.maplegend [data-lk]').forEach(d=>d.classList.toggle('lk-off',!on[d.dataset.lk]));
     syncChips();
