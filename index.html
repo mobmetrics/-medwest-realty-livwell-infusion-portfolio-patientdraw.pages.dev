@@ -795,7 +795,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
  border-radius:7px 7px 0 0;cursor:move;user-select:none;touch-action:none;font-size:11px;font-weight:700;letter-spacing:.4px;position:sticky;top:0;z-index:1}
 #map-ctl-bar .grip{opacity:.6;letter-spacing:-2px}
 #map-ctl-bar .ttl{flex:1;text-transform:uppercase}
-#map-ctl-min{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:4px;width:22px;height:20px;line-height:18px;font-size:14px;font-weight:700;cursor:pointer;padding:0}
+#map-ctl-min{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:4px;height:20px;line-height:18px;font-size:11px;font-weight:700;cursor:pointer;padding:0 8px;white-space:nowrap}
 #map-ctl-min:hover{background:rgba(255,255,255,.32)}
 #map-ctl.min{width:auto;overflow:visible}
 #map-ctl.min #map-ctl-body{display:none}
@@ -892,7 +892,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 <div id="map-box"><div id="map"></div>
 <div id="map-ctl">
 <div id="map-ctl-bar" title="Drag to move"><span class="grip">&#8942;&#8942;</span><span class="ttl">Map layers</span>
-  <button type="button" id="map-ctl-min" title="Hide this box">&#8211;</button></div>
+  <button type="button" id="map-ctl-min" title="Hide this box">&#8211; Hide</button></div>
 <div id="map-ctl-body">
   <div id="lp-show">
     <div class="lsh">Show on map <span>— pick as many as you like</span></div>
@@ -2041,7 +2041,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     var W=area.clientWidth, H=area.clientHeight, w=box.offsetWidth, h=Math.min(box.offsetHeight,H-20);
     var x=Math.max(6,Math.min(box.offsetLeft,W-w-6)), y=Math.max(6,Math.min(box.offsetTop,H-h-6));
     box.style.left=x+'px'; box.style.top=y+'px'; }
-  function setMin(v){ box.classList.toggle('min',!!v); btn.innerHTML=v?'&#9656;':'&#8211;'; btn.title=v?'Show map layers':'Hide this box'; st.min=!!v; save(); clamp(); }
+  function setMin(v){ box.classList.toggle('min',!!v); btn.innerHTML=v?'&#9656; Show':'&#8211; Hide'; btn.title=v?'Show map layers':'Hide this box'; st.min=!!v; save(); clamp(); }
   if(typeof st.x==='number'){ box.style.left=st.x+'px'; box.style.top=st.y+'px'; }
   setMin(st.min);
   btn.addEventListener('click',function(e){ e.stopPropagation(); setMin(!box.classList.contains('min')); });
