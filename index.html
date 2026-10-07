@@ -2612,7 +2612,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     return [
       { popover:{
           title:'Checking and comparing a site',
-          description:'Nine steps, about two minutes, using the Anaheim relocation as the example. Some steps ask for a '
+          description:'Ten steps, about two minutes, using the Anaheim relocation as the example. Some steps ask for a '
             +'click — click where it says, then press Next. Close the tour any time.'
       }},
       { element:'#stats-row', popover:{
@@ -2641,14 +2641,22 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
       }},
       { element:'#lp-two', onHighlightStarted:ensure, popover:{
           title:'Read the comparison',
-          description:'Today’s clinic and the two Placentia sites, measured the same way. The summary says which site wins on '
-            +'patients, doctor referrals and competition; in the scorecard, shaded is the stronger site on each line.',
+          description:'Today’s clinic and the two Placentia sites, measured the same way. The summary at the top says which site wins on '
+            +'patients, doctor referrals and competition.',
           side:'left', align:'start'
       }},
       { element:'#cw-add', onHighlightStarted:ensure, popover:{
           title:'Add a site of your own',
           description:'Up to three sites at a time. Remove one with its ✕, then type any address, city or ZIP code and press Add. '
             +'LivWell clinics can be added by name, for example “LivWell Anaheim”.',
+          side:'left', align:'start'
+      }},
+      { element:function(){ ensure(); var t=document.querySelector('#cmp2-out table');
+          if(t) t.scrollIntoView({block:'start'}); return t||document.getElementById('lp-two'); },
+        popover:{
+          title:'Scroll down for the findings',
+          description:'Below the summary is the scorecard: every measure for every site, with the stronger one shaded. '
+            +'The starred Best area column is the center of the shaded area on the map, with the reason it is suggested under each number.',
           side:'left', align:'start'
       }},
       { element:'#tabbar', popover:{
