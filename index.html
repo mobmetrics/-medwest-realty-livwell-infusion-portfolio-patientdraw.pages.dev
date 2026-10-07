@@ -817,7 +817,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
       <img class="gmw" src="mw-logo.png" alt="MedWest Realty">
       <img class="gcl" src="livwell-logo.png" alt="LivWell Infusions">
     </div>
-    <h1>LivWell Infusion Portfolio and Patient Draw</h1>
+    <h1>LivWell Infusions Patient Draw and Site Comparison</h1>
     <p>Site selection intelligence prepared by MedWest Realty.</p>
     <input type="text" id="signin-name" placeholder="Your name" autocomplete="name">
     <input type="email" id="signin-email" placeholder="Email address" autocomplete="email">
@@ -895,7 +895,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 </div>
 <div class="hl-block" id="hl-iso">
   <div class="hl-title">◎ HOW ALONE EACH CLINIC SITS — DISTANCE TO THE NEAREST OTHER LIVWELL</div>
-  <div class="hl-note">Clinics recoloured by how far away the nearest other LivWell sits. <b>Blue = on its own</b> (it has the area to itself) · amber = some nearby · <b>red = crowded</b> (sharing the area with other LivWell clinics). Temecula is the only location with no other LivWell inside 30 miles, and it has never been graded — though the competitor layers show it is not alone in its market.</div>
+  <div class="hl-note">Clinics recolored by how far away the nearest other LivWell sits. <b>Blue = on its own</b> (it has the area to itself) · amber = some nearby · <b>red = crowded</b> (sharing the area with other LivWell clinics). Temecula is the only location with no other LivWell inside 30 miles, and it has never been graded — though the competitor layers show it is not alone in its market.</div>
 </div>
 <div id="map-box"><div id="map"></div>
 <div id="map-ctl">
@@ -949,7 +949,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 
   <div class="pgroup">
     <h4>How Alone Each Clinic Sits</h4>
-    <div class="lbtn" id="lb-iso"><span class="cbx"></span><span class="sw" style="background:#6B5B95"></span>Colour clinics by isolation</div>
+    <div class="lbtn" id="lb-iso"><span class="cbx"></span><span class="sw" style="background:#6B5B95"></span>Color clinics by isolation</div>
   </div>
   </div>
 </div>
@@ -1045,7 +1045,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
     <div class="two">
       <div>
         <div class="factor"><h3>Market saturation, not distance</h3><p>Monterey's middle patient lives 3.3 miles from the clinic; Burbank's lives 5.5 miles away. Neither clinic is asking for a long trip, and the shorter trip belongs to Monterey — so distance is not what is holding Burbank back.</p></div>
-        <div class="factor"><h3>But how far each clinic reaches <em>is</em> a difference</h3><p>The middle of each clinic&rsquo;s area looks similar; the edges do not. Nine out of ten of Monterey's patients live within 16.8 miles, and 114 of them share the clinic's own ZIP code. Burbank's outer edge stops at 13.3 miles — roughly where its nearest LivWell neighbours sit — and only 5 patients share its ZIP code. Monterey owns a corridor; Burbank owns neither a core nor a periphery.</p></div>
+        <div class="factor"><h3>But how far each clinic reaches <em>is</em> a difference</h3><p>The middle of each clinic&rsquo;s area looks similar; the edges do not. Nine out of ten of Monterey's patients live within 16.8 miles, and 114 of them share the clinic's own ZIP code. Burbank's outer edge stops at 13.3 miles — roughly where its nearest LivWell neighbors sit — and only 5 patients share its ZIP code. Monterey owns a corridor; Burbank owns neither a core nor a periphery.</p></div>
         <div class="factor"><h3>Captive geography vs. abundant alternatives</h3><p>Monterey's clinic is one of only a handful of options across an entire region — just 4 hospitals cover the whole Monterey Peninsula and Salinas Valley, and the southernmost of those, in King City, is nearly an hour away. Burbank sits inside the Los Angeles basin, surrounded by 6+ hospitals in the immediate area and dozens more (Kaiser, Cedars-Sinai, UCLA-affiliated systems) a short drive away. Patients there have far less reason to stay loyal to any single location.</p></div>
         <div class="factor"><h3>Highway access cuts both ways</h3><p>Burbank benefits from excellent freeway access (I-5, SR-134, SR-170) — but that same connectivity makes it just as easy for patients to drive to a competing provider. Monterey's more limited access (CA-1, CA-68, no direct Interstate) works in the location's favor once patients are already in the region: there's simply less competition to drive to.</p></div>
       </div>
@@ -1159,7 +1159,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   Hospital, highway and market figures are approximate, from public sources. All distances are straight-line miles, not drive time.
   <b>Anaheim referrals.</b> LivWell&rsquo;s list of Anaheim appointments with each ordering doctor&rsquo;s office, October 2026, pinned by street address. The &ldquo;best area for a new site&rdquo; is a starting point drawn from where those doctors and Anaheim&rsquo;s patients are, not a site recommendation.
 </footer>
-<footer id="mw-footer">MedWest Realty · Prepared for LivWell Infusions · Portfolio &amp; Patient Draw</footer>
+<footer id="mw-footer">MedWest Realty · Prepared for LivWell Infusions · Patient Draw &amp; Site Comparison</footer>
 <div id="mw-disclaimer"><b>Disclaimer.</b> Information from sources deemed reliable but MedWest Realty does not guarantee the accuracy. Please perform your own due diligence and consult with all appropriate advisors.</div>
 </div>
 </div>
@@ -1515,7 +1515,7 @@ BRANDS.forEach(b=>{
      .bindTooltip(()=>window.lwCompTip?window.lwCompTip(k):('<b>'+b.key+' \u00b7 '+k.name+'</b>'),{direction:'top',offset:[0,-6],className:'lwtip'})
      .bindPopup('<b>'+k.name+'</b><br><span style="color:'+b.col+'">'+b.key+'</span>'+
        (k.zip?'<br>ZIP '+k.zip:'')+
-       (k.prec==='city'?'<br><span style="font-size:11px;color:#5B6472">Plotted at city centre \u2014 ZIP not published</span>':''));
+       (k.prec==='city'?'<br><span style="font-size:11px;color:#5B6472">Plotted at city center \u2014 ZIP not published</span>':''));
   });
   compLayers[b.key]=g;
 });
@@ -1911,10 +1911,10 @@ const ZSHP = {"90001":[[339602,-1182379,-1,-272,146,-1,0,22,71,0,0,-22,74,0,2,24
     });
     const far=ROWS.filter(function(r){ return !r.near; }).reduce(function(s,r){ return s+r.n; },0);
     document.getElementById('pz2-foot').innerHTML=
-      '<b>How to read this.</b> A ZIP code counts as near a clinic when its centre point sits within '+
+      '<b>How to read this.</b> A ZIP code counts as near a clinic when its center point sits within '+
       NEAR_MI+' miles of the closest LivWell location, measured straight-line. '+
       nf(TOTAL-far)+' of the '+nf(TOTAL)+' mapped California patients live in a near ZIP code and '+
-      nf(far)+' live beyond that. Distances use ZIP centre points, so they are approximate for large rural ZIP codes.';
+      nf(far)+' live beyond that. Distances use ZIP center points, so they are approximate for large rural ZIP codes.';
   }
 
   function summary(){
@@ -2475,7 +2475,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     if(CW.length<2){ cout.hidden=true; cout.innerHTML=''; if(CW.length===1){ cmsg.style.color='var(--muted)'; cmsg.textContent='Add at least one more site to compare.'; } return; }
     cmsg.textContent='';
     const T=CW.map(cwStats), na='—', allCA=CW.every(p=>p.st==='CA');
-    const nearAna=CW.some(p=>miles(p.lat,p.lon,ANAC.lat,ANAC.lon)<=30);
+    const nearAna=CW.every(p=>miles(p.lat,p.lon,ANAC.lat,ANAC.lon)<=30);
     /* rows: [label, values, raw numbers, higher is better] or a group heading */
     /* Best area for a new Anaheim site: the centre of the shaded area, added as a starred column
        whenever the comparison is in the Anaheim area. Its notes say why it is suggested. */
@@ -2529,13 +2529,13 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     cout.innerHTML='<div class="cw-lbl">Which site wins on what</div><div class="cw-wins">'+W.map(w=>'<div><b class="k">'+w[0]+'</b><span>'+w[1]+'</span></div>').join('')+'</div>'+
       '<div class="cw-lbl">Scorecard <span>&mdash; shaded = the stronger site on that measure</span></div>'+
       '<table><thead><tr><th></th>'+CW.map((p,i)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+i+'" title="Show on the map" style="background:'+CWCOL[i]+'"><b>'+(i+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>').join('')+
-        (BA?'<th class="ba" title="Centre of the shaded best area for a new site"><span class="cpn ba">&#9733;</span>Best area (center)</th>':'')+'</tr></thead><tbody>'+
+        (BA?'<th class="ba" title="Center of the shaded best area for a new site"><span class="cpn ba">&#9733;</span>Best area (center)</th>':'')+'</tr></thead><tbody>'+
       R.map(r=>{ if(r.length===1) return '<tr class="cwg"><td colspan="'+(TT.length+1)+'">'+r[0]+'</td></tr>';
         const s=shade(r[2],r[3]), nb=BA?baNote(r[0],r[2],r[3]):'';
         return '<tr><td>'+r[0]+'</td>'+r[1].map((v,i)=>{ const isBA=BA&&i===CW.length;
           return '<td class="'+(s[i]?'best':'')+(isBA?' bacell':'')+'">'+v+(isBA&&nb?'<small class="why">'+nb+'</small>':'')+'</td>'; }).join('')+'</tr>'; }).join('')+
       '</tbody></table>'+
-      '<div class="cnote">'+(BA?'&#9733; Best area = the centre of the shaded &ldquo;best area for a new site&rdquo; on the map, picked by scoring the map in small squares on Anaheim patients and doctor appointments within a 15-minute drive, weighted equally. A starting point to search within, not a specific building. ':'')+'15-min drive = the dashed circle around each pin, 7 miles, a straight-line estimate. LivWell clinics being compared are left out of each other&rsquo;s counts, since one would replace the other.'+
+      '<div class="cnote">'+(BA?'&#9733; Best area = the center of the shaded &ldquo;best area for a new site&rdquo; on the map, picked by scoring the map in small squares on Anaheim patients and doctor appointments within a 15-minute drive, weighted equally. A starting point to search within, not a specific building. ':'')+'15-min drive = the dashed circle around each pin, 7 miles, a straight-line estimate. LivWell clinics being compared are left out of each other&rsquo;s counts, since one would replace the other.'+
       (allCA?'':' The patient file and competitor survey cover California only.')+'</div>'+
       '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to all</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
