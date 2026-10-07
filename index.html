@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LivWell Infusions — Portfolio &amp; Patient Draw | MedWest Realty</title>
+<title>LivWell Infusions — Patient Draw &amp; Site Comparison | MedWest Realty</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
@@ -715,6 +715,49 @@ table.at tbody tr:hover td{background:#F5F7F9}
 table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px solid #29374D;border-radius:2px;vertical-align:middle;margin-left:8px}
 .ana-more{text-align:center;margin:10px 0 4px}
 .ana-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+<style>
+/* ===== Patient Draw & Site Comparison layout (Oct 2026) ===== */
+@media(min-width:1181px){ body #main-area{grid-template-columns:1fr 470px;height:820px} }
+#map-box{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
+#map-box #map{flex:1;min-height:0;height:auto}
+#map-ctl{position:absolute;top:10px;left:120px;z-index:900;width:290px;max-height:calc(100% - 20px);overflow-y:auto;
+ background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:12px}
+#map-ctl #lp-show{margin:0 0 8px}
+#map-ctl #lp-foot{margin-bottom:0}
+#map-ctl #more-body{margin-top:10px}
+#map-ctl .lbtn{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12.5px;line-height:1.3;border:0;border-radius:0;white-space:normal;color:var(--ink);background:transparent!important}
+#map-ctl .lbtn.active{font-weight:600;color:var(--navy)}
+#map-ctl .cbx{width:14px;height:14px;flex:none;border:1.5px solid #b9c2cd;border-radius:3px;background:#fff;position:relative}
+#map-ctl .lbtn.active .cbx{background:var(--red);border-color:var(--red)}
+#map-ctl .lbtn.active .cbx::after{content:"";position:absolute;left:4px;top:1px;width:3px;height:7px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+#map-ctl .sw{width:12px;height:12px;border-radius:50%;flex:none}
+#map-ctl .swl{width:16px;height:0;border-top:2px dashed;flex:none}
+#map-ctl .ct{margin-left:auto;font-size:10.5px;color:var(--muted);padding-left:6px;white-space:nowrap}
+.cw-h{display:flex;justify-content:space-between;align-items:baseline;margin:2px 0 8px}
+.cw-h h3{margin:0;font-size:15px;color:var(--navy)}.cw-h span{font-size:11px;color:var(--muted)}
+.cw-site{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:6px;padding:7px 10px;margin-bottom:6px;font-size:12.5px}
+.cw-site small{display:block;color:var(--muted);font-size:10.5px}
+.cw-n{display:inline-flex;width:20px;height:20px;border-radius:50%;color:#fff;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
+.cw-x{margin-left:auto;border:0;background:none;color:#8a95a5;font-size:13px;cursor:pointer}.cw-x:hover{color:var(--red)}
+.cw-empty{font-size:12px;color:var(--muted);border:1.5px dashed var(--line);border-radius:6px;padding:10px;margin-bottom:6px}
+#cw-add{display:flex;gap:6px}#cw-add .cmp2-in{flex:1;margin:0}
+#cw-add input{width:100%}
+#cw-go{background:var(--navy);color:#fff;border:0;border-radius:5px;font:inherit;font-weight:700;font-size:12.5px;padding:0 14px;cursor:pointer}
+#cw-go:disabled,#cw-q:disabled{opacity:.5;cursor:not-allowed}
+#cw-demo{display:block;width:100%;margin:8px 0 4px;border:1px dashed var(--navy);background:#fff;color:var(--navy);border-radius:5px;font:inherit;font-size:11.5px;font-weight:600;padding:6px;cursor:pointer}
+#cw-demo:hover{background:#F2F5F8}
+.cw-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.cw-lbl span{text-transform:none;letter-spacing:0;font-weight:400}
+.cw-wins{border:1px solid var(--line);border-radius:6px;padding:2px 10px}
+.cw-wins div{display:flex;gap:10px;font-size:12px;padding:7px 0;border-bottom:1px solid #EEF0F3;line-height:1.4}
+.cw-wins div:last-child{border:0}
+.cw-wins b.k{flex:none;width:96px;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding-top:1px}
+#cmp2-out th:first-child{width:40%}
+#cmp2-out tr.cwg td{background:#F4F5F7;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+#cmp2-out .cpn{border:0;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;margin-right:4px;cursor:pointer;vertical-align:middle}
+.mvb-ref{margin-bottom:14px}
+.mvb-ref #cmp-head{margin-top:4px}
+@media(max-width:1180px){ #map-ctl{position:static;width:auto;max-height:none;box-shadow:none;border-radius:0;border-left:0;border-right:0} }
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
@@ -735,7 +778,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 <div id="tour-prompt-overlay" class="tour-modal-overlay">
   <div class="tour-prompt-card">
     <h3 id="tour-prompt-title">Want a quick tour?</h3>
-    <p id="tour-prompt-msg">A three-minute walkthrough of why Monterey is the strongest location.</p>
+    <p id="tour-prompt-msg">A two-minute walkthrough of how to check and compare a site, using Anaheim as the example.</p>
     <div class="tour-prompt-actions">
       <button class="tour-btn-no" type="button" onclick="dismissTourPrompt()">No thanks</button>
       <button class="tour-btn-yes" type="button" onclick="acceptTourPrompt()">Yes, show me</button>
@@ -753,8 +796,8 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   </div>
   <div class="hspace"></div>
   <div class="title-block">
-    <h1>LivWell Infusions — Portfolio &amp; Patient Draw</h1>
-    <p>MedWest Realty &nbsp;·&nbsp; 29-location isolation analysis &nbsp;·&nbsp; Monterey vs. Burbank patient origin</p>
+    <h1>LivWell Infusions — Patient Draw &amp; Site Comparison</h1>
+    <p>MedWest Realty &nbsp;·&nbsp; 29 locations &nbsp;·&nbsp; where patients come from and how sites compare</p>
   </div>
   <div class="client-chip">
     <img class="client-logo" alt="LivWell Infusions"
@@ -762,32 +805,30 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
          onerror="this.style.display='none';document.getElementById('client-fb').style.display='block'">
     <span class="client-fb" id="client-fb" style="display:none">LivWell<span>Infusions</span></span>
   </div>
-  <button id="tour-nav-btn" type="button" title="Walk through why Monterey is the strongest location">&#127891; Tour</button>
+  <button id="tour-nav-btn" type="button" title="Walk through how to check and compare a site">&#127891; Tour</button>
 </div>
 
 <div class="wrap">
 <div id="stats-row">
   <div class="stat-card c1"><div class="stat-lbl">Locations</div><div class="stat-val" id="s-loc">29</div><div class="stat-note">21 in California · 8 in Arizona</div></div>
-  <div class="stat-card c1"><div class="stat-lbl">Best performer</div><div class="stat-val">Monterey</div><div class="stat-note" id="s-best-note">Draws Burbank's patient volume</div></div>
-  <div class="stat-card c2 kworst"><div class="stat-lbl">Worst performer</div><div class="stat-val">Burbank</div><div class="stat-note" id="s-worst-note">Monterey draws more per month open</div></div>
-  <div class="stat-card c3"><div class="stat-lbl">Patient homes mapped</div><div class="stat-val" id="s-pat">7,153</div><div class="stat-note">California addresses on the map</div></div>
-  <div class="stat-card c2"><div class="stat-lbl">Most isolated clinic</div><div class="stat-val">32.8<span class="u"> mi</span></div><div class="stat-note">Temecula — furthest from any other LivWell</div></div>
-  <div class="stat-card c6"><div class="stat-lbl">How far patients travel</div><div class="stat-val">17<span class="u"> vs </span>13<span class="u"> mi</span></div><div class="stat-note">Monterey reaches further than Burbank</div></div>
+  <div class="stat-card c3"><div class="stat-lbl">Patient homes mapped</div><div class="stat-val" id="s-pat">7,153</div><div class="stat-note">California addresses, by ZIP code</div></div>
+  <div class="stat-card c1"><div class="stat-lbl">Typical patient trip</div><div class="stat-val">6.4<span class="u"> mi</span></div><div class="stat-note">Half of patients live closer than this</div></div>
+  <div class="stat-card c1"><div class="stat-lbl">Live within 10 miles</div><div class="stat-val">69%</div><div class="stat-note">Of patients, of the clinic they use</div></div>
+  <div class="stat-card c2"><div class="stat-lbl">No competitor within 10 mi</div><div class="stat-val">3<span class="u"> of 21</span></div><div class="stat-note">Monterey, Watsonville, Santa Cruz</div></div>
+  <div class="stat-card c6"><div class="stat-lbl">Largest patient draw</div><div class="stat-val" style="font-size:20px">Santa Monica (Wilshire)</div><div class="stat-note">1,289 patients mapped</div></div>
 </div>
 
 
 
 <div class="answer">
   <div class="k">What the data says</div>
-  <h3>Monterey draws nearly seven times Burbank's patients — and the reason is competition, not demographics.</h3>
-  <p>Monterey is the only California LivWell with no competing infusion clinic inside 30 miles; the nearest is
-     45.6 miles away in San Jose. Burbank has thirteen inside 30 miles, one of them just 0.6 miles away, plus
-     five other LivWell clinics drawing on the same area. Household incomes and patient travel distances in the two
-     markets are broadly comparable.</p>
+  <h3>Patients stay close to home &mdash; half live within 6.4 miles of their clinic, so where a clinic sits decides who it reaches.</h3>
+  <p>That makes site choice a numbers question: how many patients and referring doctors sit within a short drive, and how many
+     competitors are already there. Use the map and the comparison beside it to test any address against the same measures.</p>
 </div>
 
-<h2 class="sec">All 29 Locations, Patient Draw &amp; Competing Clinics</h2>
-<p class="sub">Opens on California, where the patient data is — zoom out for the 8 Arizona sites. Monterey and Burbank are compared below the map.</p>
+<h2 class="sec">Patient Draw &amp; Site Comparison</h2>
+<p class="sub">Add up to three sites on the right; the map shows each one&rsquo;s 15-minute drive. Opens on California &mdash; zoom out for the 8 Arizona sites.</p>
 <div id="main-area">
 <div id="map-wrap">
 <div class="hl-block" id="hl-comp">
@@ -805,27 +846,8 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   <div class="hl-title">◎ HOW ALONE EACH CLINIC SITS — DISTANCE TO THE NEAREST OTHER LIVWELL</div>
   <div class="hl-note">Clinics recoloured by how far away the nearest other LivWell sits. <b>Blue = on its own</b> (it has the area to itself) · amber = some nearby · <b>red = crowded</b> (sharing the area with other LivWell clinics). Temecula is the only location with no other LivWell inside 30 miles, and it has never been graded — though the competitor layers show it is not alone in its market.</div>
 </div>
-<div id="map"></div>
-</div>
-<div id="lpanel">
-  <div id="lp-tabs"><button type="button" data-t="one" class="on">Check one location</button><button type="button" data-t="two">Compare two</button></div>
-  <div id="lp-one">
-    <form id="locform" autocomplete="off">
-      <div class="cmp2-in"><span class="lic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></span><input id="locq" type="text" placeholder="Address, city, ZIP code or county" aria-label="Check a location"></div>
-      <button id="locgo" type="submit">Search</button>
-      <div id="locmsg"></div>
-    </form>
-    <div id="lc-card"></div>
-  </div>
-  <div id="lp-two" hidden>
-    <form id="cmp2-bar" autocomplete="off">
-      <div class="cmp2-in"><span class="cpn"><b>1</b></span><input id="cmp2-a" type="text" placeholder="First address, city or ZIP" aria-label="First location"></div>
-      <div class="cmp2-in"><span class="cpn"><b>2</b></span><input id="cmp2-b" type="text" placeholder="Second address, city or ZIP" aria-label="Second location"></div>
-      <button id="cmp2-go" type="submit">Compare</button>
-      <div id="cmp2-msg"></div>
-    </form>
-    <div id="cmp2-out" hidden></div>
-  </div>
+<div id="map-box"><div id="map"></div>
+<div id="map-ctl">
   <div id="lp-show">
     <div class="lsh">Show on map <span>— pick as many as you like</span></div>
     <div class="lchips">
@@ -878,6 +900,30 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   </div>
 </div>
 </div>
+</div>
+<div id="lpanel">
+  <div id="lp-tabs"><button type="button" data-t="one">Check one location</button><button type="button" data-t="two" class="on">Compare sites</button></div>
+  <div id="lp-one" hidden>
+    <form id="locform" autocomplete="off">
+      <div class="cmp2-in"><span class="lic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg></span><input id="locq" type="text" placeholder="Address, city, ZIP code or county" aria-label="Check a location"></div>
+      <button id="locgo" type="submit">Search</button>
+      <div id="locmsg"></div>
+    </form>
+    <div id="lc-card"></div>
+  </div>
+  <div id="lp-two">
+    <div class="cw-h"><h3>Sites in this comparison</h3><span>up to 3</span></div>
+    <div id="cw-list"></div>
+    <form id="cw-add" autocomplete="off">
+      <div class="cmp2-in"><input id="cw-q" type="text" placeholder="Add an address, city or ZIP code…" aria-label="Add a site"></div>
+      <button id="cw-go" type="submit">Add</button>
+    </form>
+    <div id="cmp2-msg"></div>
+    <button type="button" id="cw-demo">Example: today&rsquo;s Anaheim clinic vs the two Placentia sites</button>
+    <div id="cmp2-out" hidden></div>
+  </div>
+</div>
+</div>
 
 <div class="maplegend">
   <div class="lgh">Map legend</div>
@@ -896,7 +942,16 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   <div data-lk="iso"><i class="bar" style="background:linear-gradient(90deg,#1F5C7A,#C98A12,#DC2F3A)"></i> Isolation — on its own to crowded</div>
 </div>
 
-<h2 class="sec" id="cmp-head">Monterey vs Burbank</h2>
+<div id="deck">
+<div id="tabbar">
+<button class="tab on" data-t="dt">All 29 locations</button>
+<button class="tab" data-t="pz">Where patients come from</button>
+<button class="tab" data-t="cv">Patient coverage by ZIP code</button>
+<button class="tab" data-t="an">Anaheim &mdash; referring doctors</button>
+<button class="tab" data-t="sc">Monterey vs Burbank (reference)</button>
+</div>
+<div class="tabpanes">
+<div class="pane" id="pane-sc"><div class="mvb-ref"><h2 class="sec" id="cmp-head">Monterey vs Burbank</h2>
 <p class="sub" id="cmp-sub">The best and worst locations on the left, the charts behind the comparison on the right</p>
 <div class="cmp-split">
   <div class="ccard">
@@ -923,16 +978,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
   </div>
 </div>
 
-<div id="deck">
-<div id="tabbar">
-<button class="tab on" data-t="sc">Monterey vs Burbank — the full comparison</button>
-<button class="tab" data-t="dt">All 29 locations</button>
-<button class="tab" data-t="pz">Where patients come from</button>
-<button class="tab" data-t="cv">Patient coverage by ZIP code</button>
-<button class="tab" data-t="an">Anaheim &mdash; referring doctors</button>
-</div>
-<div class="tabpanes">
-<div class="pane on" id="pane-sc"><div class="card">
+</div><div class="card">
     <h2>Monterey vs. Burbank scorecard</h2>
     <div class="takeaway">Burbank sits in the bigger, better-connected market. Monterey still draws several times the patients — and the reason is not distance or demographics.</div>
     <p class="lede" id="sc-lede"></p>
@@ -958,7 +1004,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
       </div>
     </div>
   </div></div>
-<div class="pane" id="pane-dt"><div class="card">
+<div class="pane on" id="pane-dt"><div class="card">
     <h2>All 29 locations by isolation</h2>
     <div class="takeaway">The portfolio ranked by how alone each clinic is. Temecula is the most isolated of all 29 and has never been graded.</div>
     <p class="lede">The counts recompute against the distance set on the map above. Click any row to fly the map to that clinic.</p>
@@ -1900,8 +1946,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     ['ana-doc','ana-pat','ana-zone','ana-site'].forEach(id=>{ if(!on(id)) $(id).click(); });
     map.fitBounds(ANA_VIEW);
     /* fill Compare two with the two Placentia sites, ready to press Compare */
-    const t=document.querySelector('#lp-tabs button[data-t="two"]'); if(t) t.click();
-    $('cmp2-a').value=ANA_DATA.sites[0].label; $('cmp2-b').value=ANA_DATA.sites[1].label;
+    if(window.lwCompareDemo) window.lwCompareDemo();
   };
 
   /* ---------- tab: Anaheim referring doctors ---------- */
@@ -2105,7 +2150,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     if(v==='mvb'){ setBtn('lb-hm',on); setBtn('lb-hb',on); if(on) setTimeout(home,450); }
     if(v==='anaheim'){
       if(on){ showTab('one'); const a=CL.find(c=>c.name==='Anaheim'); $('locq').value=''; $('locmsg').textContent='';
-        Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML='';
+        clearCompare();
         runPoint({lat:a.lat,lon:a.lon,label:'LivWell Anaheim, today’s clinic',st:'CA',self:'Anaheim'}); }
       else { clearCheck(); home(); }
     }
@@ -2279,67 +2324,111 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     return {inCA,w5:w(5),w10:w(10),w30:w(30),nc:cd[0],nl:lw[0],lw10:lw.filter(x=>x.mi<=10).length,pat6,d15:drive15(p,null)};
   }
   function splitLabel(t){ const i=t.indexOf(', '); return i>0?[t.slice(0,i),t.slice(i+2)]:[t,'']; }
-  function clearCompare(){ Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML=''; cmsg.textContent=''; $('cmp2-a').value=''; $('cmp2-b').value=''; }
   const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
-  $('cmp2-bar').onsubmit=async e=>{
-    e.preventDefault();
-    const qa=$('cmp2-a').value.trim(), qb=$('cmp2-b').value.trim();
-    if(!qa||!qb){ cmsg.style.color='var(--red)'; cmsg.textContent='Type a location in both boxes first.'; return; }
-    cmsg.style.color='var(--muted)'; cmsg.textContent='Looking those up…';
-    let a,b;
-    try{ a=await lookup(qa); await wait(1100); b=await lookup(qb); }   /* the free lookup allows about one request a second */
-    catch(err){ cmsg.style.color='var(--red)'; cmsg.textContent='The address lookup isn’t responding right now — try ZIP codes instead.'; return; }
-    const bad=[[a,1],[b,2]].filter(([r])=>!r).map(([,n])=>n);
-    if(bad.length){ cmsg.style.color='var(--red)'; cmsg.textContent='Couldn’t find location '+bad.join(' and ')+' — try adding the city and state.'; return; }
-    if(a.kind==='county'||b.kind==='county'){ cmsg.style.color='var(--red)'; cmsg.textContent='Compare works with addresses, cities or ZIP codes — a county is too big to score as one site.'; return; }
-    cmsg.textContent=''; clearCheck(true);
-    const A=statsFor(a), B=statsFor(b), na='—';
-    const pts=[a,b];
-    busy=true; comps(true); busy=false; mark(null);
-    Lcmp.clearLayers();
-    pts.forEach((p,i)=>driveRing(p,i?RED:NAVY,(i+1)+'. '+p.label).addTo(Lcmp));
-    pts.forEach((p,i)=>L.marker([p.lat,p.lon],{zIndexOffset:1100,icon:numPin(i+1)}).addTo(Lcmp)
-      .bindTooltip('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{direction:'top',offset:[0,-36],className:'lwtip'})
-      .bindPopup('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{offset:[0,-30]}));
-    settle(()=>map.fitBounds(L.latLngBounds(pts.flatMap(p=>{ const dy=DRIVE_MI/69, dx=DRIVE_MI/(69*Math.cos(p.lat*Math.PI/180)); return [[p.lat-dy,p.lon-dx],[p.lat+dy,p.lon+dx]]; })).pad(0.05),{maxZoom:12}));
-
-    const rating=S=>!S.inCA?na: S.w10===0?'<span class="chip open">Open</span>': S.w10<=3?'<span class="chip some">Some</span>':'<span class="chip busy">Crowded</span>';
-    const ncv=S=>S.inCA?'<span title="'+esc(S.nc.k.brand)+', '+esc(S.nc.k.name)+'">'+S.nc.mi.toFixed(1)+' mi</span>':na;
-    const nlv=S=>'<span title="'+esc(S.nl.c.name)+'">'+S.nl.mi.toFixed(1)+' mi</span>';
-    /* each row: label, value 1, value 2, numbers used to pick the stronger one, lower-is-better */
-    const rows=[
-      ['Rating', rating(A), rating(B), A.inCA?A.w10:null, B.inCA?B.w10:null, true],
-      ['Competitors within 5 mi', A.inCA?A.w5:na, B.inCA?B.w5:na, A.inCA?A.w5:null, B.inCA?B.w5:null, true],
-      ['Competitors within 10 mi', A.inCA?A.w10:na, B.inCA?B.w10:na, A.inCA?A.w10:null, B.inCA?B.w10:null, true],
-      ['Closest competitor', ncv(A), ncv(B), A.inCA?A.nc.mi:null, B.inCA?B.nc.mi:null, false],
-      ['Closest LivWell', nlv(A), nlv(B), A.nl.mi, B.nl.mi, false],
-      ['Patients within 6 mi', A.inCA?nf(A.pat6):na, B.inCA?nf(B.pat6):na, A.inCA?A.pat6:null, B.inCA?B.pat6:null, false],
-      ['Patients within 15-min drive', A.inCA?nf(A.d15.pat):na, B.inCA?nf(B.d15.pat):na, A.inCA?A.d15.pat:null, B.inCA?B.d15.pat:null, false, 'd15'],
-      ['Competitors within 15-min drive', A.inCA?A.d15.comp:na, B.inCA?B.d15.comp:na, A.inCA?A.d15.comp:null, B.inCA?B.d15.comp:null, true, 'd15'],
-      ['Other LivWell clinics within 15-min drive', A.d15.lw, B.d15.lw, A.d15.lw, B.d15.lw, true, 'd15'],
-      ['Anaheim appointments from doctors within 15-min drive', nf(ANA.apptNear(a)), nf(ANA.apptNear(b)), ANA.apptNear(a), ANA.apptNear(b), false, 'd15'],
-      ['Average miles to Anaheim&rsquo;s referring doctors', ANA.avgDoc(a).toFixed(1)+' mi', ANA.avgDoc(b).toFixed(1)+' mi', +ANA.avgDoc(a).toFixed(1), +ANA.avgDoc(b).toFixed(1), true]
-    ];
-    /* patients whose ZIP sits inside both circles, so the two counts aren't double-read */
-    const both=ALLPZ.reduce((s,[i,n])=>s+(A.d15.zipsIn.has(i)&&B.d15.zipsIn.has(i)?n:0),0);
-    const cls=(x,y,low)=> (x===null||y===null||x===y)?['','']: ((low?x<y:x>y)?[' class="best"','']:['',' class="best"']);
-    const hdr=(p,n)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+n+'" title="Show on the map"><b>'+(n+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>';
-    cout.innerHTML='<table><thead><tr><th></th>'+hdr(a,0)+hdr(b,1)+'</tr></thead><tbody>'+
-      rows.map(r=>{ const c=cls(r[3],r[4],r[5]); return '<tr'+(r[6]?' class="'+r[6]+'"':'')+'><td>'+r[0]+'</td><td'+c[0]+'>'+r[1]+'</td><td'+c[1]+'>'+r[2]+'</td></tr>'; }).join('')+
+  /* =================== Compare sites (up to three) ===================
+     Replaces the two-box Compare. Each site gets a numbered pin and its
+     15-minute drive circle; the panel shows a plain-language "which site
+     wins on what" summary and a scorecard with the stronger value shaded. */
+  const CW=[], CWMAX=3, CWCOL=[NAVY,RED,'#C98A12'];
+  const cwPin=(n,col)=>L.divIcon({className:'lcpin',iconSize:[30,40],iconAnchor:[15,38],
+    html:'<svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 38C6 26 2 20 2 13a13 13 0 0 1 26 0c0 7-4 13-13 25z" fill="'+col+'" stroke="#fff" stroke-width="2.5"/><text x="15" y="18" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Segoe UI,Arial,sans-serif">'+n+'</text></svg>'});
+  const ANAC=CL.find(c=>c.name==='Anaheim');
+  function cwFit(){ if(!CW.length) return; settle(()=>map.fitBounds(L.latLngBounds(CW.flatMap(p=>{ const dy=DRIVE_MI/69, dx=DRIVE_MI/(69*Math.cos(p.lat*Math.PI/180)); return [[p.lat-dy,p.lon-dx],[p.lat+dy,p.lon+dx]]; })).pad(0.05),{maxZoom:12})); }
+  function clearCompare(){ CW.length=0; Lcmp.clearLayers(); cout.hidden=true; cout.innerHTML=''; cmsg.textContent=''; $('cw-q').value=''; cwList(); }
+  function cwList(){
+    $('cw-list').innerHTML=CW.length?CW.map((p,i)=>'<div class="cw-site"><span class="cw-n" style="background:'+CWCOL[i]+'">'+(i+1)+'</span><div><b>'+esc(splitLabel(p.label)[0])+'</b><small>'+esc(splitLabel(p.label)[1]||p.note||'')+'</small></div><button type="button" class="cw-x" data-i="'+i+'" title="Remove">&#10005;</button></div>').join('')
+      :'<div class="cw-empty">No sites yet. Add up to three addresses, cities or ZIP codes below.</div>';
+    $('cw-list').querySelectorAll('.cw-x').forEach(b=>b.onclick=()=>{ CW.splice(+b.dataset.i,1); cwRender(); });
+    $('cw-q').disabled=CW.length>=CWMAX; $('cw-go').disabled=CW.length>=CWMAX;
+    $('cw-q').placeholder=CW.length>=CWMAX?'Three sites added — remove one to add another':'Add an address, city or ZIP code…';
+  }
+  function cwStats(p){
+    const S=statsFor(p);
+    /* LivWell clinics being compared are left out of each other's counts: one would replace the other */
+    const skip=new Set(CW.filter(q=>q.self).map(q=>q.self));
+    const lwNear=CL.filter(c=>!skip.has(c.name) && c.name!==p.self && miles(p.lat,p.lon,c.lat,c.lon)>0.25 && miles(p.lat,p.lon,c.lat,c.lon)<=DRIVE_MI).length;
+    return {S,lwNear,appt:window.ANA?ANA.apptNear(p):0,avg:window.ANA?ANA.avgDoc(p):0,
+      anp:(PZ.loc['Anaheim']||[]).reduce((a,[i,n])=>a+(miles(p.lat,p.lon,PZ.zips[i][0],PZ.zips[i][1])<=DRIVE_MI?n:0),0)};
+  }
+  function cwRender(){
+    cwList(); Lcmp.clearLayers();
+    CW.forEach((p,i)=>{ driveRing(p,CWCOL[i],(i+1)+'. '+p.label).addTo(Lcmp);
+      L.marker([p.lat,p.lon],{zIndexOffset:1100,icon:cwPin(i+1,CWCOL[i])}).addTo(Lcmp)
+        .bindTooltip('<b>'+(i+1)+'. '+esc(p.label)+'</b>',{direction:'top',offset:[0,-36],className:'lwtip'}); });
+    lkLater();
+    if(CW.length<2){ cout.hidden=true; cout.innerHTML=''; if(CW.length===1){ cmsg.style.color='var(--muted)'; cmsg.textContent='Add at least one more site to compare.'; } return; }
+    cmsg.textContent='';
+    const T=CW.map(cwStats), na='—', allCA=CW.every(p=>p.st==='CA');
+    const nearAna=CW.some(p=>miles(p.lat,p.lon,ANAC.lat,ANAC.lon)<=30);
+    /* rows: [label, values, raw numbers, higher is better] or a group heading */
+    const R=[['Patients nearby'],
+      ['LivWell patients within a 15-min drive', T.map(t=>allCA?nf(t.S.d15.pat):na), T.map(t=>allCA?t.S.d15.pat:null), true],
+      ['LivWell patients within 6 miles', T.map(t=>allCA?nf(t.S.pat6):na), T.map(t=>allCA?t.S.pat6:null), true]];
+    if(nearAna) R.push(['Anaheim referrals'],
+      ['Anaheim patients within a 15-min drive', T.map(t=>nf(t.anp)), T.map(t=>t.anp), true],
+      ['Anaheim appointments from doctors within a 15-min drive', T.map(t=>nf(t.appt)+' <small>('+Math.round(100*t.appt/ANA.total)+'%)</small>'), T.map(t=>t.appt), true],
+      ['Average miles to Anaheim&rsquo;s referring doctors', T.map(t=>t.avg.toFixed(1)+' mi'), T.map(t=>+t.avg.toFixed(1)), false]);
+    R.push(['Competition'],
+      ['Competing clinics within a 15-min drive', T.map(t=>allCA?t.S.d15.comp:na), T.map(t=>allCA?t.S.d15.comp:null), false],
+      ['Competing clinics within 10 miles', T.map(t=>allCA?t.S.w10:na), T.map(t=>allCA?t.S.w10:null), false],
+      ['Closest competing clinic', T.map(t=>allCA?t.S.nc.mi.toFixed(1)+' mi':na), T.map(t=>allCA?+t.S.nc.mi.toFixed(1):null), true],
+      ['Other LivWell clinics within a 15-min drive', T.map(t=>t.lwNear), T.map(t=>t.lwNear), false]);
+    const shade=(v,hi)=>{ if(v.some(x=>x===null)) return v.map(()=>false); const b=hi?Math.max(...v):Math.min(...v); return v.every(x=>x===b)?v.map(()=>false):v.map(x=>x===b); };
+    const name=i=>(i+1)+'. '+esc(splitLabel(CW[i].label)[0]);
+    const lead=(vals,hi)=>{ const idx=vals.map((v,i)=>i).sort((a,b)=>hi?vals[b]-vals[a]:vals[a]-vals[b]); return idx; };
+    const close=(a,b)=>Math.abs(a-b)<=Math.max(2,0.03*Math.max(a,b));
+    const W=[];
+    /* leaders = every site within a small margin of the best; the rest are listed after "vs" */
+    const win=(v,hi,tol,fmt,what)=>{ const best=hi?Math.max(...v):Math.min(...v);
+      const L=v.map((x,i)=>i).filter(i=>Math.abs(v[i]-best)<=tol(best)), O=v.map((x,i)=>i).filter(i=>!L.includes(i));
+      const order=L.sort((a,b)=>hi?v[b]-v[a]:v[a]-v[b]);
+      if(!O.length) return 'Close &mdash; '+order.map(i=>name(i)+' '+fmt(v[i])).join(', ')+' '+what+'.';
+      return '<b>'+order.map(name).join(' and ')+'</b> &mdash; '+order.map(i=>fmt(v[i])).join(' and ')+' '+what+', vs '+O.map(i=>fmt(v[i])).join(' and ')+'.'; };
+    const pctTol=b=>Math.max(2,0.03*b);
+    if(nearAna) W.push(['Patients', win(T.map(t=>t.anp),true,pctTol,v=>nf(v),'Anaheim patients within a 15-min drive')]);
+    else if(allCA) W.push(['Patients', win(T.map(t=>t.S.d15.pat),true,pctTol,v=>nf(v),'LivWell patients within a 15-min drive')]);
+    if(nearAna) W.push(['Doctor referrals', win(T.map(t=>t.appt),true,pctTol,v=>nf(v),'Anaheim appointments from doctors within a 15-min drive')]);
+    if(allCA) W.push(['Competition', win(T.map(t=>+t.S.nc.mi.toFixed(1)),true,()=>0.5,v=>v.toFixed(1)+' mi','to the nearest competing clinic')]);
+    for(let i=0;i<CW.length;i++) for(let j=i+1;j<CW.length;j++){ const d=miles(CW[i].lat,CW[i].lon,CW[j].lat,CW[j].lon);
+      if(d<1) W.push(['Sites '+(i+1)+' and '+(j+1),'About '+d.toFixed(1)+' miles apart, so their numbers are nearly the same.']); }
+    cout.innerHTML='<div class="cw-lbl">Which site wins on what</div><div class="cw-wins">'+W.map(w=>'<div><b class="k">'+w[0]+'</b><span>'+w[1]+'</span></div>').join('')+'</div>'+
+      '<div class="cw-lbl">Scorecard <span>&mdash; shaded = the stronger site on that measure</span></div>'+
+      '<table><thead><tr><th></th>'+CW.map((p,i)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+i+'" title="Show on the map" style="background:'+CWCOL[i]+'"><b>'+(i+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>').join('')+'</tr></thead><tbody>'+
+      R.map(r=>{ if(r.length===1) return '<tr class="cwg"><td colspan="'+(CW.length+1)+'">'+r[0]+'</td></tr>';
+        const s=shade(r[2],r[3]); return '<tr><td>'+r[0]+'</td>'+r[1].map((v,i)=>'<td'+(s[i]?' class="best"':'')+'>'+v+'</td>').join('')+'</tr>'; }).join('')+
       '</tbody></table>'+
-      '<div class="cnote">Shaded = the stronger of the two. Hover a distance for the place name.'+
-      ' 15-min drive = the dashed circles on the map (1 navy, 2 red), 7 miles each, a straight-line estimate.'+
-      ((A.inCA&&B.inCA)?(both?' <b>'+nf(both)+'</b> patients live inside both circles.':' The two circles share no patients.'):'')+
-      ((A.inCA&&B.inCA)?'':' The patient file and competitor survey cover California only.')+'</div>'+
-      '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to both</button><button type="button" id="cmp2-clear">Clear</button></div>';
+      '<div class="cnote">15-min drive = the dashed circle around each pin, 7 miles, a straight-line estimate. LivWell clinics being compared are left out of each other&rsquo;s counts, since one would replace the other.'+
+      (allCA?'':' The patient file and competitor survey cover California only.')+'</div>'+
+      '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to all</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
-    cout.querySelectorAll('button.cpn').forEach(btn=>btn.onclick=()=>{
-      const p=pts[+btn.dataset.n]; settle(()=>map.setView([p.lat,p.lon],12.5));
-    });
-    $('cmp2-zoom').onclick=()=>settle(()=>map.fitBounds(L.latLngBounds(pts.flatMap(p=>{ const dy=DRIVE_MI/69, dx=DRIVE_MI/(69*Math.cos(p.lat*Math.PI/180)); return [[p.lat-dy,p.lon-dx],[p.lat+dy,p.lon+dx]]; })).pad(0.05),{maxZoom:12}));
-    $('cmp2-clear').onclick=clearCompare;
+    cout.querySelectorAll('button.cpn').forEach(btn=>btn.onclick=()=>{ const p=CW[+btn.dataset.n]; settle(()=>map.setView([p.lat,p.lon],12.5)); });
+    $('cmp2-zoom').onclick=cwFit; $('cmp2-clear').onclick=clearCompare;
+  }
+  function cwAdd(p){ if(CW.length>=CWMAX) return; clearCheck(true); CW.push(p); busy=true; comps(true); busy=false; cwRender(); cwFit(); }
+  /* a LivWell clinic can be added by name, e.g. "LivWell Anaheim" */
+  function clinicFor(q){ const m=q.replace(/^\s*livwell\s+/i,'').trim().toLowerCase(); if(!/^\s*livwell\s+/i.test(q)) return null;
+    const c=CL.find(c=>c.name.toLowerCase()===m || c.name.toLowerCase().startsWith(m)); return c?{kind:'point',lat:c.lat,lon:c.lon,label:'LivWell '+c.name+', today’s clinic',st:c.st,self:c.name}:null; }
+  $('cw-add').onsubmit=async e=>{
+    e.preventDefault();
+    const q=$('cw-q').value.trim(); if(!q) return;
+    let p=clinicFor(q);
+    if(!p){ cmsg.style.color='var(--muted)'; cmsg.textContent='Looking that up…';
+      try{ p=await lookup(q); }catch(err){ cmsg.style.color='var(--red)'; cmsg.textContent='The address lookup isn’t responding right now — try a ZIP code instead.'; return; }
+      if(!p){ cmsg.style.color='var(--red)'; cmsg.textContent='Couldn’t find that — try adding the city and state.'; return; }
+      if(p.kind==='county'){ cmsg.style.color='var(--red)'; cmsg.textContent='A county is too big to score as one site — use an address, city or ZIP code.'; return; } }
+    cmsg.textContent=''; $('cw-q').value=''; cwAdd(p);
   };
+  /* Anaheim relocation example: today's clinic and the two Placentia sites under review */
+  window.lwCompareDemo=function(){
+    showTab('two'); CW.length=0;
+    CW.push({kind:'point',lat:ANAC.lat,lon:ANAC.lon,label:'LivWell Anaheim, today’s clinic',st:'CA',self:'Anaheim'});
+    (typeof ANA_DATA!=='undefined'?ANA_DATA.sites:[]).forEach(s=>CW.push({kind:'point',lat:s.lat,lon:s.lon,label:s.label,st:'CA',note:'under review'}));
+    clearCheck(true); busy=true; comps(true); busy=false; cwRender(); cwFit();
+  };
+  window.lwCompareEnsure=function(){ if(CW.length<2) window.lwCompareDemo(); else showTab('two'); };
+  $('cw-demo').onclick=window.lwCompareDemo;
+  cwList();
 
   /* =================== Map key: only what is switched on =================== */
   let lkT=null;
@@ -2370,7 +2459,7 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
 </script>
 <script>
 /* =====================================================================
-   GUIDED TOUR — the case for Monterey
+   GUIDED TOUR — checking and comparing a site
    Eleven steps. The viewer does the clicking: steps 3, 4, 5, 8, 9 and 10 point at
    a control and ask for it to be ticked, then Next carries on. Clicks on the
    highlighted element are deliberately left enabled (disableActiveInteraction
@@ -2382,80 +2471,60 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
   var _tour = null;
 
   function steps(){
+    var ensure=function(){ if(window.lwCompareEnsure) window.lwCompareEnsure(); };
     return [
       { popover:{
-          title:'Why Monterey is the strongest location',
-          description:'Eleven steps, about three minutes. Some of them ask for a box to be ticked or a tab to be opened \u2014 '
-            +'click where it says to, then press Next. Close the tour any time.'
+          title:'Checking and comparing a site',
+          description:'Nine steps, about two minutes, using the Anaheim relocation as the example. Some steps ask for a '
+            +'click — click where it says, then press Next. Close the tour any time.'
       }},
-      { element:'.answer', popover:{
-          title:'The short answer',
-          description:'LivWell graded Monterey best and Burbank worst on revenue. The question was why. '
-            +'Monterey draws nearly seven times the patients, and the reason is competition \u2014 '
-            +'not income, and not how far people travel.',
+      { element:'#stats-row', popover:{
+          title:'Where LivWell patients come from',
+          description:'29 clinics and 7,153 California patient homes. Half of patients live within 6.4 miles of the clinic '
+            +'they use, and 69% within 10 miles. The draw is local, so where a clinic sits decides who it reaches.',
           side:'bottom', align:'start'
       }},
-      { element:'#grp-bestworst', popover:{
-          title:'Click: Monterey \u2014 patient heat',
-          description:'Tick the Monterey box and watch the map. 614 patients from 51 home towns, spread '
-            +'across the whole Peninsula and down the Salinas Valley. Monterey draws from a corridor, '
-            +'not a neighbourhood.',
-          side:'left', align:'start'
-      }},
-      { element:'#grp-bestworst', popover:{
-          title:'Now tick Burbank',
-          description:'89 patients, and a much tighter cloud that stops around six miles out \u2014 roughly '
-            +'where the nearest other LivWell clinics sit. Burbank holds neither a core nor an outer reach.',
-          side:'left', align:'start'
-      }},
-      { element:'#grp-competitors', popover:{
-          title:'Click all three competitor layers',
-          description:'65 competing infusion clinics across California. Nothing within 45.6 miles of '
-            +'Monterey \u2014 the nearest is in San Jose. Thirteen inside 30 miles of Burbank, the closest '
-            +'0.6 miles away. That is the whole explanation.',
-          side:'left', align:'start'
-      }},
-      { element:'.cmp-split > .ccard', popover:{
-          title:'The two locations side by side',
-          description:'614 patients against 89. Eighteen a month open against 4.9. Two other LivWell '
-            +'clinics nearby against five \u2014 and zero competing clinics against thirteen.',
+      { element:'#lp-show', popover:{
+          title:'Click: Patients',
+          description:'Switches on every patient home area, grouped by ZIP code — bigger dots, more patients. '
+            +'The other buttons can be switched on together; Clear map puts everything back.',
           side:'right', align:'start'
       }},
-      { element:'.cmp-right', popover:{
-          title:'The same gap, drawn',
-          description:'Where each clinic\u2019s patients live, both charts on one scale. Monterey\u2019s '
-            +'busiest home town on its own has more patients than all of Burbank.',
+      { element:'#lp-tabs', popover:{
+          title:'Check one location',
+          description:'Click Check one location and type an address, city or ZIP code — for example 1211 W La Palma Ave, Anaheim. '
+            +'A pin drops with its 15-minute drive circle, and the panel lists competitors, the nearest LivWell and patients nearby.',
+          side:'left', align:'start'
+      }},
+      { element:'#grp-ana', popover:{
+          title:'Click: Anaheim relocation — Show all',
+          description:'Turns on the doctors who send patients to Anaheim (gold, sized by appointments), Anaheim patients’ '
+            +'home areas, the best area for a new site, and the two Placentia sites under review. It also loads them into the comparison.',
+          side:'right', align:'start'
+      }},
+      { element:'#lp-two', onHighlightStarted:ensure, popover:{
+          title:'Read the comparison',
+          description:'Today’s clinic and the two Placentia sites, measured the same way. The summary says which site wins on '
+            +'patients, doctor referrals and competition; in the scorecard, shaded is the stronger site on each line.',
+          side:'left', align:'start'
+      }},
+      { element:'#cw-add', onHighlightStarted:ensure, popover:{
+          title:'Add a site of your own',
+          description:'Up to three sites at a time. Remove one with its ✕, then type any address, city or ZIP code and press Add. '
+            +'LivWell clinics can be added by name, for example “LivWell Anaheim”.',
           side:'left', align:'start'
       }},
       { element:'#tabbar', popover:{
-          title:'Click: All 29 locations',
-          description:'The rest of the portfolio, ranked by how alone each clinic sits. Monterey is 2nd of '
-            +'29; Burbank is 27th. The two locations LivWell graded land exactly where the pattern predicts.',
+          title:'Click: Anaheim — referring doctors',
+          description:'Every Anaheim appointment, grouped by the ordering doctor’s office. Click a row to find the office on the map. '
+            +'The top five offices send 43% of appointments.',
           side:'top', align:'start'
       }},
       { element:'#tabbar', popover:{
-          title:'Click: Where patients come from',
-          description:'Every California patient address, grouped by home ZIP code \u2014 7,153 of them across '
-            +'713 ZIP codes. Half live within 6.4 miles of the clinic they use and 94% within 25 miles. '
-            +'The draw is local, so where a clinic sits decides who it reaches. The dropdown narrows to '
-            +'a single location.',
+          title:'Monterey vs Burbank is still here',
+          description:'The original best-versus-worst study now sits in the last tab, Monterey vs Burbank (reference), '
+            +'with its charts and scorecard unchanged.',
           side:'top', align:'start'
-      }},
-      { element:'#tabbar', popover:{
-          title:'Click: Patient coverage by ZIP code',
-          description:'The same patients read as coverage: which ZIP codes sit within 10 miles of a LivWell '
-            +'clinic and which do not. 5,798 patients are close to one; 1,355 live beyond that \u2014 the '
-            +'gap where another location could go. That is the case for Monterey, and the map for where '
-            +'the next one might sit.',
-          side:'top', align:'start'
-      }},
-      { element:'#lpanel', popover:{
-          title:'Check or compare a location',
-          description:'Check one location: type any address, city, ZIP code or county and press Search. A red pin '
-            +'drops on the map and the panel shows competing clinics nearby, the closest LivWell and how many '
-            +'LivWell patients live within 6 miles. Compare two puts two locations side by side. The Show on map '
-            +'buttons can be switched on together, and Clear map puts everything back.',
-          side:'left', align:'start'
       }}
     ];
   }
@@ -2468,7 +2537,6 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     /* Two live instances fight each other and make the tour skip steps, so
        tear down anything still open before starting. */
     if(_tour){ try{ _tour.destroy(); }catch(e){} _tour = null; }
-    if(window.lwOpenLayers) window.lwOpenLayers(true);
     _tour = window.driver.js.driver({
       animate:false,
       disableActiveInteraction:false,   /* the viewer clicks the highlighted control */
