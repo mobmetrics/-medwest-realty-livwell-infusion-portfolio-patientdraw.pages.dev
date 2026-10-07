@@ -788,6 +788,19 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 .answer p{margin-top:2px}
 #main-area{margin-top:0}
 @media(min-width:1181px){ body #main-area{height:calc(100vh - var(--maptop,210px) - 8px);min-height:460px} }
+/* movable, hideable map-layers box */
+#map-ctl{padding:0}
+#map-ctl-body{padding:8px 12px 10px}
+#map-ctl-bar{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;background:var(--navy);color:#fff;
+ border-radius:7px 7px 0 0;cursor:move;user-select:none;touch-action:none;font-size:11px;font-weight:700;letter-spacing:.4px;position:sticky;top:0;z-index:1}
+#map-ctl-bar .grip{opacity:.6;letter-spacing:-2px}
+#map-ctl-bar .ttl{flex:1;text-transform:uppercase}
+#map-ctl-min{border:0;background:rgba(255,255,255,.18);color:#fff;border-radius:4px;width:22px;height:20px;line-height:18px;font-size:14px;font-weight:700;cursor:pointer;padding:0}
+#map-ctl-min:hover{background:rgba(255,255,255,.32)}
+#map-ctl.min{width:auto;overflow:visible}
+#map-ctl.min #map-ctl-body{display:none}
+#map-ctl.min #map-ctl-bar{border-radius:7px;cursor:pointer}
+@media(max-width:1180px){ #map-ctl-bar{cursor:default} #map-ctl-min{display:none} }
 @media(max-width:1180px){ #map-ctl{position:static;width:auto;max-height:none;box-shadow:none;border-radius:0;border-left:0;border-right:0} }
 </style></head><body>
 <div id="signin-gate">
@@ -878,6 +891,9 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 </div>
 <div id="map-box"><div id="map"></div>
 <div id="map-ctl">
+<div id="map-ctl-bar" title="Drag to move"><span class="grip">&#8942;&#8942;</span><span class="ttl">Map layers</span>
+  <button type="button" id="map-ctl-min" title="Hide this box">&#8211;</button></div>
+<div id="map-ctl-body">
   <div id="lp-show">
     <div class="lsh">Show on map <span>— pick as many as you like</span></div>
     <div class="lchips">
@@ -928,6 +944,7 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
     <div class="lbtn" id="lb-iso"><span class="cbx"></span><span class="sw" style="background:#6B5B95"></span>Colour clinics by isolation</div>
   </div>
   </div>
+</div>
 </div>
 </div>
 </div>
@@ -2012,6 +2029,33 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
 })();
 </script>
 <script>
+/* Map layers box: drag the navy bar to move it anywhere over the map; the – button folds it
+   into a small "Map layers" tab (click the tab to open it again). Position and state are remembered. */
+(function(){
+  var box=document.getElementById('map-ctl'), bar=document.getElementById('map-ctl-bar'),
+      btn=document.getElementById('map-ctl-min'), area=document.getElementById('map-box'), K='lw_mapctl';
+  if(!box||!bar||!area) return;
+  var st={}; try{ st=JSON.parse(localStorage.getItem(K)||'{}')||{}; }catch(e){}
+  function save(){ try{ localStorage.setItem(K,JSON.stringify(st)); }catch(e){} }
+  function clamp(){ if(getComputedStyle(box).position!=='absolute') return;
+    var W=area.clientWidth, H=area.clientHeight, w=box.offsetWidth, h=Math.min(box.offsetHeight,H-20);
+    var x=Math.max(6,Math.min(box.offsetLeft,W-w-6)), y=Math.max(6,Math.min(box.offsetTop,H-h-6));
+    box.style.left=x+'px'; box.style.top=y+'px'; }
+  function setMin(v){ box.classList.toggle('min',!!v); btn.innerHTML=v?'&#9656;':'&#8211;'; btn.title=v?'Show map layers':'Hide this box'; st.min=!!v; save(); clamp(); }
+  if(typeof st.x==='number'){ box.style.left=st.x+'px'; box.style.top=st.y+'px'; }
+  setMin(st.min);
+  btn.addEventListener('click',function(e){ e.stopPropagation(); setMin(!box.classList.contains('min')); });
+  var drag=null, moved=false;
+  bar.addEventListener('pointerdown',function(e){ if(e.target===btn||getComputedStyle(box).position!=='absolute') return;
+    drag={sx:e.clientX,sy:e.clientY,x:box.offsetLeft,y:box.offsetTop}; moved=false; bar.setPointerCapture(e.pointerId); e.preventDefault(); });
+  bar.addEventListener('pointermove',function(e){ if(!drag) return; var dx=e.clientX-drag.sx, dy=e.clientY-drag.sy;
+    if(Math.abs(dx)+Math.abs(dy)>3) moved=true;
+    box.style.left=(drag.x+dx)+'px'; box.style.top=(drag.y+dy)+'px'; clamp(); });
+  bar.addEventListener('pointerup',function(){ if(!drag) return; drag=null;
+    if(!moved && box.classList.contains('min')){ setMin(false); return; }
+    st.x=box.offsetLeft; st.y=box.offsetTop; save(); });
+  window.addEventListener('resize',clamp);
+})();
 /* Fit the map to the screen: the map area runs from where it starts to the bottom of the window. */
 (function(){
   function fit(){ var m=document.getElementById('main-area'); if(!m) return;
