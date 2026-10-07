@@ -1190,9 +1190,9 @@ const map=L.map('map',{scrollWheelZoom:true,zoomSnap:0}).setView([35.6,-119.4],6
    and the old all-29 fit padded the view with empty desert. */
 const HOME=L.latLngBounds(CL.filter(c=>c.st==='CA').map(c=>[c.lat,c.lon]));
 const goHome=()=>map.fitBounds(HOME,{padding:[26,26]});
-/* CARTO Voyager: same OpenStreetMap data with less clutter (no peak / landmark symbols) */
-const base=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
- {attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',subdomains:'abcd',maxZoom:19}).addTo(map);
+/* Esri World Street Map: no API key needed (same service as the Satellite view) and no peak / landmark triangles */
+const base=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+ {attribution:'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, USGS, &copy; OpenStreetMap contributors',maxZoom:19}).addTo(map);
 const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
  {attribution:'Esri, Maxar, Earthstar Geographics',maxZoom:18});
 let satOn=false;
