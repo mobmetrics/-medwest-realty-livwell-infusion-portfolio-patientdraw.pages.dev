@@ -695,6 +695,7 @@ body.mapfull #main-area{position:fixed;top:0;left:0;width:100vw;height:100vh;z-i
 .mw-tour-popover .driver-popover-progress-text{color:#8a95a5;font-size:10.5px}
 .driver-active-element{outline:2px solid var(--red)!important;outline-offset:3px;border-radius:6px}
 @media(max-width:1180px){ #tour-nav-btn{margin-left:auto} }
+</style>
 <style>
 /* ===== Anaheim relocation (added Oct 2026) ===== */
 #grp-ana{margin-top:10px;border:1px solid var(--line);border-radius:6px;padding:8px 10px 6px}
@@ -715,6 +716,7 @@ table.at tbody tr:hover td{background:#F5F7F9}
 table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px solid #29374D;border-radius:2px;vertical-align:middle;margin-left:8px}
 .ana-more{text-align:center;margin:10px 0 4px}
 .ana-note{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+</style>
 <style>
 /* ===== Patient Draw & Site Comparison layout (Oct 2026) ===== */
 @media(min-width:1181px){ body #main-area{grid-template-columns:1fr 470px;height:820px} }
@@ -788,6 +790,12 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 .answer p{margin-top:2px}
 #main-area{margin-top:0}
 @media(min-width:1181px){ body #main-area{height:calc(100vh - var(--maptop,210px) - 8px);min-height:460px} }
+/* best-area column in the scorecard */
+#cmp2-out th.ba{background:#4a3f6b}
+#cmp2-out .cpn.ba{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#4a3f6b;font-size:10px;font-weight:800;cursor:default}
+#cmp2-out td.bacell{background:#F3F0FA}
+#cmp2-out td.bacell.best{background:#E2DBF3}
+#cmp2-out td small.why{display:block;white-space:normal;overflow:visible;font-size:9.5px;line-height:1.25;color:#5B6472;font-weight:400;margin-top:2px}
 /* movable, hideable map-layers box */
 #map-ctl{padding:0}
 #map-ctl-body{padding:8px 12px 10px}
@@ -1182,8 +1190,9 @@ const map=L.map('map',{scrollWheelZoom:true,zoomSnap:0}).setView([35.6,-119.4],6
    and the old all-29 fit padded the view with empty desert. */
 const HOME=L.latLngBounds(CL.filter(c=>c.st==='CA').map(c=>[c.lat,c.lon]));
 const goHome=()=>map.fitBounds(HOME,{padding:[26,26]});
-const base=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
- {attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:18}).addTo(map);
+/* CARTO Voyager: same OpenStreetMap data with less clutter (no peak / landmark symbols) */
+const base=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+ {attribution:'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',subdomains:'abcd',maxZoom:19}).addTo(map);
 const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
  {attribution:'Esri, Maxar, Earthstar Geographics',maxZoom:18});
 let satOn=false;
@@ -2445,20 +2454,39 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     const T=CW.map(cwStats), na='—', allCA=CW.every(p=>p.st==='CA');
     const nearAna=CW.some(p=>miles(p.lat,p.lon,ANAC.lat,ANAC.lon)<=30);
     /* rows: [label, values, raw numbers, higher is better] or a group heading */
+    /* Best area for a new Anaheim site: the centre of the shaded area, added as a starred column
+       whenever the comparison is in the Anaheim area. Its notes say why it is suggested. */
+    const BA=(nearAna&&typeof ANA_DATA!=='undefined')?(function(){ const z=ANA_DATA.zone;
+      const q={kind:'point',lat:z.reduce((a,c)=>a+c[0],0)/z.length,lon:z.reduce((a,c)=>a+c[1],0)/z.length,st:'CA',label:'Best area (center)'};
+      return cwStats(q); })():null;
+    const TT=BA?T.concat([BA]):T;
     const R=[['Patients nearby'],
-      ['LivWell patients within a 15-min drive', T.map(t=>allCA?nf(t.S.d15.pat):na), T.map(t=>allCA?t.S.d15.pat:null), true],
-      ['LivWell patients within 6 miles', T.map(t=>allCA?nf(t.S.pat6):na), T.map(t=>allCA?t.S.pat6:null), true]];
+      ['LivWell patients within a 15-min drive', TT.map(t=>allCA?nf(t.S.d15.pat):na), TT.map(t=>allCA?t.S.d15.pat:null), true],
+      ['LivWell patients within 6 miles', TT.map(t=>allCA?nf(t.S.pat6):na), TT.map(t=>allCA?t.S.pat6:null), true]];
     if(nearAna) R.push(['Anaheim referrals'],
-      ['Anaheim patients within a 15-min drive', T.map(t=>nf(t.anp)), T.map(t=>t.anp), true],
-      ['Anaheim appointments from doctors within a 15-min drive', T.map(t=>nf(t.appt)+' <small>('+Math.round(100*t.appt/ANA.total)+'%)</small>'), T.map(t=>t.appt), true],
-      ['Average miles to Anaheim&rsquo;s referring doctors', T.map(t=>t.avg.toFixed(1)+' mi'), T.map(t=>+t.avg.toFixed(1)), false]);
+      ['Anaheim patients within a 15-min drive', TT.map(t=>nf(t.anp)), TT.map(t=>t.anp), true],
+      ['Anaheim appointments from doctors within a 15-min drive', TT.map(t=>nf(t.appt)+' <small>('+Math.round(100*t.appt/ANA.total)+'%)</small>'), TT.map(t=>t.appt), true],
+      ['Average miles to Anaheim&rsquo;s referring doctors', TT.map(t=>t.avg.toFixed(1)+' mi'), TT.map(t=>+t.avg.toFixed(1)), false]);
     R.push(['Competition'],
-      ['Competing clinics within a 15-min drive', T.map(t=>allCA?t.S.d15.comp:na), T.map(t=>allCA?t.S.d15.comp:null), false],
-      ['Competing clinics within 10 miles', T.map(t=>allCA?t.S.w10:na), T.map(t=>allCA?t.S.w10:null), false],
-      ['Closest competing clinic', T.map(t=>allCA?t.S.nc.mi.toFixed(1)+' mi':na), T.map(t=>allCA?+t.S.nc.mi.toFixed(1):null), true],
-      ['Other LivWell clinics within a 15-min drive', T.map(t=>t.lwNear), T.map(t=>t.lwNear), false]);
+      ['Competing clinics within a 15-min drive', TT.map(t=>allCA?t.S.d15.comp:na), TT.map(t=>allCA?t.S.d15.comp:null), false],
+      ['Competing clinics within 10 miles', TT.map(t=>allCA?t.S.w10:na), TT.map(t=>allCA?t.S.w10:null), false],
+      ['Closest competing clinic', TT.map(t=>allCA?t.S.nc.mi.toFixed(1)+' mi':na), TT.map(t=>allCA?+t.S.nc.mi.toFixed(1):null), true],
+      ['Other LivWell clinics within a 15-min drive', TT.map(t=>t.lwNear), TT.map(t=>t.lwNear), false]);
     const shade=(v,hi)=>{ if(v.some(x=>x===null)) return v.map(()=>false); const b=hi?Math.max(...v):Math.min(...v); return v.every(x=>x===b)?v.map(()=>false):v.map(x=>x===b); };
     const name=i=>(i+1)+'. '+esc(splitLabel(CW[i].label)[0]);
+    const iA=CW.findIndex(p=>p.self==='Anaheim');
+    function baNote(lbl,raw,hi){ const v=raw[raw.length-1], o=raw.slice(0,-1);
+      if(v===null||o.some(x=>x===null)) return '';
+      if(raw.every(x=>x===v)) return 'Same as every option';
+      const best=hi?Math.max(...raw):Math.min(...raw);
+      if(/appointments/.test(lbl)&&iA>=0) return v>=o[iA]?'More than today&rsquo;s clinic'+(v===best?' &mdash; most of all':''):'Keeps '+nf(v)+' of today&rsquo;s '+nf(o[iA]);
+      if(/Anaheim patients/.test(lbl)&&iA>=0&&v>o[iA]) return '+'+(v-o[iA])+' vs today&rsquo;s clinic'+(v===best?'; most of all':'');
+      if(v!==best) return '';
+      if(/Average miles/.test(lbl)) return 'Shortest trip for referring doctors';
+      if(/Closest competing/.test(lbl)) return 'Farthest from a competitor';
+      if(/Other LivWell/.test(lbl)) return 'No other LivWell nearby';
+      if(/Competing clinics/.test(lbl)) return 'Fewest competitors';
+      return 'Most of all '+raw.length; }
     const lead=(vals,hi)=>{ const idx=vals.map((v,i)=>i).sort((a,b)=>hi?vals[b]-vals[a]:vals[a]-vals[b]); return idx; };
     const close=(a,b)=>Math.abs(a-b)<=Math.max(2,0.03*Math.max(a,b));
     const W=[];
@@ -2477,11 +2505,14 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
       if(d<1) W.push(['Sites '+(i+1)+' and '+(j+1),'About '+d.toFixed(1)+' miles apart, so their numbers are nearly the same.']); }
     cout.innerHTML='<div class="cw-lbl">Which site wins on what</div><div class="cw-wins">'+W.map(w=>'<div><b class="k">'+w[0]+'</b><span>'+w[1]+'</span></div>').join('')+'</div>'+
       '<div class="cw-lbl">Scorecard <span>&mdash; shaded = the stronger site on that measure</span></div>'+
-      '<table><thead><tr><th></th>'+CW.map((p,i)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+i+'" title="Show on the map" style="background:'+CWCOL[i]+'"><b>'+(i+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>').join('')+'</tr></thead><tbody>'+
-      R.map(r=>{ if(r.length===1) return '<tr class="cwg"><td colspan="'+(CW.length+1)+'">'+r[0]+'</td></tr>';
-        const s=shade(r[2],r[3]); return '<tr><td>'+r[0]+'</td>'+r[1].map((v,i)=>'<td'+(s[i]?' class="best"':'')+'>'+v+'</td>').join('')+'</tr>'; }).join('')+
+      '<table><thead><tr><th></th>'+CW.map((p,i)=>'<th title="'+esc(p.label)+'"><button type="button" class="cpn" data-n="'+i+'" title="Show on the map" style="background:'+CWCOL[i]+'"><b>'+(i+1)+'</b></button>'+esc(splitLabel(p.label)[0])+'</th>').join('')+
+        (BA?'<th class="ba" title="Centre of the shaded best area for a new site"><span class="cpn ba">&#9733;</span>Best area (center)</th>':'')+'</tr></thead><tbody>'+
+      R.map(r=>{ if(r.length===1) return '<tr class="cwg"><td colspan="'+(TT.length+1)+'">'+r[0]+'</td></tr>';
+        const s=shade(r[2],r[3]), nb=BA?baNote(r[0],r[2],r[3]):'';
+        return '<tr><td>'+r[0]+'</td>'+r[1].map((v,i)=>{ const isBA=BA&&i===CW.length;
+          return '<td class="'+(s[i]?'best':'')+(isBA?' bacell':'')+'">'+v+(isBA&&nb?'<small class="why">'+nb+'</small>':'')+'</td>'; }).join('')+'</tr>'; }).join('')+
       '</tbody></table>'+
-      '<div class="cnote">15-min drive = the dashed circle around each pin, 7 miles, a straight-line estimate. LivWell clinics being compared are left out of each other&rsquo;s counts, since one would replace the other.'+
+      '<div class="cnote">'+(BA?'&#9733; Best area = the centre of the shaded &ldquo;best area for a new site&rdquo; on the map, picked by scoring the map in small squares on Anaheim patients and doctor appointments within a 15-minute drive, weighted equally. A starting point to search within, not a specific building. ':'')+'15-min drive = the dashed circle around each pin, 7 miles, a straight-line estimate. LivWell clinics being compared are left out of each other&rsquo;s counts, since one would replace the other.'+
       (allCA?'':' The patient file and competitor survey cover California only.')+'</div>'+
       '<div id="cmp2-btns"><button type="button" id="cmp2-zoom">Zoom to all</button><button type="button" id="cmp2-clear">Clear</button></div>';
     cout.hidden=false;
