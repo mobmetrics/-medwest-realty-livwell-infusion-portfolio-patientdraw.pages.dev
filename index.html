@@ -791,7 +791,8 @@ table.at .abar{display:inline-block;height:9px;background:#C98A12;border:1px sol
 #main-area{margin-top:0}
 @media(min-width:1181px){ body #main-area{height:calc(100vh - var(--maptop,210px) - 8px);min-height:460px} }
 /* best-area column in the scorecard */
-#cmp2-out th.ba{background:#4a3f6b}
+#cmp2-out th.ba{background:#4a3f6b;width:25%}
+#cmp2-out table:has(th.ba) th:first-child{width:29%}
 #cmp2-out .cpn.ba{display:inline-flex;align-items:center;justify-content:center;background:#fff;color:#4a3f6b;font-size:10px;font-weight:800;cursor:default}
 #cmp2-out td.bacell{background:#F3F0FA}
 #cmp2-out td.bacell.best{background:#E2DBF3}
@@ -2498,18 +2499,32 @@ const ANA_DATA = {"offs":[{"a":"725 W La Veta Ave","c":"Orange","z":"92868","n":
     const shade=(v,hi)=>{ if(v.some(x=>x===null)) return v.map(()=>false); const b=hi?Math.max(...v):Math.min(...v); return v.every(x=>x===b)?v.map(()=>false):v.map(x=>x===b); };
     const name=i=>(i+1)+'. '+esc(splitLabel(CW[i].label)[0]);
     const iA=CW.findIndex(p=>p.self==='Anaheim');
+    /* The "why" under each Best-area number: how it compares with today's clinic and the other sites. */
+    const sn=i=>CW[i].self==='Anaheim'?'today':esc(splitLabel(CW[i].label)[0]).replace(/^(\d+) North /,'$1 N ').replace(/^(\d+) East /,'$1 E ').replace(/ Drive$/,' Dr').replace(/ Boulevard$/,' Blvd');
+    const NW=['','','two','three','four'];
     function baNote(lbl,raw,hi){ const v=raw[raw.length-1], o=raw.slice(0,-1);
       if(v===null||o.some(x=>x===null)) return '';
+      const isMi=/miles|Closest/.test(lbl), f=x=>isMi?(+x).toFixed(1)+' mi':nf(x);
+      const best=hi?Math.max(...raw):Math.min(...raw), all=NW[raw.length]||raw.length;
+      const lead=o.indexOf(hi?Math.max(...o):Math.min(...o));               /* strongest of the real sites */
+      const oth=o.map((x,i)=>i).filter(i=>i!==iA); const bo=oth.length?oth.reduce((m,i)=>(hi?o[i]>o[m]:o[i]<o[m])?i:m,oth[0]):-1;
+      if(/Other LivWell/.test(lbl)) return v===0?'None &mdash; no overlap with another LivWell':v+' nearby &mdash; would share patients';
       if(raw.every(x=>x===v)) return 'Same as every option';
-      const best=hi?Math.max(...raw):Math.min(...raw);
-      if(/appointments/.test(lbl)&&iA>=0) return v>=o[iA]?'More than today&rsquo;s clinic'+(v===best?' &mdash; most of all':''):'Keeps '+nf(v)+' of today&rsquo;s '+nf(o[iA]);
-      if(/Anaheim patients/.test(lbl)&&iA>=0&&v>o[iA]) return '+'+(v-o[iA])+' vs today&rsquo;s clinic'+(v===best?'; most of all':'');
-      if(v!==best) return '';
-      if(/Average miles/.test(lbl)) return 'Shortest trip for referring doctors';
-      if(/Closest competing/.test(lbl)) return 'Farthest from a competitor';
-      if(/Other LivWell/.test(lbl)) return 'No other LivWell nearby';
-      if(/Competing clinics/.test(lbl)) return 'Fewest competitors';
-      return 'Most of all '+raw.length; }
+      if(/LivWell patients within a 15/.test(lbl)) return v===best?'Most of the '+all+' &mdash; sits between both referral hubs':nf(o[lead]-v)+' fewer than '+sn(lead);
+      if(/LivWell patients within 6/.test(lbl)) return v===best?'Most of the '+all:nf(o[lead]-v)+' fewer than '+sn(lead);
+      if(/Anaheim patients/.test(lbl)){ const parts=[];
+        if(iA>=0) parts.push((v>=o[iA]?'+':'')+(v-o[iA])+' vs today');
+        if(bo>=0) parts.push((v>=o[bo]?'+':'')+(v-o[bo])+' vs '+sn(bo));
+        return parts.join('; ')+(v===best?' &mdash; most of all':''); }
+      if(/appointments/.test(lbl)){
+        if(iA>=0){ const r=v/o[iA]; if(v>=o[iA]) return 'More referrals than today ('+nf(v)+' vs '+nf(o[iA])+')';
+          return (r>=0.95?'Keeps nearly all of today&rsquo;s referrals':'Keeps '+Math.round(r*100)+'% of today&rsquo;s referrals')+' ('+nf(v)+' vs '+nf(o[iA])+')'; }
+        return v===best?'Most referrals of all':nf(o[lead]-v)+' fewer than '+sn(lead); }
+      if(/Average miles/.test(lbl)) return v===best?'Shortest trip for referring doctors':(v-o[lead]).toFixed(1)+' mi farther than '+sn(lead);
+      if(/Closest competing/.test(lbl)) return v===best?'Farthest from a competitor':(o[lead]-v).toFixed(1)+' mi closer than '+sn(lead);
+      if(/Competing clinics/.test(lbl)){ if(iA>=0&&v===o[iA]) return 'Same as today'; if(v===best) return 'Fewest of all';
+        return (v-o[lead])+' more than '+sn(lead); }
+      return ''; }
     const lead=(vals,hi)=>{ const idx=vals.map((v,i)=>i).sort((a,b)=>hi?vals[b]-vals[a]:vals[a]-vals[b]); return idx; };
     const close=(a,b)=>Math.abs(a-b)<=Math.max(2,0.03*Math.max(a,b));
     const W=[];
