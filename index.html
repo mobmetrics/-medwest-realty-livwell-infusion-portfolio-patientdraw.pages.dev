@@ -839,6 +839,26 @@ table.at tr.ie-sub td{background:#F5F7F9;font-size:10px;text-transform:uppercase
  body.mapfull #cmp2-out th.ba{width:27%}
  body.mapfull #cmp2-out td small.why{font-size:11.5px}
 }
+
+/* ===== Medication multi-pick (15 Oct 2026) ===== */
+.medpick{position:relative;width:100%;margin:4px 0 2px}
+#ie-filter .medpick{width:260px;margin:0}
+.mp-btn{display:flex;align-items:center;gap:6px;width:100%;padding:5px 8px;font:inherit;font-size:12px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--navy);cursor:pointer;text-align:left}
+#ie-filter .mp-btn{padding:7px 9px;font-size:12.5px}
+.mp-btn:hover{border-color:var(--navy)}
+.mp-txt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mp-car{font-size:10px;color:var(--muted)}
+.mp-pop{position:fixed;z-index:9000;background:#fff;border:1px solid var(--navy);border-radius:6px;box-shadow:0 8px 24px rgba(41,55,77,.22);font-size:12.5px}
+.mp-pop[hidden]{display:none}
+.mp-list{overflow-y:auto;padding:4px 0}
+.mp-row{display:flex;align-items:center;gap:8px;padding:5px 10px;cursor:pointer;color:var(--navy);line-height:1.25}
+.mp-row:hover{background:#F2F5F8}
+.mp-row span{color:var(--muted)}
+.mp-row input{accent-color:#DC2F3A;margin:0;flex:none}
+.mp-all{border-bottom:1px solid var(--line);font-weight:700}
+.mp-foot{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-top:1px solid var(--line)}
+.mp-foot button{border:1px solid var(--navy);background:#fff;color:var(--navy);border-radius:4px;font:inherit;font-size:11.5px;font-weight:700;padding:4px 12px;cursor:pointer}
+.mp-foot .mp-done{background:var(--navy);color:#fff}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
@@ -952,7 +972,7 @@ table.at tr.ie-sub td{background:#F5F7F9;font-size:10px;text-transform:uppercase
       <div class="lbtn" id="ie-doc"><span class="cbx"></span><span class="sw" style="background:#C98A12;border:1.5px solid #DC2F3A"></span>Doctors who prescribe LivWell&rsquo;s medications</div>
       <div class="lbtn" id="ie-ring"><span class="cbx"></span><span class="sw" style="background:rgba(41,55,77,.1);border:1.5px dashed #29374D"></span>About a 20-minute drive from today&rsquo;s clinics</div>
       <div class="lbtn" id="ie-zone"><span class="cbx"></span><span class="sw" style="background:rgba(220,47,58,.1);border:1.5px dashed #DC2F3A"></span>Search areas 1&ndash;4</div>
-      <select id="ie-med" aria-label="Medication"></select>
+      <div class="medpick" id="ie-med"></div>
     </div>
   </div>
   <div id="lp-foot"><div id="more-hd"><span>More map layers</span><span class="car">&#9656;</span></div><button class="shw clr" id="shw-clear" type="button">&#10005; Clear map</button></div>
@@ -1204,7 +1224,7 @@ table.at tr.ie-sub td{background:#F5F7F9;font-size:10px;text-transform:uppercase
     <h3 class="ie-h3">Top prescribing doctors</h3>
     <div id="ie-filter">
       <select id="ie-area-f" aria-label="Area"></select>
-      <select id="ie-med2" aria-label="Medication"></select>
+      <div class="medpick" id="ie-med2"></div>
       <input id="ie-q" type="search" placeholder="Search doctor, specialty, group, city or ZIP&hellip;">
       <button class="btn" id="ie-clear" type="button">Clear</button>
       <span style="font-size:12px;color:var(--muted)" id="ie-count"></span>
@@ -2152,8 +2172,10 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   const ALLTOT=DOCS.reduce((a,d)=>a+d.t,0);
   const medTot={}; DOCS.forEach(d=>{ for(const k in d.m) medTot[k]=(medTot[k]||0)+d.m[k]; });
   const MEDS=Object.keys(medTot).sort((a,b)=>medTot[b]-medTot[a]);
-  let med='';                                   /* '' = all medications */
-  const ord=d=>med?(d.m[med]||0):d.t;
+  let meds=new Set();                           /* empty = all medications */
+  const ord=d=>meds.size?[...meds].reduce((a,k)=>a+(d.m[k]||0),0):d.t;
+  const medLbl=()=>meds.size===1?[...meds][0]:[...meds].join(', ');
+  const topMedIn=d=>Object.keys(d.m).filter(k=>meds.has(k)).sort((a,b)=>d.m[b]-d.m[a])[0]||mainMed(d);
   const mainMed=d=>Object.keys(d.m).sort((a,b)=>d.m[b]-d.m[a])[0];
   const pct=(n,t)=>t?Math.round(100*n/t)+'%':'0%';
 
@@ -2187,7 +2209,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
         const top=g.ds.slice(0,5).map(d=>esc(d.n)+' &middot; '+nf(ord(d))).join('<br>');
         const m=L.circleMarker([Z[g.z][0],Z[g.z][1]],{radius:4+Math.sqrt(g.o)*0.2,color:RED,weight:1.5,fillColor:GOLD,fillOpacity:.75})
           .bindTooltip('<b>ZIP '+g.z+' &middot; '+esc(g.ds[0].c)+'</b><br>'+g.ds.length+' doctor'+(g.ds.length===1?'':'s')+' &middot; '+nf(g.o)+' orders'
-            +(med?' of '+esc(med):'')+' ('+pct(g.o,curTot())+' of the area)<br>'+top+(g.ds.length>5?'<br>+ '+(g.ds.length-5)+' more':'')
+            +(meds.size?' of '+esc(medLbl()):'')+' ('+pct(g.o,curTot())+' of the area)<br>'+top+(g.ds.length>5?'<br>+ '+(g.ds.length-5)+' more':'')
             +'<br><i>Pinned at the ZIP code&rsquo;s centre &mdash; the list has no street addresses.</i>',{direction:'top',className:'lwtip'})
           .addTo(Ldoc);
         zipMk[g.z]=m;
@@ -2207,7 +2229,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     AREAS.filter(A=>A.num).forEach(A=>{
       const S=areaStats(A);
       const tip='<b>Search area '+A.num+' &middot; '+esc(A.name)+'</b><br>'+esc(A.cities.join(', '))
-        +'<br>'+S.docs+' doctors &middot; '+nf(S.orders)+' orders'+(med?' of '+esc(med):'')+' ('+pct(S.orders,T)+')'
+        +'<br>'+S.docs+' doctors &middot; '+nf(S.orders)+' orders'+(meds.size?' of '+esc(medLbl()):'')+' ('+pct(S.orders,T)+')'
         +'<br>Nearest counted LivWell: '+esc(A.near.c.name)+', '+A.near.mi.toFixed(0)+' mi (straight line)'
         +'<br><i>Circle = about a 15-minute drive around the centre of these orders. A place to start looking, not a site recommendation.</i>';
       const c=L.circle([A.lat,A.lon],{radius:R7*1609.344,color:RED,weight:2,dashArray:'8 6',fillColor:RED,fillOpacity:.06})
@@ -2237,9 +2259,44 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   paint();
 
   /* ---------- medication filter (map box and tab stay in step) ---------- */
-  const medOpts='<option value="">All medications</option>'+MEDS.map(k=>'<option value="'+esc(k)+'">'+esc(k)+' ('+nf(medTot[k])+')</option>').join('');
-  ['ie-med','ie-med2'].forEach(id=>{ $(id).innerHTML=medOpts; $(id).onchange=()=>setMed($(id).value); });
-  function setMed(v){ med=v; $('ie-med').value=v; $('ie-med2').value=v; drawDocs(); drawZones(); front(); areaRows(); docRows(); }
+  /* multi-pick: tick several medications; map box and tab stay in step */
+  const medRows='<label class="mp-row mp-all"><input type="checkbox" data-k=""> All medications</label>'
+    +MEDS.map(k=>'<label class="mp-row"><input type="checkbox" data-k="'+esc(k)+'"> '+esc(k)+' <span>('+nf(medTot[k])+')</span></label>').join('');
+  const PICKS=['ie-med','ie-med2'];
+  PICKS.forEach(id=>{ const w=$(id);
+    w.innerHTML='<button type="button" class="mp-btn" aria-haspopup="true" aria-expanded="false"><span class="mp-txt">All medications</span><span class="mp-car">&#9662;</span></button>'
+      +'<div class="mp-pop" hidden><div class="mp-list">'+medRows+'</div>'
+      +'<div class="mp-foot"><button type="button" class="mp-clr">Clear</button><button type="button" class="mp-done">Done</button></div></div>';
+    const btn=w.querySelector('.mp-btn'), pop=w.querySelector('.mp-pop');
+    btn.onclick=e=>{ e.stopPropagation(); pop.hidden?mpOpen(w):mpClose(); };
+    pop.addEventListener('click',e=>e.stopPropagation());
+    pop.addEventListener('change',e=>{ const k=e.target.dataset.k; if(k===undefined) return;
+      const next=new Set(meds);
+      if(k===''){ next.clear(); } else if(e.target.checked) next.add(k); else next.delete(k);
+      setMed([...next]); });
+    w.querySelector('.mp-clr').onclick=()=>setMed('');
+    w.querySelector('.mp-done').onclick=()=>mpClose();
+  });
+  let mpCur=null;
+  function mpPlace(w){ const pop=w.querySelector('.mp-pop'), r=w.querySelector('.mp-btn').getBoundingClientRect();
+    const wd=Math.max(r.width,250), below=window.innerHeight-r.bottom-8, above=r.top-8, h=Math.min(330,Math.max(below,above));
+    pop.style.width=wd+'px'; pop.style.left=Math.min(r.left,window.innerWidth-wd-8)+'px';
+    pop.querySelector('.mp-list').style.maxHeight=(h-44)+'px';
+    if(below>=Math.min(330,above)||below>=200){ pop.style.top=(r.bottom+4)+'px'; pop.style.bottom='auto'; }
+    else { pop.style.top='auto'; pop.style.bottom=(window.innerHeight-r.top+4)+'px'; } }
+  function mpOpen(w){ mpClose(); mpCur=w; const pop=w.querySelector('.mp-pop'); pop.hidden=false;
+    w.querySelector('.mp-btn').setAttribute('aria-expanded','true'); mpPlace(w); }
+  function mpClose(){ if(!mpCur) return; mpCur.querySelector('.mp-pop').hidden=true;
+    mpCur.querySelector('.mp-btn').setAttribute('aria-expanded','false'); mpCur=null; }
+  document.addEventListener('click',mpClose);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') mpClose(); });
+  document.addEventListener('scroll',e=>{ if(mpCur && !mpCur.contains(e.target)) mpClose(); },true);
+  window.addEventListener('resize',()=>{ if(mpCur) mpPlace(mpCur); });
+  function setMed(v){ meds=new Set(Array.isArray(v)?v:(v?[v]:[]));
+    const txt=!meds.size?'All medications':meds.size===1?[...meds][0]:meds.size+' medications: '+[...meds].join(', ');
+    PICKS.forEach(id=>{ const w=$(id); w.querySelector('.mp-txt').textContent=txt; w.title=txt;
+      w.querySelectorAll('input[data-k]').forEach(c=>{ c.checked=c.dataset.k===''?!meds.size:meds.has(c.dataset.k); }); });
+    drawDocs(); drawZones(); front(); areaRows(); docRows(); }
 
   /* ---------- tab: Inland Empire — new sites ---------- */
   const ps=AREAS.find(A=>A.name==='Palm Springs area'), psT=DOCS.filter(d=>d.a===ps.name).reduce((a,d)=>a+d.t,0);
@@ -2273,7 +2330,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     const show=all?list:list.slice(0,25), mx=list.length?ord(list[0]):1;
     $('ie-doc-body').innerHTML=show.map((d,i)=>{ const A=AREAS.find(x=>x.name===d.a);
       return '<tr data-z="'+d.z+'"><td>'+(i+1)+'</td><td><b>'+esc(d.n)+'</b></td><td>'+esc(d.s)+'</td><td>'+(d.g?esc(d.g):'&mdash;')+'</td><td>'+esc(d.c)+'</td>'
-      +'<td>'+(A.num?A.num+' &middot; ':'')+esc(d.a)+'</td><td>'+esc(med||mainMed(d))+'</td>'
+      +'<td>'+(A.num?A.num+' &middot; ':'')+esc(d.a)+'</td><td>'+esc(meds.size?topMedIn(d):mainMed(d))+'</td>'
       +'<td class="n"><b>'+nf(ord(d))+'</b><span class="abar" style="width:'+Math.max(3,Math.round(120*ord(d)/mx))+'px"></span></td></tr>'; }).join('')
       || '<tr><td colspan="8" style="color:var(--muted)">No doctors match these filters.</td></tr>';
     $('ie-more').textContent=all?'Show top 25 only':'Show all '+list.length+' doctors';
@@ -2303,7 +2360,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     const ds=DOCS.filter(d=>ord(d)>0 && miles(p.lat,p.lon,d.lat,d.lon)<=R7);
     const nearA=AREAS.filter(A=>A.num).map(A=>({A,mi:miles(p.lat,p.lon,A.lat,A.lon)})).sort((a,b)=>a.mi-b.mi)[0];
     if(!ds.length && nearA.mi>25) return '';
-    return '<div class="lcs">Inland Empire prescribing doctors'+(med?' &middot; '+esc(med):'')+'</div>'
+    return '<div class="lcs">Inland Empire prescribing doctors'+(meds.size?' &middot; '+esc(medLbl()):'')+'</div>'
       +row('Doctors within about a 15-minute drive', ds.length)
       +row('Their orders', nf(ds.reduce((a,d)=>a+ord(d),0))+' of '+nf(curTot()))
       +row('Closest search area', nearA.A.num+' &middot; '+esc(nearA.A.name)+', '+nearA.mi.toFixed(1)+' mi');
