@@ -821,6 +821,24 @@ table.at tr.ie-sub td{background:#F5F7F9;font-size:10px;text-transform:uppercase
 #map-ctl.min #map-ctl-bar{border-radius:7px;cursor:pointer}
 @media(max-width:1180px){ #map-ctl-bar{cursor:default} #map-ctl-min{display:none} }
 @media(max-width:1180px){ #map-ctl{position:static;width:auto;max-height:none;box-shadow:none;border-radius:0;border-left:0;border-right:0} }
+
+/* ===== Full-width page + wider fill-screen panel (Sketch C, 15 Oct 2026) ===== */
+.wrap{max-width:none;padding-left:20px;padding-right:20px}
+#cmp2-out td small{white-space:normal;overflow:visible;text-overflow:clip}
+@media(min-width:1181px){
+ body.mapfull #main-area{grid-template-columns:1fr max(40vw,560px)}
+ body.mapfull #cmp2-out th{overflow-wrap:normal;word-break:normal}
+}
+@media(min-width:1600px){
+ body.mapfull #lpanel{padding:14px 22px}
+ body.mapfull #cmp2-out table{font-size:13.5px}
+ body.mapfull #cmp2-out th{font-size:13px;padding:9px 10px}
+ body.mapfull #cmp2-out td{padding:8px 10px}
+ body.mapfull #cmp2-out td small{font-size:11.5px}
+ body.mapfull #cmp2-out table:has(th.ba) th:first-child{width:25%}
+ body.mapfull #cmp2-out th.ba{width:27%}
+ body.mapfull #cmp2-out td small.why{font-size:11.5px}
+}
 </style></head><body>
 <div id="signin-gate">
   <div class="gcard">
