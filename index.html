@@ -745,6 +745,25 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 /* MedWest-branded hover boxes (17 Oct 2026): navy title bar, red accent, muted footnote */
 .leaflet-tooltip.lwtip:not(.rvlab){background:#fff;border:1px solid #d9dee6;border-left:4px solid #DC2F3A;border-radius:6px;box-shadow:0 6px 18px rgba(41,55,77,.18);color:#1f2a3a;font-size:12px;line-height:1.55;padding:9px 12px;width:max-content;max-width:320px;white-space:normal;opacity:1!important}
 .leaflet-tooltip.lwtip:not(.rvlab)>b:first-child+br{display:none}
+.leaflet-tooltip.lwtip.zpop{padding:0;width:400px;max-width:calc(100vw - 32px);overflow:hidden}
+.zpop .zh{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#29374D;color:#fff;padding:8px 12px;font-weight:700;font-size:13px}
+.zpop .zh small{font-weight:400;opacity:.75;font-size:10.5px;white-space:nowrap}
+.zpop .zv{padding:7px 12px;font-weight:800;font-size:12.5px;border-bottom:1px solid #e3e7ee}
+.zpop .zv-strong{background:#e4efe8;color:#1e6b41}.zpop .zv-good{background:#eef6f0;color:#1e6b41}.zpop .zv-out{background:#f5f7f9;color:#5b6576}
+.zpop .zbody{padding:8px 12px 9px}
+.zpop .zwhy{font-size:11.5px;line-height:1.45;margin-bottom:8px}
+.zpop .zboxes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.zpop .zb{background:#f5f7f9;border-radius:5px;padding:5px 8px}.zpop .zb b{display:block;font-size:15px;color:#29374D}.zpop .zb span{font-size:10px;color:#6b7585;line-height:1.25;display:block}
+.zpop .zt{width:100%;border-collapse:collapse;font-size:11.5px}
+.zpop .zt th{text-align:left;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#6b7585;padding:3px 4px;border-bottom:1.5px solid #e3e7ee;font-weight:700}
+.zpop .zt td{padding:3px 4px;border-bottom:1px solid #f0f2f5;vertical-align:top}.zpop .zt .n{text-align:right}.zpop .zt b{color:#29374D}
+.zpop .zmore{color:#6b7585}
+.zpop .zfoot{margin-top:6px;padding-top:5px;border-top:1px solid #eef0f3;color:#6b7585;font-size:10.5px;font-style:italic}
+@media(max-width:600px){.zpop .zt th:nth-child(2),.zpop .zt td:nth-child(2){display:none}}
+#zsheet{position:fixed;left:0;right:0;bottom:0;z-index:5000;max-height:72vh;overflow:auto;background:#fff;border-top:4px solid #DC2F3A;border-radius:12px 12px 0 0;box-shadow:0 -8px 24px rgba(41,55,77,.25);font-size:12px;line-height:1.5;color:#1f2a3a}
+#zsheet[hidden]{display:none}
+#zsheet .zh{border-radius:8px 8px 0 0;padding-right:44px}
+#zsheet .zx{position:absolute;top:4px;right:8px;width:30px;height:30px;border:0;background:transparent;color:#fff;font-size:24px;line-height:1;cursor:pointer;z-index:1}
 .leaflet-tooltip.lwtip:not(.rvlab)>b:first-child{display:block;margin:-9px -12px 7px;padding:7px 12px;background:#29374D;color:#fff;font-size:12.5px;letter-spacing:.2px;border-radius:0 5px 0 0}
 .leaflet-tooltip.lwtip:not(.rvlab) b{color:#29374D}
 .leaflet-tooltip.lwtip:not(.rvlab)>b:first-child{color:#fff}
@@ -772,6 +791,8 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 @media(min-width:1181px){ body #main-area{grid-template-columns:1fr 470px;height:820px} }
 #map-box{position:relative;flex:1;min-height:0;display:flex;flex-direction:column}
 #map-box #map{flex:1;min-height:0;height:auto}
+/* phone/tablet fix (17 Oct 2026): the map collapsed to 0 height below 1180px because "#map-box #map" overrode the 460px rule */
+@media(max-width:1180px){#map-box #map{flex:none;height:460px}}
 #map-ctl{position:absolute;top:10px;left:120px;z-index:900;width:290px;max-height:calc(100% - 20px);overflow-y:auto;
  background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-size:12px}
 #map-ctl #lp-show{margin:0 0 8px}
@@ -2282,6 +2303,54 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   /* ---------- layers ---------- */
   const Ldoc=L.layerGroup(), Lring=L.layerGroup(), Lzone=L.layerGroup(), Lband=L.layerGroup();
   const zipMk={};
+  /* ---------- ZIP pop-up (Sketch B, 17 Oct 2026): verdict first, then numbers, then doctors ----------
+     Strong area           = a top-10 ZIP code for prescriptions, or inside a "best area for a new site" square
+     Good supporting area  = within a 20-minute drive (15 mi) of a proposed site or a LivWell open today
+     Outside today's plan  = not within 20 minutes of any site, new or open today                           */
+  function zipPop(g){
+    const T=curTot(), byZ={};
+    DOCS.forEach(d=>{ const o=ord(d); if(o) byZ[d.z]=(byZ[d.z]||0)+o; });
+    const rankList=Object.keys(byZ).sort((a,b)=>byZ[b]-byZ[a]), rank=rankList.indexOf(g.z)+1, nZ=rankList.length;
+    const la=Z[g.z][0], lo=Z[g.z][1];
+    let sites=[];
+    try{ sites=rvSites().map(x=>({lab:'Site '+x.k+' &middot; '+esc(x.name),short:esc(x.name),lat:x.lat,lon:x.lon}))
+      .concat([{lab:'LivWell Anaheim (new site, Placentia)',short:'Anaheim (Placentia)',lat:PLA.lat,lon:PLA.lon},{lab:'LivWell Temecula',short:'Temecula',lat:TEM.lat,lon:TEM.lon}]); }catch(e){}
+    const near=sites.map(x=>({...x,mi:miles(la,lo,x.lat,x.lon)})).sort((a,b)=>a.mi-b.mi)[0];
+    let inBest=false;
+    try{ ['West','North'].forEach(k=>RV_BEST[k].sq.forEach(([a,b])=>{ if(Math.abs(a-la)<=0.005&&Math.abs(b-lo)<=0.005) inBest=true; })); }catch(e){}
+    const top10=rank>0&&rank<=10, in20=near&&near.mi<=15;
+    let cls,txt;
+    if(top10||inBest){ cls='zv-strong'; txt='&#10003; Strong area'+(in20?' for '+near.lab:''); }
+    else if(in20){ cls='zv-good'; txt='&#10003; Good supporting area for '+near.lab; }
+    else { cls='zv-out'; txt='&#8226; Outside today&rsquo;s plan'; }
+    const why=[];
+    if(near) why.push(Math.round(near.mi)+' mi from '+near.short+(in20?' (inside its 20-min area)':' (outside its 20-min area)'));
+    const topD=g.ds[0], sh=g.o?ord(topD)/g.o:0;
+    if(g.ds.length>1 && sh>=0.5) why.push('one doctor writes '+Math.round(sh*100)+'% of the prescriptions here');
+    if(inBest) why.push('inside a best area for a new site');
+    if(rank>0) why.push('#'+rank+' of '+nZ+' ZIP codes');
+    const box=(v,l)=>'<div class="zb"><b>'+v+'</b><span>'+l+'</span></div>';
+    const rows=g.ds.slice(0,5).map(d=>'<tr><td><b>'+esc(d.n)+'</b></td><td>'+(d.s&&d.s!=='Not listed'?esc(d.s):'&mdash;')+'</td><td>'+esc(meds.size?topMedIn(d):mainMed(d))+'</td><td class="n"><b>'+nf(ord(d))+'</b></td></tr>').join('');
+    return '<div class="zh"><span>ZIP '+g.z+' &middot; '+esc(g.ds[0].c)+'</span><small>pinned at ZIP centre</small></div>'
+      +'<div class="zv '+cls+'">'+txt+'</div>'
+      +'<div class="zbody"><div class="zwhy"><b>Why:</b> '+why.join(' &middot; ')+'</div>'
+      +'<div class="zboxes">'+box(g.ds.length,'doctor'+(g.ds.length===1?'':'s'))+box(nf(g.o),'prescriptions &middot; 12 mo'+(meds.size?' &middot; '+esc(medLbl()):''))+box(pct(g.o,T),'of the area')+'</div>'
+      +'<table class="zt"><tr><th>Doctor</th><th>Specialty</th><th>Main medication</th><th class="n">Prescriptions</th></tr>'+rows
+      +(g.ds.length>5?'<tr><td colspan="4" class="zmore">+ '+(g.ds.length-5)+' more doctor'+(g.ds.length-5===1?'':'s')+'</td></tr>':'')+'</table>'
+      +'<div class="zfoot">Pinned at the ZIP code&rsquo;s centre &mdash; the list has no street addresses.</div></div>';
+  }
+  /* on phones the ZIP pop-up opens as a sheet from the bottom of the screen instead of over the map */
+  (function(){
+    const sh=document.createElement('div'); sh.id='zsheet'; sh.className='lwtip zpop'; sh.hidden=true; document.body.appendChild(sh);
+    const small=()=>window.innerWidth<=600;
+    map.on('tooltipopen',e=>{
+      const el=e.tooltip.getElement(); if(!el||!/\bzpop\b/.test(el.className)||!small()) return;
+      el.style.visibility='hidden';
+      sh.innerHTML='<button type="button" class="zx" aria-label="Close">&times;</button>'+el.innerHTML; sh.hidden=false;
+      sh.querySelector('.zx').onclick=()=>{ sh.hidden=true; e.tooltip._source&&e.tooltip._source.closeTooltip&&e.tooltip._source.closeTooltip(); };
+    });
+    map.on('tooltipclose',e=>{ const el=e.tooltip.getElement(); if(el&&/\bzpop\b/.test(el.className)){ el.style.visibility=''; sh.hidden=true; } });
+  })();
   function drawDocs(){
     Ldoc.clearLayers(); for(const k in zipMk) delete zipMk[k];
     const by={};
@@ -2290,9 +2359,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       .sort((a,b)=>b.o-a.o).forEach(g=>{
         const top=g.ds.slice(0,5).map(d=>esc(d.n)+' &middot; '+nf(ord(d))).join('<br>');
         const m=L.circleMarker([Z[g.z][0],Z[g.z][1]],{radius:4+Math.sqrt(g.o)*0.2,color:RED,weight:1.5,fillColor:GOLD,fillOpacity:.75})
-          .bindTooltip('<b>ZIP '+g.z+' &middot; '+esc(g.ds[0].c)+'</b><br>'+g.ds.length+' doctor'+(g.ds.length===1?'':'s')+' &middot; '+nf(g.o)+' '+RX+' in 12 months'
-            +(meds.size?' ('+esc(medLbl())+')':'')+', '+pct(g.o,curTot())+' of the area<br>'+top+(g.ds.length>5?'<br>+ '+(g.ds.length-5)+' more':'')
-            +'<br><i>Pinned at the ZIP code&rsquo;s centre &mdash; the list has no street addresses.</i>',{direction:'top',className:'lwtip'})
+          .bindTooltip(()=>zipPop(g),{direction:'top',className:'lwtip zpop'})
           .addTo(Ldoc);
         zipMk[g.z]=m;
       });
