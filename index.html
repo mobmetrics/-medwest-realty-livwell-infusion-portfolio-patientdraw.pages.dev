@@ -820,7 +820,10 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 #cw-go:disabled,#cw-q:disabled{opacity:.5;cursor:not-allowed}
 #cw-demo{display:block;width:100%;margin:8px 0 4px;border:1px dashed var(--navy);background:#fff;color:var(--navy);border-radius:5px;font:inherit;font-size:11.5px;font-weight:600;padding:6px;cursor:pointer}
 #cw-demo:hover{background:#F2F5F8}
-#ie-demo{display:block;width:100%;margin:6px 0 4px;border:1px solid #DC2F3A;background:#DC2F3A;color:#fff;border-radius:5px;font:inherit;font-size:12px;font-weight:700;padding:7px;cursor:pointer}
+.ie-demo-row{display:flex;gap:6px;margin:6px 0 4px}
+#ie-demo-clear{flex:none;border:1px solid #29374D;background:#fff;color:#29374D;border-radius:5px;font:inherit;font-size:12px;font-weight:700;padding:7px 12px;cursor:pointer}
+#ie-demo-clear:hover{background:#29374D;color:#fff}
+#ie-demo{display:block;flex:1;min-width:0;margin:0;border:1px solid #DC2F3A;background:#DC2F3A;color:#fff;border-radius:5px;font:inherit;font-size:12px;font-weight:700;padding:7px;cursor:pointer}
 #ie-demo:hover{background:#b9232d}
 .cw-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
 .cw-lbl span{text-transform:none;letter-spacing:0;font-weight:400}
@@ -1104,7 +1107,7 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
     </form>
     <div id="cmp2-msg"></div>
     <button type="button" id="cw-demo">Example: today&rsquo;s Anaheim clinic vs the two Placentia sites</button>
-    <button type="button" id="ie-demo">&#9673; Inland Empire plan &mdash; Riverside + 3 new sites</button>
+    <div class="ie-demo-row"><button type="button" id="ie-demo">&#9673; Inland Empire plan &mdash; Riverside + 3 new sites</button><button type="button" id="ie-demo-clear" title="Clear the map back to the starting view">&#10005; Clear</button></div>
     <div id="cmp2-out" hidden></div>
   </div>
 </div>
@@ -2802,6 +2805,8 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     if(window.innerWidth>1180 && $('map-ctl') && !$('map-ctl').classList.contains('min') && $('map-ctl-min')) $('map-ctl-min').click();
     const bar=$('rv-bar'); if(bar) bar.scrollIntoView({behavior:'smooth',block:'start'});
   };
+
+  document.getElementById('ie-demo-clear').onclick=()=>{ document.getElementById('shw-clear').click(); };
   window.IE={cardRows};
 })();
 </script>
