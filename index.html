@@ -762,6 +762,7 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 @media(max-width:600px){.zpop .zt th:nth-child(2),.zpop .zt td:nth-child(2){display:none}}
 #zsheet{position:fixed;left:0;right:0;bottom:0;z-index:5000;max-height:72vh;overflow:auto;background:#fff;border-top:4px solid #DC2F3A;border-radius:12px 12px 0 0;box-shadow:0 -8px 24px rgba(41,55,77,.25);font-size:12px;line-height:1.5;color:#1f2a3a}
 #zsheet[hidden]{display:none}
+#tipfloat[hidden]{display:none}#tipfloat{opacity:1!important}
 #zsheet .zh{border-radius:8px 8px 0 0;padding-right:44px}
 #zsheet .zx{position:absolute;top:4px;right:8px;width:30px;height:30px;border:0;background:transparent;color:#fff;font-size:24px;line-height:1;cursor:pointer;z-index:1}
 .leaflet-tooltip.lwtip:not(.rvlab)>b:first-child{display:block;margin:-9px -12px 7px;padding:7px 12px;background:#29374D;color:#fff;font-size:12.5px;letter-spacing:.2px;border-radius:0 5px 0 0}
@@ -2339,6 +2340,48 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       +(g.ds.length>5?'<tr><td colspan="4" class="zmore">+ '+(g.ds.length-5)+' more doctor'+(g.ds.length-5===1?'':'s')+'</td></tr>':'')+'</table>'
       +'<div class="zfoot">Pinned at the ZIP code&rsquo;s centre &mdash; the list has no street addresses.</div></div>';
   }
+  /* keep hover boxes in view: try above, below, right and left of the dot and use the spot where the
+     least of the box is cut off by the map edge or hidden under the Map layers box (17 Oct 2026) */
+  map.on('tooltipopen',e=>{
+    const t=e.tooltip; if(t.options.permanent) return;
+    if(window.innerWidth<=600 && /\bzpop\b/.test(t.options.className||'')) return;   /* phone sheet handles these */
+    if(t._origDir===undefined){ t._origDir=t.options.direction; t._origOff=L.point(t.options.offset||[0,0]); }
+    t.options.offset=t._origOff;
+    const ov=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
+    const lost=()=>{ const el=t.getElement(); if(!el) return 0;
+      const m=map.getContainer().getBoundingClientRect(), r=el.getBoundingClientRect(), pad=6;
+      const inner={left:m.left+pad,top:m.top+pad,right:m.right-pad,bottom:m.bottom-pad};
+      let cut=r.width*r.height-ov(r,inner);
+      const ctl=document.getElementById('map-ctl');
+      if(ctl && ctl.offsetParent && getComputedStyle(ctl).position==='absolute') cut+=ov(r,ctl.getBoundingClientRect());
+      return cut; };
+    const tryDir=d=>{ t.options.direction=d; t.update(); return lost(); };
+    let best=t._origDir, bestLost=tryDir(t._origDir);
+    if(bestLost<=0) return;
+    for(const d of ['top','bottom','right','left']){ if(d===t._origDir) continue;
+      const l=tryDir(d); if(l<bestLost){ best=d; bestLost=l; } if(l<=0) break; }
+    if(t.options.direction!==best) tryDir(best);
+    /* last step: slide the box so it sits fully inside the map edges */
+    const el=t.getElement(); if(!el) return;
+    const m=map.getContainer().getBoundingClientRect(), r=el.getBoundingClientRect(), pad=6;
+    let dx=0, dy=0;
+    if(r.top<m.top+pad) dy=m.top+pad-r.top; else if(r.bottom>m.bottom-pad) dy=m.bottom-pad-r.bottom;
+    if(r.left<m.left+pad) dx=m.left+pad-r.left; else if(r.right>m.right-pad) dx=m.right-pad-r.right;
+    if(dx||dy){ t.options.offset=t._origOff.add([dx,dy]); t.update(); }
+    /* still under the Map layers box? lift a copy of the box above everything, same spot */
+    const ctl=document.getElementById('map-ctl'), r2=el.getBoundingClientRect();
+    if(ctl && ctl.offsetParent && getComputedStyle(ctl).position==='absolute' && ov(r2,ctl.getBoundingClientRect())>0){
+      let fl=document.getElementById('tipfloat');
+      if(!fl){ fl=document.createElement('div'); fl.id='tipfloat'; document.body.appendChild(fl); }
+      fl.className='leaflet-tooltip '+(t.options.className||'');
+      fl.innerHTML=el.innerHTML;
+      fl.style.cssText='position:fixed;z-index:2000;pointer-events:none;margin:0;left:'+r2.left+'px;top:'+r2.top+'px;width:'+r2.width+'px';
+      fl.hidden=false; el.style.visibility='hidden'; t._lifted=true;
+    }
+  });
+  map.on('tooltipclose',e=>{ const t=e.tooltip; if(!t._lifted) return; t._lifted=false;
+    const el=t.getElement(); if(el) el.style.visibility=''; const fl=document.getElementById('tipfloat'); if(fl) fl.hidden=true; });
+  window.addEventListener('scroll',()=>{ const fl=document.getElementById('tipfloat'); if(fl&&!fl.hidden) map.eachLayer(l=>{ if(l.getTooltip&&l.getTooltip()&&l.getTooltip()._lifted) l.closeTooltip(); }); },true);
   /* on phones the ZIP pop-up opens as a sheet from the bottom of the screen instead of over the map */
   (function(){
     const sh=document.createElement('div'); sh.id='zsheet'; sh.className='lwtip zpop'; sh.hidden=true; document.body.appendChild(sh);
