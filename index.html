@@ -745,6 +745,19 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 .rvpin{background:none;border:none}
 #lpanel #ie-band{margin:8px 0 2px;font-size:12.5px;color:var(--navy);border:1px dashed #DC2F3A;border-radius:6px;padding:7px 10px;cursor:pointer;display:flex;align-items:center;gap:8px}
 .ie-bandmsg{font-size:11.5px;color:var(--muted);line-height:1.4;margin:2px 2px 6px}
+#ie-ring,#ie-band,#ie-band-msg,.maplegend [data-ie="ring"],.maplegend [data-ie="band"]{display:none!important}
+#rv-bar{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:0 0 8px}
+#rv-bar[hidden]{display:none}
+.rvb-g{display:flex;align-items:center;gap:8px}.rvb-g>b{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--navy)}
+.rvseg{display:inline-flex;flex-wrap:wrap;border:1.5px solid var(--navy);border-radius:8px;overflow:hidden}
+.rvseg button{font:inherit;font-size:12.5px;font-weight:700;color:var(--navy);background:#fff;border:0;border-left:1px solid #d6dbe3;padding:6px 13px;cursor:pointer}
+.rvseg button:first-child{border-left:0}.rvseg button.on{background:var(--navy);color:#fff}
+#rv-side{margin-bottom:10px}#rv-side[hidden]{display:none}
+.rv-selc{background:#fff;border:1px solid var(--line);border-left:5px solid var(--red);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.rv-selc .k{font-size:10.5px;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}.rv-selc h4{margin:2px 0 6px;font-size:16px;color:var(--navy)}
+.rv-selc table{width:100%;border-collapse:collapse;font-size:12.5px}.rv-selc td{padding:5px 2px;border-bottom:1px solid #eef0f3}.rv-selc td+td{text-align:right;font-weight:700;color:var(--navy)}
+.rv-wholec{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12.5px}
+.rv-wholec .k{font-size:10.5px;letter-spacing:.07em;color:var(--muted);text-transform:uppercase}.rv-wholec .v{font-size:22px;font-weight:800;color:var(--navy)}
 .ie-h3{font-size:14px;color:var(--navy);margin:18px 0 6px}
 </style>
 <style>
@@ -966,6 +979,10 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
   <div class="hl-title">◎ HOW ALONE EACH CLINIC SITS — DISTANCE TO THE NEAREST OTHER LIVWELL</div>
   <div class="hl-note">Clinics recolored by how far away the nearest other LivWell sits. <b>Blue = on its own</b> (it has the area to itself) · amber = some nearby · <b>red = crowded</b> (sharing the area with other LivWell clinics). Temecula is the only location with no other LivWell inside 30 miles, and it has never been graded — though the competitor layers show it is not alone in its market.</div>
 </div>
+<div id="rv-bar" hidden>
+  <div class="rvb-g"><b>Shade areas within</b><div class="rvseg" id="rv-min"><button type="button" data-v="20" class="on">20 min</button><button type="button" data-v="30">30 min</button></div></div>
+  <div class="rvb-g"><b>Site details</b><div class="rvseg" id="rv-pick"></div></div>
+</div>
 <div id="map-box"><div id="map"></div>
 <div id="map-ctl">
 <div id="map-ctl-bar" title="Drag to move"><span class="grip">&#8942;&#8942;</span><span class="ttl">Map layers</span>
@@ -998,8 +1015,6 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
     <div class="pgroup" id="grp-rv">
       <h4>Inland Empire &mdash; Riverside plan <button type="button" id="rv-all">Show all</button></h4>
       <div class="lbtn" id="rv-site"><span class="cbx"></span><span class="sw" style="background:#DC2F3A"></span>Riverside (ground zero) and new sites 2&ndash;4</div>
-      <div class="lbtn" id="rv-r20"><span class="cbx"></span><span class="sw" style="background:rgba(220,47,58,.15);border:2px solid #DC2F3A"></span>20-minute drive from Riverside (15 mi)</div>
-      <div class="lbtn" id="rv-r30"><span class="cbx"></span><span class="sw" style="border:2px dashed #DC2F3A"></span>30-minute drive from Riverside (22 mi)</div>
       <div class="lbtn" id="rv-best"><span class="cbx"></span><span class="sw" style="border-radius:2px;background:rgba(41,55,77,.22);border:1.5px dashed #29374D"></span>Best area for a new site &mdash; West, North</div>
       <div class="lbtn" id="rv-line"><span class="cbx"></span><span class="sw" style="border-radius:0;height:0;border-top:2px solid #DC2F3A"></span>Which site each doctor is closest to</div>
       <div class="lbtn" id="rv-ps"><span class="cbx"></span><span class="sw" style="background:#b0262f"></span>Use Palm Springs instead of Palm Desert</div>
@@ -1044,6 +1059,7 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 </div>
 </div>
 <div id="lpanel">
+  <div id="rv-side" hidden><div id="rv-sel" class="rv-selc"></div><div id="rv-whole" class="rv-wholec"></div></div>
   <div id="lp-tabs"><button type="button" data-t="one">Check one location</button><button type="button" data-t="two" class="on">Compare sites</button></div>
   <div class="lbtn ie-bandrow" id="ie-band"><span class="cbx"></span>Show a 20&ndash;30 minute drive around the sites I add</div>
   <div id="ie-band-msg" class="ie-bandmsg" hidden></div>
@@ -1085,8 +1101,8 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
   <div data-ie="ring" class="lk-off"><i style="border:2px dashed #29374D;background:rgba(41,55,77,.1)"></i> 20&ndash;30 minute drive from LivWell Temecula (15&ndash;22 miles)</div>
   <div data-ie="band" class="lk-off"><i style="border:2px dashed #DC2F3A;background:rgba(220,47,58,.1)"></i> 20&ndash;30 minute drive from a site you added (15&ndash;22 miles)</div>
   <div data-rv="site" class="lk-off"><i style="background:#DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Proposed Inland Empire site (1 = Riverside, 4500 Brockton Ave)</div>
-  <div data-rv="r20" class="lk-off"><i style="border:2px solid #DC2F3A;background:rgba(220,47,58,.12)"></i> 20-minute drive from Riverside (15 miles)</div>
-  <div data-rv="r30" class="lk-off"><i style="border:2px dashed #DC2F3A;background:none"></i> 30-minute drive from Riverside (22 miles)</div>
+  <div data-rv="cov" class="lk-off"><i style="background:rgba(220,47,58,.3)"></i> Shaded = within the chosen drive time of a LivWell site (red = new site, navy = open today)</div>
+  <div data-rv="cov" class="lk-off"><i style="border:2.5px solid #DC2F3A;background:none"></i> Red outline = the site picked under &ldquo;Site details&rdquo;</div>
   <div data-rv="best" class="lk-off"><i style="border-radius:2px;background:rgba(41,55,77,.22);border:1.5px dashed #29374D"></i> Best area for a new site &mdash; reaches the most prescriptions within a 15-minute drive</div>
   <div data-rv="line" class="lk-off"><i style="border-radius:0;height:0;border-top:2px solid #DC2F3A;width:14px"></i> Line to the site each doctor is closest to (navy = a clinic open today)</div>
   <div data-ie="zone" class="lk-off"><i style="border:2px dashed #DC2F3A;background:rgba(220,47,58,.1)"></i> Inland Empire search area 1&ndash;4</div>
@@ -2332,7 +2348,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   map.on('layeradd layerremove',e=>{ if(Lband.hasLayer(e.layer)) return; clearTimeout(bT); bT=setTimeout(addedBands,80); });
   bindToggle('ie-band',()=>{Lband.addTo(map); addedBands(); paint();},()=>{Lband.clearLayers(); map.removeLayer(Lband); addedBands.framed=false; if($('ie-band-msg')) $('ie-band-msg').hidden=true; paint();},false);
 
-  const IDS=['ie-doc','ie-ring','ie-zone'];
+  const IDS=['ie-doc','ie-zone'];   /* the Temecula band is replaced by the Riverside plan's shaded coverage */
   const IE_VIEW=[[33.40,-118.30],[34.30,-116.15]];
   function paint(){
     $('shw-ie').classList.toggle('on',IDS.some(on));
@@ -2509,6 +2525,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       const r=A.res.get(s);
       L.marker([s.lat,s.lon],{icon:rvPin(s.k),zIndexOffset:950})
         .bindTooltip('<b>'+s.k+' &middot; '+esc(s.full)+'</b><br>'+nf(r.rx)+' prescriptions (12 months) closest to this site &middot; '+r.docs+' doctors'+'',{direction:'top',offset:[0,-30],className:'lwtip'})
+        .on('click',()=>{ rvSel=String(s.k); rvCov(); })
         .addTo(Lrv.site);
       L.tooltip({permanent:true,direction:'right',offset:[10,-18],className:'lwtip rvlab',interactive:false})
         .setLatLng([s.lat,s.lon]).setContent(s.k+' &middot; '+esc(s.full)).addTo(Lrv.site);
@@ -2530,6 +2547,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
         .addTo(Lrv.best);
     });
     rvCards(A);
+    if(typeof rvCov==='function' && $('rv-pick')) try{ rvCov(); }catch(e){}
   }
   function rvCards(A){
     const S=A.S, newT=S.reduce((a,s)=>a+A.res.get(s).rx,0);
@@ -2550,17 +2568,56 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       $('map').scrollIntoView({behavior:'smooth',block:'center'}); map.setView([s.lat,s.lon],11);
     });
   }
-  const RVI=['rv-site','rv-r20','rv-r30','rv-best','rv-line'];
-  const rvKey={'rv-site':'site','rv-r20':'r20','rv-r30':'r30','rv-best':'best','rv-line':'line'};
-  RVI.forEach(id=>bindToggle(id,()=>{ Lrv[rvKey[id]].addTo(map); if(id==='rv-r20'||id==='rv-r30'||id==='rv-best') Lrv[rvKey[id]].eachLayer(l=>l.bringToBack&&l.bringToBack()); rvPaint(); },
+
+  /* ---------- shaded coverage (one area, no outlines) + "Site details" picker ---------- */
+  map.createPane('rvCov'); map.getPane('rvCov').style.zIndex=350; map.getPane('rvCov').style.opacity='.2'; map.getPane('rvCov').style.pointerEvents='none';
+  const Lcov=L.layerGroup(), Lsel=L.layerGroup();
+  let rvMin=20, rvSel='1';
+  const rvAll=()=>rvSites().map(s=>({key:String(s.k),name:s.k+' '+s.name,full:s.k+' &middot; '+s.full,lat:s.lat,lon:s.lon,ex:false}))
+    .concat([{key:'P',name:'Anaheim',full:'LivWell Anaheim &mdash; new site, Placentia',lat:PLA.lat,lon:PLA.lon,ex:true},
+             {key:'T',name:'Temecula',full:'LivWell Temecula',lat:TEM.lat,lon:TEM.lon,ex:true}]);
+  function rvCov(){
+    const R=rvMin===20?R20:R30, all=rvAll();
+    if(!all.some(x=>x.key===rvSel)) rvSel='1';
+    Lcov.clearLayers(); Lsel.clearLayers();
+    all.forEach(x=>L.circle([x.lat,x.lon],{pane:'rvCov',radius:R*1609.344,stroke:false,fillColor:x.ex?NAVY:RED,fillOpacity:1,interactive:false}).addTo(Lcov));
+    const sel=all.find(x=>x.key===rvSel);
+    L.circle([sel.lat,sel.lon],{radius:R*1609.344,color:RED,weight:2.5,fill:false,interactive:false}).addTo(Lsel);
+    /* buttons */
+    $('rv-pick').innerHTML=all.map(x=>'<button type="button" data-k="'+x.key+'"'+(x.key===rvSel?' class="on"':'')+'>'+esc(x.name)+'</button>').join('');
+    $('rv-pick').querySelectorAll('button').forEach(b=>b.onclick=()=>{ rvSel=b.dataset.k; rvCov(); });
+    $('rv-min').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.v===rvMin));
+    /* numbers for the selected site */
+    const within=(p,mi)=>DOCS.reduce((a,d)=>a+(miles(d.lat,d.lon,p.lat,p.lon)<=mi?ord(d):0),0);
+    const others=mi=>all.filter(x=>x!==sel).map(x=>({n:x.name.replace(/^\d /,''),m:miles(sel.lat,sel.lon,x.lat,x.lon)})).filter(x=>x.m<=mi)
+      .sort((a,b)=>a.m-b.m).map(x=>esc(x.n)+' ('+Math.round(x.m)+' mi)').join(', ')||'None';
+    $('rv-sel').innerHTML='<div class="k">Selected'+(sel.ex?' &middot; open today':' &middot; '+sel.key)+(meds.size?' &middot; '+esc(medLbl()):'')+'</div><h4>'+sel.full+'</h4><table>'
+      +'<tr><td>Prescriptions within 20 min</td><td>'+nf(within(sel,R20))+'</td></tr>'
+      +'<tr><td>Within 30 min</td><td>'+nf(within(sel,R30))+'</td></tr>'
+      +'<tr><td>Other sites inside 20 min</td><td>'+others(R20)+'</td></tr>'
+      +'<tr><td>Other sites inside 30 min</td><td>'+others(R30)+'</td></tr></table>';
+    const T=curTot(), cov=mi=>DOCS.reduce((a,d)=>a+(all.some(x=>miles(d.lat,d.lon,x.lat,x.lon)<=mi)?ord(d):0),0);
+    const c=cov(R), o=cov(rvMin===20?R30:R20);
+    $('rv-whole').innerHTML='<div class="k">Whole Inland Empire</div><div class="v">'+pct(c,T)+'</div>of prescriptions sit inside the shaded area at '+rvMin+' minutes &middot; <b>'+pct(o,T)+'</b> at '+(rvMin===20?30:20)+' minutes.'
+      +'<div style="color:var(--muted);font-size:11.5px;margin-top:5px">White gaps = places no LivWell reaches in '+rvMin+' minutes. Drive times are straight-line estimates: 20 min &asymp; '+R20+' mi, 30 min &asymp; '+R30+' mi.</div>';
+  }
+  $('rv-min').querySelectorAll('button').forEach(b=>b.onclick=()=>{ rvMin=+b.dataset.v; rvCov(); });
+  const RVI=['rv-site','rv-best','rv-line'];
+  const rvKey={'rv-site':'site','rv-best':'best','rv-line':'line'};
+  RVI.forEach(id=>bindToggle(id,()=>{ Lrv[rvKey[id]].addTo(map); if(id==='rv-best') Lrv[rvKey[id]].eachLayer(l=>l.bringToBack&&l.bringToBack()); rvPaint(); },
     ()=>{ map.removeLayer(Lrv[rvKey[id]]); rvPaint(); },false));
   bindToggle('rv-ps',()=>{ window.rvRefresh&&rvRefresh(); rvPaint(); },()=>{ window.rvRefresh&&rvRefresh(); rvPaint(); },false);
-  function rvPaint(){
-    $('shw-rv').classList.toggle('on',RVI.some(on));
-    document.querySelectorAll('.maplegend [data-rv]').forEach(d=>d.classList.toggle('lk-off',!on('rv-'+d.dataset.rv)));
+  function rvPaint(){ setTimeout(rvPaintNow,0); }
+  function rvPaintNow(){
+    const act=RVI.some(on);
+    $('shw-rv').classList.toggle('on',act);
+    document.querySelectorAll('.maplegend [data-rv]').forEach(d=>d.classList.toggle('lk-off',d.dataset.rv==='cov'?!act:!on('rv-'+d.dataset.rv)));
+    $('rv-bar').hidden=!act; $('rv-side').hidden=!act;
+    if(act){ if(!map.hasLayer(Lcov)) Lcov.addTo(map); if(!map.hasLayer(Lsel)) Lsel.addTo(map); }
+    else { map.removeLayer(Lcov); map.removeLayer(Lsel); }
   }
   const RV_VIEW=[[33.50,-117.95],[34.30,-115.85]];
-  function rvShow(){ RVI.forEach(id=>{ if(!on(id)) $(id).click(); }); map.fitBounds(RV_VIEW); }
+  function rvShow(){ ['rv-site','rv-best'].forEach(id=>{ if(!on(id)) $(id).click(); }); if(on('ie-zone')) $('ie-zone').click(); map.fitBounds(RV_VIEW); }
   function rvHide(){ RVI.forEach(id=>{ if(on(id)) $(id).click(); }); }
   $('rv-all').onclick=rvShow;
   $('shw-rv').onclick=()=>{ RVI.some(on)?rvHide():rvShow(); };
