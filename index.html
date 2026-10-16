@@ -888,18 +888,11 @@ table.dt tr.rvrow td{background:#FFF7F7}table.dt tr.rvsub td{background:#F5F7F9;
 .wrap{max-width:none;padding-left:20px;padding-right:20px}
 #cmp2-out td small{white-space:normal;overflow:visible;text-overflow:clip}
 @media(min-width:1181px){
- body.mapfull #main-area{grid-template-columns:1fr max(40vw,560px)}
+ body.mapfull #main-area{grid-template-columns:1fr max(20vw,380px)}   /* half-width side panel in Fill screen (17 Oct 2026; was max(40vw,560px)) */
  body.mapfull #cmp2-out th{overflow-wrap:normal;word-break:normal}
 }
 @media(min-width:1600px){
- body.mapfull #lpanel{padding:14px 22px}
- body.mapfull #cmp2-out table{font-size:13.5px}
- body.mapfull #cmp2-out th{font-size:13px;padding:9px 10px}
- body.mapfull #cmp2-out td{padding:8px 10px}
- body.mapfull #cmp2-out td small{font-size:11.5px}
- body.mapfull #cmp2-out table:has(th.ba) th:first-child{width:25%}
- body.mapfull #cmp2-out th.ba{width:27%}
- body.mapfull #cmp2-out td small.why{font-size:11.5px}
+ body.mapfull #lpanel{padding:12px 14px}
 }
 
 /* ===== Medication multi-pick (15 Oct 2026) ===== */
