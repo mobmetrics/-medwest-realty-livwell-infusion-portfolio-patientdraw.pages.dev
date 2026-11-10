@@ -1139,8 +1139,8 @@ html.mw-embed #stats-row .hlcard.hl-on .stat-lbl,html.mw-embed #stats-row .hlcar
       <h4>Survey sites &mdash; San Gabriel Valley to Riverside <button type="button" id="sv-all">Show all</button></h4>
       <div class="lbtn" id="sv-bld"><span class="cbx"></span><span class="sw" style="background:#29374D;box-shadow:6px 0 0 #DC2F3A"></span>Available buildings (26)</div>
       <div class="lbtn" id="sv-zone"><span class="cbx"></span><span class="sw" style="border-radius:2px;background:rgba(220,47,58,.15);border:1.5px solid #DC2F3A"></span>15-minute drive from each center</div>
-      <div class="lbtn" id="sv-w"><span class="cbx"></span><span class="sw" style="border-radius:2px;background:rgba(79,109,143,.15);border:1.5px dashed #4F6D8F"></span>2nd San Gabriel Valley center (Duarte)</div>
-      <div class="svhint">Off by default &mdash; turn on if needed</div>
+      <div class="lbtn" id="sv-w"><span class="cbx"></span><span class="sw" style="border-radius:2px;background:rgba(46,111,142,.15);border:1.5px solid #2E6F8E"></span>2nd San Gabriel Valley center (Duarte)</div>
+      <div class="svhint">On by default &mdash; turn off to see only the 3 survey centers</div>
       <div class="lbtn" id="sv-pat"><span class="cbx"></span><span class="sw" style="background:#6F9FCF"></span>LivWell clinics &amp; patient homes</div>
     </div>
   </div>
@@ -1244,6 +1244,7 @@ html.mw-embed #stats-row .hlcard.hl-on .stat-lbl,html.mw-embed #stats-row .hlcar
   <div data-sv="bld" class="lk-off"><i style="background:#8A6D1F"></i> Survey building &mdash; San Bernardino</div>
   <div data-sv="zone" class="lk-off"><i style="background:#fff;border:3px solid #29374D"></i> Center site</div>
   <div data-sv="zone" class="lk-off"><i style="border-radius:2px;background:rgba(41,55,77,.15);border:1.5px solid #29374D"></i> 15-minute drive (real drive time)</div>
+  <div data-sv="w" class="lk-off"><i style="border-radius:2px;background:rgba(46,111,142,.15);border:1.5px solid #2E6F8E"></i> 15-minute drive &mdash; 2nd San Gabriel Valley center</div>
   <div data-lk="drive"><i style="border:2px dashed #DC2F3A;background:none"></i> About a 15-minute drive (7-mile circle)</div>
   <div data-lk="pin"><i style="background:#DC2F3A;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></i> Location you checked or compared</div>
   <div data-lk="iso"><i class="bar" style="background:linear-gradient(90deg,#1F5C7A,#C98A12,#DC2F3A)"></i> Isolation — on its own to crowded</div>
@@ -3805,7 +3806,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const nf=n=>n==null?'&mdash;':n.toLocaleString('en-US');
   const on=id=>$(id)&&$(id).classList.contains('active');
-  const COL={E:'#29374D',R:'#DC2F3A',S:'#8A6D1F',W:'#4F6D8F'};
+  const COL={E:'#29374D',R:'#DC2F3A',S:'#8A6D1F',W:'#2E6F8E'};
   const AREA={E:'East San Gabriel Valley',R:'Riverside',S:'San Bernardino'};
   const CEN={E:{n:'East San Gabriel Valley',a:'210 W Bonita Ave, Pomona',lat:34.09643,lon:-117.75064},
              R:{n:'Riverside',a:'5053 La Mart Dr, Riverside',lat:33.95885,lon:-117.33223},
@@ -3820,6 +3821,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   const active=()=>on('sv-w')?['E','R','S','W']:['E','R','S'];
   const zonesOf=p=>active().filter(k=>p.inZ[k]);
   const zname=k=>CEN[k].n;
+  const bl=n=>n+(n===1?' building':' buildings');
 
   /* ---------- map layers ---------- */
   const Lb=L.layerGroup(), Lz=L.layerGroup(), Lw=L.layerGroup();
@@ -3830,7 +3832,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       .addTo(Lb);
   });
   function zoneLayer(k,g){
-    L.polygon(SV.z[k],{color:COL[k],weight:2,dashArray:k==='W'?'6 4':null,fillColor:COL[k],fillOpacity:.13,interactive:false}).addTo(g);
+    L.polygon(SV.z[k],{color:COL[k],weight:2,dashArray:null,fillColor:COL[k],fillOpacity:.13,interactive:false}).addTo(g);
     L.circleMarker([CEN[k].lat,CEN[k].lon],{radius:9,color:COL[k],weight:4,fillColor:'#fff',fillOpacity:1})
       .bindTooltip('<b>'+CEN[k].n+' center</b><br>'+CEN[k].a,{className:'lwtip svtip'}).addTo(g);
   }
@@ -3840,7 +3842,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   const live=()=>IDS.some(on);
   bindToggle('sv-bld',()=>{ Lb.addTo(map); refresh(); },()=>{ map.removeLayer(Lb); refresh(); },false);
   bindToggle('sv-zone',()=>{ Lz.addTo(map); Lz.eachLayer(l=>l.bringToBack&&l.bringToBack()); refresh(); },()=>{ map.removeLayer(Lz); refresh(); },false);
-  bindToggle('sv-w',()=>{ if(live()){ Lw.addTo(map); Lw.eachLayer(l=>l.bringToBack&&l.bringToBack()); } refresh(); },()=>{ map.removeLayer(Lw); refresh(); },false);
+  bindToggle('sv-w',()=>{ if(live()){ Lw.addTo(map); Lw.eachLayer(l=>l.bringToBack&&l.bringToBack()); } refresh(); },()=>{ map.removeLayer(Lw); refresh(); },true);
   const patChip=()=>document.querySelector('#lp-show .shw[data-v="pat"]');
   bindToggle('sv-pat',()=>{ if(!on('lb-clin')) $('lb-clin').click(); const c=patChip(); if(c&&!c.classList.contains('on')) c.click(); },
                       ()=>{ if(quiet) return; const c=patChip(); if(c&&c.classList.contains('on')) c.click(); },false);
@@ -3849,7 +3851,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   function showAll(){
     if($('shw-ie').classList.contains('on')) $('shw-ie').click();
     if($('shw-rv').classList.contains('on')) $('shw-rv').click();
-    IDS.concat(['sv-pat']).forEach(id=>{ if(!on(id)) $(id).click(); });
+    IDS.concat(['sv-w','sv-pat']).forEach(id=>{ if(!on(id)) $(id).click(); });
     map.fitBounds(VIEW);
     if(window.innerWidth>1180 && $('map-ctl') && !$('map-ctl').classList.contains('min') && $('map-ctl-min')) $('map-ctl-min').click();
   }
@@ -3873,8 +3875,9 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
       +'<div class="sv-h">Area vs area</div>'
       +pairs.map(([a,b])=>{ const s=shared(a,b); return '<div class="sv-pr"><span>'+zname(a)+' &harr; '+zname(b)+'<br><span class="sv-mut">'+mi(CEN[a].lat,CEN[a].lon,CEN[b].lat,CEN[b].lon).toFixed(1)+' mi apart</span></span><span class="sv-pill '+(s?'r':'n')+'">'+(s?s+' shared':'No overlap')+'</span></div>'; }).join('')
       +'<div class="sv-h">Buildings in both zones</div>'
-      +(ov.length?ov.map(p=>'<div class="sv-b" data-a="'+esc(p.addr)+'"><span class="sv-dot" style="background:'+COL[p.area]+'"></span>'+esc(p.addr)+' <span class="sv-mut">&middot; '+esc(p.city)+'</span></div>').join(''):'<div class="sv-mut">None</div>')
-      +'<div class="sv-h">Not in any zone</div><div style="font-size:12.5px"><b>'+out.length+' buildings</b> <span class="sv-mut">&middot; '+Object.keys(outBy).map(k=>outBy[k]+' '+AREA[k]).join(', ')+'</span></div>'
+      +(ov.length?ov.map(p=>'<div class="sv-b" data-a="'+esc(p.addr)+'"><span class="sv-dot" style="background:'+COL[p.area]+'"></span>'+esc(p.addr)+' <span class="sv-mut">&middot; in '+zonesOf(p).map(zname).join(' &amp; ')+' zones</span></div>').join(''):'<div class="sv-mut">None</div>')
+      +'<div class="sv-h">Not in any zone &middot; '+bl(out.length)+'</div>'
+      +(out.length?out.map(p=>'<div class="sv-b" data-a="'+esc(p.addr)+'"><span class="sv-dot" style="background:#fff;border:2px solid '+COL[p.area]+';width:9px;height:9px"></span>'+esc(p.addr)+' <span class="sv-mut">&middot; '+esc(p.city)+'</span></div>').join(''):'<div class="sv-mut">None</div>')
       +(Z.includes('W')?'':'<div class="sv-note"><button type="button" id="sv-w-on">Turn on</button> the 2nd San Gabriel Valley center (Duarte) to cover '+P.filter(p=>p.inZ.W&&!zonesOf(p).length).length+' more.</div>')
       +'<button type="button" id="sv-adv">'+(lp.classList.contains('sv-adv-open')?'&#9662;':'&#9656;')+' Advanced &mdash; check or compare your own sites</button>';
   }
@@ -3896,12 +3899,12 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     const card=(cls,k,lbl,val,note)=>'<div class="stat-card sv-card '+cls+'" data-sv="'+k+'" role="button" tabindex="0"><div class="stat-lbl">'+lbl+'</div><div class="stat-val">'+val+'</div><div class="stat-note">'+note+'</div></div>';
     const n=k=>P.filter(p=>p.inZ[k]).length, wOn=on('sv-w');
     const ov=P.filter(p=>zonesOf(p).length>1).length, out=P.filter(p=>!zonesOf(p).length).length;
-    row.innerHTML=card('c1','E','East San Gabriel Valley center',n('E')+' buildings','within 15 min &middot; '+CEN.E.a)
-      +card('c2','R','Riverside center',n('R')+' buildings','within 15 min &middot; '+CEN.R.a)
-      +card('c3','S','San Bernardino center',n('S')+' buildings','within 15 min &middot; '+CEN.S.a)
-      +card(wOn?'c1':'sv-off','W','2nd San Gabriel Valley center',wOn?n('W')+' buildings':'Off',(wOn?'within 15 min &middot; ':'Click to turn on &middot; ')+CEN.W.a)
-      +card('c2 sv-red','OV','Overlap',ov+' buildings','in two drive zones at once')
-      +card('c6','OUT','Not in any zone',out+' buildings','outside every 15-minute drive');
+    row.innerHTML=card('c1','E','East San Gabriel Valley center',bl(n('E')),'within 15 min &middot; '+CEN.E.a)
+      +card('c2','R','Riverside center',bl(n('R')),'within 15 min &middot; '+CEN.R.a)
+      +card('c3','S','San Bernardino center',bl(n('S')),'within 15 min &middot; '+CEN.S.a)
+      +card(wOn?'c3':'sv-off','W','2nd San Gabriel Valley center',wOn?bl(n('W')):'Off',(wOn?'within 15 min &middot; ':'Click to turn on &middot; ')+CEN.W.a)
+      +card('c2 sv-red','OV','Overlap',bl(ov),'in two drive zones at once')
+      +card('c6','OUT','Not in any zone',bl(out),'outside every 15-minute drive');
     row.querySelectorAll('.sv-card').forEach(c=>{ const go=e=>{ if(e.type==='keydown'&&e.key!=='Enter'&&e.key!==' ') return;
       const k=c.dataset.sv;
       if(k==='W' && !on('sv-w')){ $('sv-w').click(); return; }
@@ -3933,7 +3936,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
     if(on('sv-w')&&live()&&!map.hasLayer(Lw)){ Lw.addTo(map); Lw.eachLayer(l=>l.bringToBack&&l.bringToBack()); }
     if(!live()&&map.hasLayer(Lw)) map.removeLayer(Lw);
     $('shw-sv').classList.toggle('on',live());
-    document.querySelectorAll('.maplegend [data-sv]').forEach(d=>d.classList.toggle('lk-off',!on('sv-'+d.dataset.sv)));
+    document.querySelectorAll('.maplegend [data-sv]').forEach(d=>d.classList.toggle('lk-off',!live()||!on('sv-'+d.dataset.sv)));
     setTimeout(()=>{ drawStats(); drawSide(); drawTab(); },150);
   }
   /* if the Inland Empire or Riverside plan layers are switched on, step aside */
