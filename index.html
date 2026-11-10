@@ -1033,6 +1033,10 @@ html.mw-embed #stats-row .hlcard.hl-on .stat-lbl,html.mw-embed #stats-row .hlcar
   .g2-client{height:48px;margin-bottom:30px}
 }
 </style>
+<style id="mw-embed-oneheader">
+/* inside the lease dashboard's Site Selection tab the lease dashboard's top bar is the only header */
+html.mw-embed #header{display:none!important}
+</style>
 </head><body>
 <div id="signin-gate" class="g2">
   <div class="g2-side">
@@ -3952,8 +3956,13 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
 
   const IDS=['sv-bld','sv-zone'];
   const live=()=>IDS.some(on);
-  bindToggle('sv-bld',()=>{ Lb.addTo(map); refresh(); },()=>{ map.removeLayer(Lb); refresh(); },false);
-  bindToggle('sv-zone',()=>{ Lz.addTo(map); Lz.eachLayer(l=>l.bringToBack&&l.bringToBack()); refresh(); },()=>{ map.removeLayer(Lz); refresh(); },false);
+  /* turning a survey layer on clears the Inland Empire / Riverside plan layers first (fix 10 Nov 2026) */
+  const IE_RV=['ie-doc','ie-ring','ie-zone','ie-band','rv-site','rv-best','rv-line'];
+  function clearIE(){ IE_RV.forEach(id=>{ if($(id)&&on(id)) $(id).click(); });
+    setTimeout(()=>{ $('shw-ie').classList.toggle('on',['ie-doc','ie-zone'].some(on));
+      document.querySelectorAll('.maplegend [data-ie]').forEach(d=>d.classList.toggle('lk-off',!$('ie-'+d.dataset.ie)||!on('ie-'+d.dataset.ie))); },0); }   /* keep the Inland Empire button in step */
+  bindToggle('sv-bld',()=>{ clearIE(); Lb.addTo(map); refresh(); },()=>{ map.removeLayer(Lb); refresh(); },false);
+  bindToggle('sv-zone',()=>{ clearIE(); Lz.addTo(map); Lz.eachLayer(l=>l.bringToBack&&l.bringToBack()); refresh(); },()=>{ map.removeLayer(Lz); refresh(); },false);
   bindToggle('sv-w',()=>{ if(live()){ Lw.addTo(map); Lw.eachLayer(l=>l.bringToBack&&l.bringToBack()); } refresh(); },()=>{ map.removeLayer(Lw); refresh(); },true);
   const patChip=()=>document.querySelector('#lp-show .shw[data-v="pat"]');
   bindToggle('sv-pat',()=>{ if(!on('lb-clin')) $('lb-clin').click(); const c=patChip(); if(c&&!c.classList.contains('on')) c.click(); },
@@ -3961,8 +3970,7 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   let quiet=false;
 
   function showAll(){
-    if($('shw-ie').classList.contains('on')) $('shw-ie').click();
-    if($('shw-rv').classList.contains('on')) $('shw-rv').click();
+    clearIE();
     IDS.concat(['sv-w','sv-pat']).forEach(id=>{ if(!on(id)) $(id).click(); });
     map.fitBounds(VIEW);
     if(window.innerWidth>1180 && $('map-ctl') && !$('map-ctl').classList.contains('min') && $('map-ctl-min')) $('map-ctl-min').click();
@@ -4053,12 +4061,23 @@ const IE_DATA = {"docs":[["Kam Newman","Rheumatology","Eisenhower Health","Ranch
   }
   /* if the Inland Empire or Riverside plan layers are switched on, step aside */
   map.on('layeradd',()=>{ clearTimeout(refresh._t); refresh._t=setTimeout(()=>{
-    if(live() && ($('shw-ie').classList.contains('on')||$('shw-rv').classList.contains('on'))){
+    if(live() && IE_RV.some(id=>$(id)&&on(id))){
       quiet=true; ['sv-bld','sv-zone','sv-w','sv-pat'].forEach(id=>{ if(on(id)) $(id).click(); }); quiet=false;
       setTimeout(()=>{ if(window.rvRefresh) window.rvRefresh(); },350);   /* put the Inland Empire cards back */
     }
   },120); });
   drawTab(); refresh();
+})();
+</script>
+<script>
+/* the lease dashboard's Tour button (Site Selection tab) starts this page's tour */
+(function(){
+  if(window.top===window.self) return;
+  const ok=o=>o==='https://livwell.medwestrealty.com'||/^https:\/\/([a-z0-9-]+\.)?livwell-dashboard\.pages\.dev$/.test(o);
+  window.addEventListener('message',function(e){
+    if(!ok(e.origin)||!e.data||e.data.type!=='mw-tour') return;
+    const b=document.getElementById('tour-nav-btn'); if(b) b.click();
+  });
 })();
 </script>
 </body></html>
